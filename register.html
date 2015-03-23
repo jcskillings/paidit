@@ -11,10 +11,27 @@
   </head>
   <body>
     <h1>Splash</h1>
+    <div class="row">
+          <div class="large-12 columns">
+            <a><img src="img/logoSm.png" /></a>
+          </div>
+    </div>
+    <div class="row" id="bottomRow">
+          <div class="large-12 columns">
+            <a><img src="img/logoSm.png" /></a>
+          </div>
+    </div>
+    
     <a href="#" data-reveal-id="regModal" class="radius button">Register</a>
     <a href="#" data-reveal-id="loginModal" class="radius button">Login</a>
     
-    <div div id="regModal" class="reveal-modal small" data-reveal aria-labelledby="Register" aria-hidden="true" role="dialog">
+    <!-- MODALS FOR SIGN UP AND LOGIN-->
+    <div div id="regModal" class="reveal-modal small" data-reveal aria-labelledby="Sign Up" aria-hidden="true" role="dialog">
+      <div class="row">
+          <div class="large-6 large-centered columns">
+            <a><img src="img/logoSm.png" /></a>
+          </div>
+        </div>
       <form>
         <div class="row">
           <div class="large-6 columns">
@@ -63,13 +80,14 @@
         </div>
         <div class="row">
             <div class="large-4 columns">
-              <a href="#" class="radius button">Register</a>
+              <a href="#" class="radius button">Sign Up</a>
             </div>
           </div>
       </form>
        <a class="close-reveal-modal" aria-label="Close">&#215;</a>
       </div>
       
+      <!-- Login modal-->
       <div div id="loginModal" class="reveal-modal tiny" data-reveal aria-labelledby="Register" aria-hidden="true" role="dialog">
         <form>
           <div class="row">
