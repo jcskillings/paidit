@@ -8,10 +8,13 @@
     <link rel="stylesheet" href="css/foundation.css" />
     
     <script src="js/vendor/modernizr.js"></script>
+
+
   </head>
-  <body>
+  <body onload="checkCookie()">
     <h1>Splash</h1>
-    <a href="#" data-reveal-id="regModal" class="radius button">Register</a>
+
+    <a href="#" data-reveal-id="regModal" id="reg" class="radius button">Register</a>
     
     <div div id="regModal" class="reveal-modal" data-reveal aria-labelledby="Register" aria-hidden="true" role="dialog">
       <form>
@@ -60,28 +63,81 @@
             </label>
           </div>
         </div>
+         <button type="submit" class="btn btn-success">Submit <span class="fa fa-arrow-right"></span></button>
       </form>
        <a class="close-reveal-modal" aria-label="Close">&#215;</a>
-      </div>
-    
-        <div class="large-4 columns">
-        </div>
-      
-      
     </div>
-    
 
-    
-   
-    
-    
-    
-    
+    <a href="#" data-reveal-id="logModal" id="log" class="radius button">Login</a>
+    <div div id="logModal" class="reveal-modal" data-reveal aria-labelledby="Login" aria-hidden="true" role="dialog">
+      <form>
+        <div class="row">
+          <div class="large-6 columns">
+            <label>Username
+            <input type="text" placeholder="user name" id='regUsername' />
+            </label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="large-6 columns">
+            <label>Password
+            <input type="password" placeholder="******" id='regPassword' />
+            </label>
+          </div>
+        </div>
+        
+         <button type="submit" class="btn btn-success">Submit <span class="fa fa-arrow-right"></span></button>
+      </form>
+       <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+    </div>
+
     
     <script src="js/vendor/jquery.js"></script>
     <script src="js/foundation.min.js"></script>
     <script>
       $(document).foundation();
+      
+      function setCookie(cname,cvalue,exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        var expires = "expires=" + d.toGMTString();
+        document.cookie = cname+"="+cvalue+"; "+expires;
+      }
+
+      function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+            }
+          }
+        return "";
+      }
+
+      function checkCookie() {
+        var user=getCookie("username");
+        var password =getCookie("password");
+        if (user != "" && password != "") {
+          //alert("Welcome again " + user);
+          
+        } else {
+           //user = prompt("Please enter your name:","");
+           //("#div_modal").addClass("md-show");
+          user = document.getElementById('regUsername');
+          password = document.getElementById('regPassword');
+           //("#div_modal").removeClass("md-show");
+          if (user != "" && user != null && password != null && password !="") {
+            setCookie("username", user, 30);
+            setCookie("password", password, 30);
+          }
+          
+        }
+      }
+      
+
     </script>
   </body>
 </html>
