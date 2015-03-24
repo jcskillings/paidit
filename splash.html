@@ -31,8 +31,8 @@
           
             <div class="large-2 columns">
               <ul class="button-group radius even-2 " id="loginButtons">
-             <li><a href="#" data-reveal-id="regModal" class="button">Sign up</a></li>
-              <li><a href="#" data-reveal-id="loginModal" class=" button">Log in</a></li>
+             <li><a href="#" data-reveal-id="regModal" class="button clearRegForm">Sign up</a></li>
+              <li><a href="#" data-reveal-id="loginModal" class=" button clearLoginForm" id="btnLogin">Log in</a></li>
             </ul>
             </div>
             
@@ -63,7 +63,7 @@
             <a><img src="img/logoSm.png" /></a>
           </div>
         </div>
-      <form data-abide name='regForm' onsubmit="return validateForm()" method="post">
+      <form id="regForm" data-abide name='regForm' onsubmit="return validateForm()" method="post">
         <div class="row">
           <div class="large-6 large-centered columns">
             <label>Username 
@@ -79,14 +79,16 @@
             <label>Password 
             <input type="password" placeholder="********" id='regPassword' name='regPassword' required />
             </label>
+            <small class="error">password is required</small>
           </div>
         </div>
         
         <div class="row">
           <div class="large-6 large-centered columns">
             <label>Confirm Password
-            <input type="password" placeholder="*******" id='regPassConfirm' data-equalto="regPassword"/>
+            <input type="password" placeholder="*******" id='regPassConfirm' required data-equalto="regPassword"/>
             </label>
+            <small class="error">passwords do not match</small>
           </div>
         </div>
         
@@ -126,13 +128,14 @@
               <input href="#" type="submit" class="radius button" value="Sign up"/>
             </div>
           </div>
+          <a type="reset" class="close-reveal-modal" aria-label="Close">&#215;</a>
       </form>
-       <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+       
       </div>
       
       <!-- Login modal-->
       <div div id="loginModal" class="reveal-modal tiny" data-reveal aria-labelledby="Register" aria-hidden="true" role="dialog">
-        <form>
+        <form data-abide id='loginForm' >
           <div class="row">
             <div class="large-6  columns">
               <label>Username
@@ -153,7 +156,7 @@
             </div>
           </div>
            
-          <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+          <a type='reset' class='close-reveal-modal clearLoginForm' aria-label='Close' id='closeLogin'>&#215;</a>
         </form>
         
       </div> <!-- login Modal-->
@@ -232,6 +235,20 @@
         }
       }
       
+      $(".clearLoginForm").on("click",function(){
+      $("#loginForm").removeClass("error");
+      $("#loginForm").removeClass("error");
+      $("#loginForm")[0].reset();
+      });
+      
+      $(".clearRegForm").on("click",function(){
+      $("#regForm").removeClass("error");
+      $("#regForm").removeClass("error");
+      $("#regForm")[0].reset();
+      });
+      
     </script>
+    
+    
   </body>
 </html>
