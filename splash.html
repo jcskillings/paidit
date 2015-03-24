@@ -13,7 +13,7 @@
     <script src="splash.js"></script>
 
   </head>
-  <body>
+  <body onload="checkCookie()">
     
   
     <div class="row fullWidth" id="tipTopRow">
@@ -50,74 +50,80 @@
     
     <div class="row fullWidth" id="bottomRow">
           <div class="large-12 xlarge-12 columns">
-            <p>stuff here</p>
+            <p>More information</p>
           </div>
     </div>
     
     
     
-    <!-- MODALS FOR SIGN UP AND LOGIN-->
-    <div div id="regModal" class="reveal-modal small" data-reveal aria-labelledby="Sign Up" aria-hidden="true" role="dialog">
+    <!--  registration modal-->
+    <div div id="regModal" class="reveal-modal tiny" data-reveal aria-labelledby="Sign Up" aria-hidden="true" role="dialog">
       <div class="row">
           <div class="large-6 large-centered columns">
             <a><img src="img/logoSm.png" /></a>
           </div>
         </div>
-      <form>
+      <form data-abide name='regForm' onsubmit="return validateForm()" method="post">
         <div class="row">
-          <div class="large-6 columns">
-            <label>Username
-            <input type="text" placeholder="username" id='regUsername' />
-          <div class="large-6 columns">
-            <label>Email Address
-            <input type="text" placeholder="you@example.com" id='regEmail'/>
+          <div class="large-6 large-centered columns">
+            <label>Username 
+            <input type="text" placeholder="username" id='regUsername' name='regUsername' required/>
             </label>
-          </div>
+            <small class="error">username is required </small>
+          
             
           </div>
         </div>
         <div class="row">
-          <div class="large-6 columns">
-            <label>Password
-            <input type="password" placeholder="******" id='regPassword' />
+          <div class="large-6 large-centered columns">
+            <label>Password 
+            <input type="password" placeholder="********" id='regPassword' name='regPassword' required />
             </label>
           </div>
         </div>
         
         <div class="row">
-          <div class="large-6 columns">
+          <div class="large-6 large-centered columns">
             <label>Confirm Password
-            <input type="password" placeholder="*******" id='regPassConfirm'/>
+            <input type="password" placeholder="*******" id='regPassConfirm' data-equalto="regPassword"/>
             </label>
           </div>
         </div>
         
         <div class="row">
-          <div class="large-6 columns">
+          <div class="large-6 large-centered columns">
             <label>First Name
             <input type="text" placeholder="first name" id='regFirstName'/>
             </label>
           </div>
         </div>
         <div class="row">
-          <div class="large-6 columns">
+          <div class="large-6 large-centered columns">
             <label>Last Name
             <input type="text" placeholder="last name" id='regLastName'/>
             </label>
           </div>
         </div>
-        <!-- moved email field 
+        
         <div class="row">
-          <div class="large-6 columns">
+          <div class="large-6 large-centered columns">
             <label>Email Address
             <input type="text" placeholder="you@example.com" id='regEmail'/>
             </label>
           </div>
         </div>
-        -->
         <div class="row">
-            <div class="large-4 columns">
-              <a href="#" class="radius button">Sign Up</a>
+          <div class="large-6 large-centered columns">
+            <!-- tooltip not displaying correctly -->
+            <label>Cell Phone <span data-tooltip aria-haspopup="true" class="has-tip right" title="to receive text notifications a cell phone number is required">?</span>
+            <input type="text" placeholder="555-123-4567" id='regEmail'/>
+            </label>
+            
+          </div>
+        </div>
+        <div class="row">
+            <div class="large-6 large-centered columns">
+              <input href="#" type="submit" class="radius button" value="Sign up"/>
             </div>
           </div>
       </form>
@@ -143,14 +149,14 @@
           </div>
           <div class="row">
             <div class="large-4 columns">
-              <a href="#" class="radius button">Login</a>
+              <a href="#" class="radius button">Log in</a>
             </div>
           </div>
            
           <a class="close-reveal-modal" aria-label="Close">&#215;</a>
         </form>
         
-      </div>
+      </div> <!-- login Modal-->
         
       
 
@@ -165,6 +171,67 @@
 
      <script>
       $(document).foundation();
+    </script>
+    
+    <script>
+    
+      function validateForm() {   
+      var user;
+      var password;
+      var x = document.forms["regForm"]["regUsername"].value;
+        if (x == null || x == "") {
+          alert("Name must be filled out");
+          return false;
+        } else {
+          user = document.forms['regForm']['regUsername'].value;
+          password = document.forms['regForm']['regPassword'].value;
+           //("#div_modal").removeClass("md-show");
+          if (user != "" && user != null && password != null && password !="") {
+            setCookie("username", user, 30);
+            setCookie("password", password, 30);
+          }
+        }
+      }
+      
+      function setCookie(cname,cvalue,exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        var expires = "expires=" + d.toGMTString();
+        document.cookie = cname+"="+cvalue+"; "+expires;
+      }
+      function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+            }
+          }
+        return "";
+      }
+      
+      function checkCookie() {
+        var user=getCookie("username");
+        var password =getCookie("password");
+        if (user != "" && password != "") {
+          //alert("Welcome again " + user);
+          
+        } else {
+           //user = prompt("Please enter your name:","");
+           //("#div_modal").addClass("md-show");
+          user = document.forms['regForm']['regUsername'].value;
+          password = document.forms['regForm']['regPassword'].value;
+           //("#div_modal").removeClass("md-show");
+          if (user != "" && user != null && password != null && password !="") {
+            setCookie("username", user, 30);
+            setCookie("password", password, 30);
+          }
+          
+        }
+      }
+      
     </script>
   </body>
 </html>
