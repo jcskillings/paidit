@@ -1,6 +1,10 @@
 #topRow, #middle{
     
     background: #809C78 !important;
+    
+}
+#topRow {
+    box-shadow: 0 0 20px #444F43  !important;
 }
 #tipTopRow {
     background: #444F43 !important;
@@ -8,16 +12,18 @@
 }
 
 #bottomRow {
-    
+    box-shadow: 0 0 5px #444F43  !important;
     background: #EEF3E3 !important;
     width: 100% !important;
 }
 
 #mainLogo {
     padding: 5px;
+    
 }
 #loginButtons {
     padding: 20px;
+    
 }
 
 #regModal, #loginModal {
@@ -33,3 +39,4 @@
 .reveal-modal .close-reveal-modal {
     color: #444F43  !important;
 }
+
