@@ -14,14 +14,7 @@
 
 
   </head>
-  <body onload="checkCookie()">
-    <h1>Splash</h1>
-
-    <a href="#" data-reveal-id="regModal" id="reg" class="radius button">Register</a>
-
-    <script src="splash.js"></script>
-
-  </head>
+ 
   <body onload="checkCookie()">
     
   
@@ -124,38 +117,7 @@
             </label>
           </div>
         </div>
-
-         <button type="submit" class="btn btn-success">Submit <span class="fa fa-arrow-right"></span></button>
-      </form>
-       <a class="close-reveal-modal" aria-label="Close">&#215;</a>
-    </div>
-
-    <a href="#" data-reveal-id="logModal" id="log" class="radius button">Login</a>
-    <div div id="logModal" class="reveal-modal" data-reveal aria-labelledby="Login" aria-hidden="true" role="dialog">
-      <form>
-        <div class="row">
-          <div class="large-6 columns">
-            <label>Username
-            <input type="text" placeholder="user name" id='regUsername' />
-            </label>
-          </div>
-        </div>
-        <div class="row">
-          <div class="large-6 columns">
-            <label>Password
-            <input type="password" placeholder="******" id='regPassword' />
-            </label>
-          </div>
-        </div>
-        
-         <button type="submit" class="btn btn-success">Submit <span class="fa fa-arrow-right"></span></button>
-      </form>
-       <a class="close-reveal-modal" aria-label="Close">&#215;</a>
-    </div>
-
-    
-
-        <div class="row">
+         <div class="row">
           <div class="large-6 large-centered columns">
             <!-- tooltip not displaying correctly -->
             <label>Cell Phone <span data-tooltip aria-haspopup="true" class="has-tip right" title="to receive text notifications a cell phone number is required">?</span>
@@ -164,16 +126,17 @@
             
           </div>
         </div>
-        <div class="row">
+          <div class="row">
             <div class="large-6 large-centered columns">
               <input href="#" type="submit" class="radius button" value="Sign up"/>
             </div>
           </div>
-          <a type="reset" class="close-reveal-modal" aria-label="Close">&#215;</a>
+         <a class="close-reveal-modal" aria-label="Close">&#215;</a>
       </form>
        
-      </div>
-      
+    </div>
+
+    
       <!-- Login modal-->
       <div div id="loginModal" class="reveal-modal tiny" data-reveal aria-labelledby="Register" aria-hidden="true" role="dialog">
         <form data-abide id='loginForm' >
