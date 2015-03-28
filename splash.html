@@ -3,11 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kyle Schenk | Bill Analysis</title>
-    <link rel="stylesheet" href="css/billaccounts.css" />
-    <link rel="stylesheet" href="css/foundation.css" />
+    <title>Paidit | Simple Bill Management</title>
     
+    <link rel="stylesheet" href="css/foundation.css" />
+    <link rel="stylesheet" href="css/splash.css" />
+   
+   
     <script src="js/vendor/modernizr.js"></script>
+
 
 
   </head>
@@ -15,41 +18,99 @@
     <h1>Splash</h1>
 
     <a href="#" data-reveal-id="regModal" id="reg" class="radius button">Register</a>
+
+    <script src="splash.js"></script>
+
+  </head>
+  <body onload="checkCookie()">
     
-    <div div id="regModal" class="reveal-modal" data-reveal aria-labelledby="Register" aria-hidden="true" role="dialog">
-      <form>
+  
+    <div class="row fullWidth" id="tipTopRow">
+        
+    </div>
+    
+    <div class="row fullWidth" div id="topRow">
+          <div class="large-2  xlarge-2 columns">
+            
+            <a><img src="img/logoSm.png" id="mainLogo"/></a>
+          </div>
+          
+          
+        
+          
+            <div class="large-2 columns">
+              <ul class="button-group radius even-2 " id="loginButtons">
+             <li><a href="#" data-reveal-id="regModal" class="button clearRegForm">Sign up</a></li>
+              <li><a href="#" data-reveal-id="loginModal" class=" button clearLoginForm" id="btnLogin">Log in</a></li>
+            </ul>
+            </div>
+            
+          
+          
+    </div>
+    <div id="middle" >
+      <div class="row">
+        <div class="large-10 large-centered columns">
+         <h1>Features</h1>
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="row fullWidth" id="bottomRow">
+          <div class="large-12 xlarge-12 columns">
+            <p>More information</p>
+          </div>
+    </div>
+    
+    
+
+    
+    <!--  registration modal-->
+    <div div id="regModal" class="reveal-modal tiny" data-reveal aria-labelledby="Sign Up" aria-hidden="true" role="dialog">
+      <div class="row">
+          <div class="large-6 large-centered columns">
+            <a><img src="img/logoSm.png" /></a>
+          </div>
+        </div>
+      <form id="regForm" data-abide name='regForm' onsubmit="return validateForm()" method="post">
         <div class="row">
-          <div class="large-6 columns">
-            <label>Username
-            <input type="text" placeholder="user name" id='regUsername' />
+          <div class="large-6 large-centered columns">
+            <label>Username 
+            <input type="text" placeholder="username" id='regUsername' name='regUsername' required/>
             </label>
+            <small class="error">username is required </small>
+          
+            
           </div>
         </div>
         <div class="row">
-          <div class="large-6 columns">
-            <label>Password
-            <input type="password" placeholder="******" id='regPassword' />
+          <div class="large-6 large-centered columns">
+            <label>Password 
+            <input type="password" placeholder="********" id='regPassword' name='regPassword' required />
             </label>
+            <small class="error">password is required</small>
           </div>
         </div>
         
         <div class="row">
-          <div class="large-6 columns">
+          <div class="large-6 large-centered columns">
             <label>Confirm Password
-            <input type="password" placeholder="*******" id='regPassConfirm'/>
+            <input type="password" placeholder="*******" id='regPassConfirm' required data-equalto="regPassword"/>
             </label>
+            <small class="error">passwords do not match</small>
           </div>
         </div>
         
         <div class="row">
-          <div class="large-6 columns">
+          <div class="large-6 large-centered columns">
             <label>First Name
             <input type="text" placeholder="first name" id='regFirstName'/>
             </label>
           </div>
         </div>
         <div class="row">
-          <div class="large-6 columns">
+          <div class="large-6 large-centered columns">
             <label>Last Name
             <input type="text" placeholder="last name" id='regLastName'/>
             </label>
@@ -57,12 +118,13 @@
         </div>
         
         <div class="row">
-          <div class="large-6 columns">
+          <div class="large-6 large-centered columns">
             <label>Email Address
             <input type="text" placeholder="you@example.com" id='regEmail'/>
             </label>
           </div>
         </div>
+
          <button type="submit" class="btn btn-success">Submit <span class="fa fa-arrow-right"></span></button>
       </form>
        <a class="close-reveal-modal" aria-label="Close">&#215;</a>
@@ -92,9 +154,67 @@
     </div>
 
     
+
+        <div class="row">
+          <div class="large-6 large-centered columns">
+            <!-- tooltip not displaying correctly -->
+            <label>Cell Phone <span data-tooltip aria-haspopup="true" class="has-tip right" title="to receive text notifications a cell phone number is required">?</span>
+            <input type="text" placeholder="555-123-4567" id='regEmail'/>
+            </label>
+            
+          </div>
+        </div>
+        <div class="row">
+            <div class="large-6 large-centered columns">
+              <input href="#" type="submit" class="radius button" value="Sign up"/>
+            </div>
+          </div>
+          <a type="reset" class="close-reveal-modal" aria-label="Close">&#215;</a>
+      </form>
+       
+      </div>
+      
+      <!-- Login modal-->
+      <div div id="loginModal" class="reveal-modal tiny" data-reveal aria-labelledby="Register" aria-hidden="true" role="dialog">
+        <form data-abide id='loginForm' >
+          <div class="row">
+            <div class="large-6  columns">
+              <label>Username
+              <input type="text" placeholder="username" id='loginUsername'/>
+              </label>   
+            </div>
+          </div>
+          <div class="row">
+            <div class="large-6 columns">
+              <label>Password
+              <input type="password" placeholder="********" id='loginPassword'/>
+              </label>   
+            </div>
+          </div>
+          <div class="row">
+            <div class="large-4 columns">
+              <a href="#" class="radius button">Log in</a>
+            </div>
+          </div>
+           
+          <a type='reset' class='close-reveal-modal clearLoginForm' aria-label='Close' id='closeLogin'>&#215;</a>
+        </form>
+        
+      </div> <!-- login Modal-->
+        
+      
+
+    
+    
+    
+   
+    <!-- jquery and foundation -->
+
     <script src="js/vendor/jquery.js"></script>
+    <script src="/js/vendor/fastclick.js"></script>
     <script src="js/foundation.min.js"></script>
-    <script>
+
+     <script>
       $(document).foundation();
       
       function setCookie(cname,cvalue,exdays) {
@@ -139,5 +259,80 @@
       
 
     </script>
+    
+    <script>
+    
+      function validateForm() {   
+      var user;
+      var password;
+      var x = document.forms["regForm"]["regUsername"].value;
+        if (x == null || x == "") {
+          alert("Name must be filled out");
+          return false;
+        } else {
+          user = document.forms['regForm']['regUsername'].value;
+          password = document.forms['regForm']['regPassword'].value;
+           //("#div_modal").removeClass("md-show");
+          if (user != "" && user != null && password != null && password !="") {
+            setCookie("username", user, 30);
+            setCookie("password", password, 30);
+          }
+        }
+      }
+      
+      function setCookie(cname,cvalue,exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        var expires = "expires=" + d.toGMTString();
+        document.cookie = cname+"="+cvalue+"; "+expires;
+      }
+      function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+            }
+          }
+        return "";
+      }
+      
+      function checkCookie() {
+        var user=getCookie("username");
+        var password =getCookie("password");
+        if (user != "" && password != "") {
+          //alert("Welcome again " + user);
+          
+        } else {
+           //user = prompt("Please enter your name:","");
+           //("#div_modal").addClass("md-show");
+          user = document.forms['regForm']['regUsername'].value;
+          password = document.forms['regForm']['regPassword'].value;
+           //("#div_modal").removeClass("md-show");
+          if (user != "" && user != null && password != null && password !="") {
+            setCookie("username", user, 30);
+            setCookie("password", password, 30);
+          }
+          
+        }
+      }
+      
+      $(".clearLoginForm").on("click",function(){
+      $("#loginForm").removeClass("error");
+      $("#loginForm").removeClass("error");
+      $("#loginForm")[0].reset();
+      });
+      
+      $(".clearRegForm").on("click",function(){
+      $("#regForm").removeClass("error");
+      $("#regForm").removeClass("error");
+      $("#regForm")[0].reset();
+      });
+      
+    </script>
+    
+    
   </body>
 </html>
