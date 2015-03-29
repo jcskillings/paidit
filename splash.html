@@ -126,6 +126,11 @@
             
           </div>
         </div>
+           <div class="row">
+            <div class="large-6 large-centered columns">
+                <input id="checkbox1" type="checkbox"><label for="checkbox1">Remember Me</label>
+             </div>
+        </div>
           <div class="row">
             <div class="large-6 large-centered columns">
               <input href="#" type="submit" class="radius button" value="Sign up"/>
@@ -141,21 +146,26 @@
       <div div id="loginModal" class="reveal-modal tiny" data-reveal aria-labelledby="Register" aria-hidden="true" role="dialog">
         <form id ="loginForm" data-abide name='loginForm' onsubmit="return validateLoginForm()" method = "post">
           <div class="row">
-            <div class="large-6  columns">
+            <div class="large-6  large-centered columns">
               <label>Username
               <input type="text" placeholder="username" id='loginUsername' name = 'loginUsername'/>
               </label>   
             </div>
           </div>
           <div class="row">
-            <div class="large-6 columns">
+            <div class="large-6 large-centered columns">
               <label>Password
               <input type="password" placeholder="********" id='loginPassword' name = 'loginPassword'/>
               </label>   
             </div>
           </div>
           <div class="row">
-            <div class="large-4 columns">
+            <div class="large-6 large-centered columns">
+                <input id="checkbox2" type="checkbox"><label for="checkbox2">Remember Me</label>
+             </div>
+        </div>
+          <div class="row">
+            <div class="large-4 large-centered columns">
               <input href="#" class="radius button" type = "submit" value = "Log In"/>
             </div>
           </div>
@@ -243,9 +253,14 @@
             return false;
           }
           else {
-            setCookie("username", user, 30);
-            setCookie("password", password, 30);
-            redir();
+            var checked = document.forms['regForm']['checkbox1'].value;
+            if (checked == 'checked') {
+              setCookie("username", user, 30);
+              setCookie("password", password, 30);
+              redir();
+            } else {
+              redir();
+            }
           }
         }
       }
@@ -263,9 +278,14 @@
             return false;
           }
           else {
-            setCookie("username", user, 30);
-            setCookie("password", password, 30);
-            redir();
+            var checked = document.forms['loginForm']['checkbox2'].value;
+            if(checked == 'checked') {
+              setCookie("username", user, 30);
+              setCookie("password", password, 30);
+              redir();
+            } else {
+              redir();
+            }
           }
         }
       }
