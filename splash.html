@@ -7,57 +7,40 @@
     
     <link rel="stylesheet" href="css/foundation.css" />
     <link rel="stylesheet" href="css/splash.css" />
-   
-   
+
     <script src="js/vendor/modernizr.js"></script>
-
-
 
   </head>
  
   <body onload="checkCookie()">
-    
-  
-    <div class="row fullWidth" id="tipTopRow">
-        
-    </div>
+
+    <div class="row fullWidth" id="tipTopRow"></div>
     
     <div class="row fullWidth" div id="topRow">
-          <div class="large-2  xlarge-2 columns">
-            
-            <a><img src="img/logoSm.png" id="mainLogo"/></a>
-          </div>
-          
-          
-        
-          
-            <div class="large-2 columns">
-              <ul class="button-group radius even-2 " id="loginButtons">
-             <li><a href="#" data-reveal-id="regModal" class="button clearRegForm">Sign up</a></li>
-              <li><a href="#" data-reveal-id="loginModal" class=" button clearLoginForm" id="btnLogin">Log in</a></li>
-            </ul>
-            </div>
-            
-          
-          
+      <div class="large-2  xlarge-2 columns">
+        <a><img src="img/logoSm.png" id="mainLogo"/></a>
+      </div>
+      <div class="large-2 columns">
+        <ul class="button-group radius even-2 " id="loginButtons">
+          <li><a href="#" data-reveal-id="regModal" class="button clearRegForm">Sign up</a></li>
+          <li><a href="#" data-reveal-id="loginModal" class=" button clearLoginForm" id="btnLogin">Log in</a></li>
+        </ul>
+      </div>
     </div>
+    
     <div id="middle" >
       <div class="row">
         <div class="large-10  large-centered columns">
-         <h1 data-tooltip aria-haspopup="true" class="has-tip" title="did this work???">Features</h1>
+           <h1 data-tooltip aria-haspopup="true" class="has-tip" title="did this work???">Features</h1>
         </div>
       </div>
     </div>
     
-    
     <div class="row fullWidth" id="bottomRow">
-          <div class="large-12 xlarge-12 columns">
-            <p>More information</p>
-          </div>
+      <div class="large-12 xlarge-12 columns">
+        <p>More information</p>
+      </div>
     </div>
-    
-    
-
     
     <!--  registration modal-->
     <div div id="regModal" class="reveal-modal tiny" data-reveal aria-labelledby="Sign Up" aria-hidden="true" role="dialog">
@@ -67,20 +50,20 @@
           </div>
         </div>
       <form id="regForm" data-abide name='regForm' onsubmit="return validateForm()" method="post">
+        
         <div class="row">
           <div class="large-6 large-centered columns">
             <label>Username 
-            <input type="text" placeholder="username" id='regUsername' name='regUsername' required/>
+              <input type="text" placeholder="username" id='regUsername' name='regUsername' required/>
             </label>
             <small class="error">username is required </small>
-          
-            
           </div>
         </div>
+        
         <div class="row">
           <div class="large-6 large-centered columns">
             <label>Password 
-            <input type="password" placeholder="********" id='regPassword' name='regPassword' required />
+              <input type="password" placeholder="********" id='regPassword' name='regPassword' required />
             </label>
             <small class="error">password is required</small>
           </div>
@@ -89,7 +72,7 @@
         <div class="row">
           <div class="large-6 large-centered columns">
             <label>Confirm Password
-            <input type="password" placeholder="*******" id='regPassConfirm' required data-equalto="regPassword"/>
+              <input type="password" placeholder="*******" id='regPassConfirm' required data-equalto="regPassword"/>
             </label>
             <small class="error">passwords do not match</small>
           </div>
@@ -98,14 +81,15 @@
         <div class="row">
           <div class="large-6 large-centered columns">
             <label>First Name
-            <input type="text" placeholder="first name" id='regFirstName'/>
+              <input type="text" placeholder="first name" id='regFirstName'/>
             </label>
           </div>
         </div>
+        
         <div class="row">
           <div class="large-6 large-centered columns">
             <label>Last Name
-            <input type="text" placeholder="last name" id='regLastName'/>
+              <input type="text" placeholder="last name" id='regLastName'/>
             </label>
           </div>
         </div>
@@ -113,90 +97,82 @@
         <div class="row">
           <div class="large-6 large-centered columns">
             <label>Email Address
-            <input type="text" placeholder="you@example.com" id='regEmail'/>
+              <input type="text" placeholder="you@example.com" id='regEmail'/>
             </label>
           </div>
         </div>
-         <div class="row">
+        
+        <div class="row">
           <div class="large-6 large-centered columns">
             <!-- tooltip not displaying correctly -->
             <label>Cell Phone <span data-tooltip aria-haspopup="true" class="has-tip right" title="to receive text notifications a cell phone number is required">?</span>
-            <input type="text" placeholder="555-123-4567" id='regEmail'/>
+              <input type="text" placeholder="555-123-4567" id='regEmail'/>
             </label>
-            
           </div>
         </div>
-           <div class="row">
-            <div class="large-6 large-centered columns">
-                <input id="checkbox1" type="checkbox"><label for="checkbox1">Remember Me</label>
-             </div>
-        </div>
-          <div class="row">
-            <div class="large-6 large-centered columns">
-              <input href="#" type="submit" class="radius button" value="Sign up"/>
-            </div>
+        
+        <div class="row">
+          <div class="large-6 large-centered columns">
+            <input id="checkbox1" type="checkbox"><label for="checkbox1">Remember Me</label>
           </div>
-         <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+        </div>
+        
+        <div class="row">
+          <div class="large-6 large-centered columns">
+            <input href="#" type="submit" class="radius button" value="Sign up"/>
+          </div>
+        </div>
+        <a class="close-reveal-modal" aria-label="Close">&#215;</a>
       </form>
-       
-    </div>
+    </div>     <!--  registration modal-->
 
-    
-      <!-- Login modal-->
-      <div div id="loginModal" class="reveal-modal tiny" data-reveal aria-labelledby="Register" aria-hidden="true" role="dialog">
-        <form id ="loginForm" data-abide name='loginForm' onsubmit="return validateLoginForm()" method = "post">
-          <div class="row">
-            <div class="large-6  large-centered columns">
-              <label>Username
+    <!-- Login modal-->
+    <div div id="loginModal" class="reveal-modal tiny" data-reveal aria-labelledby="Register" aria-hidden="true" role="dialog">
+      <form id ="loginForm" data-abide name='loginForm' onsubmit="return validateLoginForm()" method = "post">
+        
+        <div class="row">
+          <div class="large-6  large-centered columns">
+            <label>Username
               <input type="text" placeholder="username" id='loginUsername' name = 'loginUsername'/>
-              </label>   
-            </div>
+            </label>   
           </div>
-          <div class="row">
-            <div class="large-6 large-centered columns">
-              <label>Password
-              <input type="password" placeholder="********" id='loginPassword' name = 'loginPassword'/>
-              </label>   
-            </div>
-          </div>
-          <div class="row">
-            <div class="large-6 large-centered columns">
-                <input id="checkbox2" type="checkbox"><label for="checkbox2">Remember Me</label>
-             </div>
         </div>
-          <div class="row">
-            <div class="large-4 large-centered columns">
-              <input href="#" class="radius button" type = "submit" value = "Log In"/>
-            </div>
+        
+        <div class="row">
+          <div class="large-6 large-centered columns">
+            <label>Password
+              <input type="password" placeholder="********" id='loginPassword' name = 'loginPassword'/>
+            </label>   
           </div>
-           
-          <a type='reset' class='close-reveal-modal clearLoginForm' aria-label='Close' id='closeLogin'>&#215;</a>
-        </form>
+        </div>
         
-      </div> <!-- login Modal-->
+        <div class="row">
+          <div class="large-6 large-centered columns">
+            <input id="checkbox2" type="checkbox"><label for="checkbox2">Remember Me</label>
+          </div>
+        </div>
+         
+        <div class="row">
+          <div class="large-4 large-centered columns">
+            <input href="#" class="radius button" type = "submit" value = "Log In"/>
+          </div>
+        </div>
+        <a type='reset' class='close-reveal-modal clearLoginForm' aria-label='Close' id='closeLogin'>&#215;</a>
+      </form>
+    </div> <!-- login Modal-->
         
-      
-
-    
-    
-    
-   
     <!-- jquery and foundation -->
-
     <script src="js/vendor/jquery.js"></script>
     <script src="/js/vendor/fastclick.js"></script>
     <script src="js/foundation.min.js"></script>
 
-     <script>
+    <script>
       $(document).foundation();
       
       function redir(){
-        alert("made it to redir");
-        //window.location.replace("https://paidit-kyleschenk1.c9.io/index.html", "https://paidit-kyleschenk1.c9.io/splash.html");
         window.location.replace("index.html");
-        alert("made it thru redir");
-        return false;
-        //window.location.replace("index.html");
+        alert().Redirecting;
+        window.location.replace("index.html");
       }
       
       function setCookie(cname,cvalue,exdays) {
@@ -218,47 +194,40 @@
           }
         return "";
       }
-
+      
       function checkCookie() {
         var user=getCookie("username");
         var password =getCookie("password");
-        if (user != "" && password != "") {
-          //alert("Welcome again " + user);
-          
-        } else {
-           //user = prompt("Please enter your name:","");
-           //("#div_modal").addClass("md-show");
-          user = document.getElementById('regUsername');
-          password = document.getElementById('regPassword');
-           //("#div_modal").removeClass("md-show");
-          if (user != "" && user != null && password != null && password !="") {
-            setCookie("username", user, 30);
-            setCookie("password", password, 30);
+        if (user != "" && password != ""){
+          if (confirm("  Welcome back " + user +"!\n(Not " + user + "? Press Cancel)") == true) {
+            redir(); //also submit login info to server
+          } else {
+            setCookie("username", "", 30);
+            setCookie("password", "", 30);
+            window.location.reload();
           }
-          
         }
       }
       
-
       function validateForm() {   
       var user = document.forms["regForm"]["regUsername"].value;
         if (user == null || user == "") {
           alert("Name must be filled out");
           return false;
-        } else {
+        } 
+        else {
           var password = document.forms['regForm']['regPassword'].value;
-           //("#div_modal").removeClass("md-show");
           if (password == null || password == "") {
             alert("Name must be filled out");
             return false;
           }
           else {
-            var checked = document.forms['regForm']['checkbox1'].value;
-            if (checked == 'checked') {
+            var checked = document.forms['regForm']['checkbox1'].checked;
+            if (checked == true) {
               setCookie("username", user, 30);
               setCookie("password", password, 30);
               redir();
-            } else {
+            } else{
               redir();
             }
           }
@@ -272,14 +241,13 @@
           return false;
         } else {
           var password = document.forms['loginForm']['loginPassword'].value;
-           //("#div_modal").removeClass("md-show");
           if (password == null || password == "") {
             alert("Name must be filled out");
             return false;
           }
           else {
-            var checked = document.forms['loginForm']['checkbox2'].value;
-            if(checked == 'checked') {
+            var checked = document.forms['loginForm']['checkbox2'].checked;
+            if(checked == true) {
               setCookie("username", user, 30);
               setCookie("password", password, 30);
               redir();
@@ -289,8 +257,6 @@
           }
         }
       }
-      
-      
       
       $(".clearLoginForm").on("click",function(){
       $("#loginForm").removeClass("error");
@@ -305,7 +271,5 @@
       });
       
     </script>
-    
-    
   </body>
 </html>
