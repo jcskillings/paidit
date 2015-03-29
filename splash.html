@@ -72,7 +72,7 @@
         <div class="row">
           <div class="large-6 large-centered columns">
             <label>Confirm Password
-              <input type="password" placeholder="*******" id='regPassConfirm' required data-equalto="regPassword"/>
+              <input type="password" placeholder="*******" id='regPassConfirm' name = 'regPassConfirm' required data-equalto="regPassword"/>
             </label>
             <small class="error">passwords do not match</small>
           </div>
@@ -218,17 +218,27 @@
         else {
           var password = document.forms['regForm']['regPassword'].value;
           if (password == null || password == "") {
-            alert("Name must be filled out");
+            alert("Password must be filled out");
             return false;
           }
           else {
-            var checked = document.forms['regForm']['checkbox1'].checked;
-            if (checked == true) {
-              setCookie("username", user, 30);
-              setCookie("password", password, 30);
-              redir();
-            } else{
-              redir();
+            var passConfirm = document.forms['regForm']['regPassConfirm'].value;
+            if (passConfirm == null || passConfirm == "") {
+              alert("Password Confirmation must be filled out");
+              return false;
+            }
+            else if(passConfirm != password){
+              alert("Password does not match Password Confirmation");
+              return false;
+            }else {
+              var checked = document.forms['regForm']['checkbox1'].checked;
+              if (checked == true) {
+                setCookie("username", user, 30);
+                setCookie("password", password, 30);
+                redir();
+              } else{
+                redir();
+              }
             }
           }
         }
