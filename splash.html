@@ -139,24 +139,24 @@
     
       <!-- Login modal-->
       <div div id="loginModal" class="reveal-modal tiny" data-reveal aria-labelledby="Register" aria-hidden="true" role="dialog">
-        <form data-abide id='loginForm' >
+        <form id ="loginForm" data-abide name='loginForm' onsubmit="return validateLoginForm()" method = "post">
           <div class="row">
             <div class="large-6  columns">
               <label>Username
-              <input type="text" placeholder="username" id='loginUsername'/>
+              <input type="text" placeholder="username" id='loginUsername' name = 'loginUsername'/>
               </label>   
             </div>
           </div>
           <div class="row">
             <div class="large-6 columns">
               <label>Password
-              <input type="password" placeholder="********" id='loginPassword'/>
+              <input type="password" placeholder="********" id='loginPassword' name = 'loginPassword'/>
               </label>   
             </div>
           </div>
           <div class="row">
             <div class="large-4 columns">
-              <a href="#" class="radius button">Log in</a>
+              <input href="#" class="radius button" type = "submit" value = "Log In"/>
             </div>
           </div>
            
@@ -179,6 +179,15 @@
 
      <script>
       $(document).foundation();
+      
+      function redir(){
+        alert("made it to redir");
+        //window.location.replace("https://paidit-kyleschenk1.c9.io/index.html", "https://paidit-kyleschenk1.c9.io/splash.html");
+        window.location.replace("index.html");
+        alert("made it thru redir");
+        return false;
+        //window.location.replace("index.html");
+      }
       
       function setCookie(cname,cvalue,exdays) {
         var d = new Date();
@@ -221,66 +230,47 @@
       }
       
 
-    </script>
-    
-    <script>
-    
       function validateForm() {   
-      var user;
-      var password;
-      var x = document.forms["regForm"]["regUsername"].value;
-        if (x == null || x == "") {
+      var user = document.forms["regForm"]["regUsername"].value;
+        if (user == null || user == "") {
           alert("Name must be filled out");
           return false;
         } else {
-          user = document.forms['regForm']['regUsername'].value;
-          password = document.forms['regForm']['regPassword'].value;
+          var password = document.forms['regForm']['regPassword'].value;
            //("#div_modal").removeClass("md-show");
-          if (user != "" && user != null && password != null && password !="") {
+          if (password == null || password == "") {
+            alert("Name must be filled out");
+            return false;
+          }
+          else {
             setCookie("username", user, 30);
             setCookie("password", password, 30);
+            redir();
           }
         }
       }
       
-      function setCookie(cname,cvalue,exdays) {
-        var d = new Date();
-        d.setTime(d.getTime() + (exdays*24*60*60*1000));
-        var expires = "expires=" + d.toGMTString();
-        document.cookie = cname+"="+cvalue+"; "+expires;
-      }
-      function getCookie(cname) {
-        var name = cname + "=";
-        var ca = document.cookie.split(';');
-        for(var i=0; i<ca.length; i++) {
-          var c = ca[i];
-          while (c.charAt(0)==' ') c = c.substring(1);
-            if (c.indexOf(name) == 0) {
-              return c.substring(name.length, c.length);
-            }
-          }
-        return "";
-      }
-      
-      function checkCookie() {
-        var user=getCookie("username");
-        var password =getCookie("password");
-        if (user != "" && password != "") {
-          //alert("Welcome again " + user);
-          
+      function validateLoginForm() {   
+      var user = document.forms["loginForm"]["loginUsername"].value;
+        if (user == null || user == "") {
+          alert("Name must be filled out");
+          return false;
         } else {
-           //user = prompt("Please enter your name:","");
-           //("#div_modal").addClass("md-show");
-          user = document.forms['regForm']['regUsername'].value;
-          password = document.forms['regForm']['regPassword'].value;
+          var password = document.forms['loginForm']['loginPassword'].value;
            //("#div_modal").removeClass("md-show");
-          if (user != "" && user != null && password != null && password !="") {
+          if (password == null || password == "") {
+            alert("Name must be filled out");
+            return false;
+          }
+          else {
             setCookie("username", user, 30);
             setCookie("password", password, 30);
+            redir();
           }
-          
         }
       }
+      
+      
       
       $(".clearLoginForm").on("click",function(){
       $("#loginForm").removeClass("error");
