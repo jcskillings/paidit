@@ -90,7 +90,7 @@
         <div class="row">
           <div class="large-6 large-centered columns">
             <label>First Name
-              <input type="text" placeholder="first name" id='regFirstName'/>
+              <input type="text" placeholder="first name" id='regFirstName' name='regFirstName'/>
             </label>
           </div>
         </div>
@@ -219,6 +219,8 @@
           redir();
         }
         else if (user != "" && password != "" && numChecked == 1) {
+          var firstName = getCookie("firstName");
+          if (firstName != "" && firstName != null) user = firstName;
           if (confirm("  Welcome back " + user +"!\n(Not " + user + "? Press Cancel)") == true) {
             redir(); //also submit login info to server
           } 
@@ -226,6 +228,7 @@
             setCookie("username", "", 30);
             setCookie("password", "", 30);
             setCookie("numChecked", "", 30);
+            setCookie("firstName", "", 30);
             window.location.reload();
           }
         }
@@ -255,16 +258,21 @@
             }
             else {
               checked = document.forms['regForm']['checkbox1'].checked;
+              var firstName = document.forms['regForm']['regFirstName'].value;
               if (checked == true) {
+                if (firstName != "" && firstName != null) setCookie("firstName", firstName, 30);
+                //send new user info to server
                 setCookie("username", user, 30);
                 setCookie("password", password, 30);
                 setCookie("numChecked", 0, 30);
                 redir();
               }
               if(checked == false){
+                //send new user info to server before clearing cookies
                 setCookie("username", "", 30);
                 setCookie("password", "", 30);
                 setCookie("numChecked", 0, 30);
+                setCookie("firstName", "", 30);
                 redir();
               }
             }
@@ -290,12 +298,14 @@
               setCookie("username", user, 30);
               setCookie("password", password, 30);
               setCookie("numChecked", 0, 30);
+              //send login info to server and verify before redirecting
               redir();
             } 
             else {
               setCookie("username", "", 30);
               setCookie("password", "", 30);
               setCookie("numChecked", 0, 30);
+              //send login info to server and verify before redirecting
               redir();
             }
           }
