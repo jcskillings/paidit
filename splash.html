@@ -177,11 +177,8 @@
 
     <script>
       $(document).foundation();
-<<<<<<< HEAD
 
-=======
       var checked;
->>>>>>> be6e3ba0ec6060ed5d19a7fcb806fdba1c7f1985
       
       function redir(){
         window.location.replace("index.html");
@@ -213,6 +210,7 @@
         var password =getCookie("password");
         if (user == "" && password == "" && numChecked == "") {
           //do nothing but load the page
+          setCookie("firstName", "", 0);
         }
         else if(user == "" && password == "" && numChecked == 0) {
           setCookie("numChecked", "", 30);
