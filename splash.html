@@ -168,10 +168,9 @@
 
     <script>
       $(document).foundation();
+      var checked;
       
       function redir(){
-        window.location.replace("index.html");
-        alert().Redirecting;
         window.location.replace("index.html");
       }
       
@@ -196,20 +195,34 @@
       }
       
       function checkCookie() {
+        var numChecked = getCookie("numChecked");
         var user=getCookie("username");
         var password =getCookie("password");
-        if (user != "" && password != ""){
+        if (user == "" && password == "" && numChecked == "") {
+          //do nothing but load the page
+        }
+        else if(user == "" && password == "" && numChecked == 0) {
+          setCookie("numChecked", "", 30);
+          redir();
+        }
+        else if (user != "" && password != "" && numChecked == 0) {
+          setCookie("numChecked", 1, 30);
+          redir();
+        }
+        else if (user != "" && password != "" && numChecked == 1) {
           if (confirm("  Welcome back " + user +"!\n(Not " + user + "? Press Cancel)") == true) {
             redir(); //also submit login info to server
-          } else {
+          } 
+          else {
             setCookie("username", "", 30);
             setCookie("password", "", 30);
+            setCookie("numChecked", "", 30);
             window.location.reload();
           }
         }
       }
       
-      function validateForm() {
+      function validateForm() {   
       var user = document.forms["regForm"]["regUsername"].value;
         if (user == null || user == "") {
           alert("Name must be filled out");
@@ -230,13 +243,19 @@
             else if(passConfirm != password){
               alert("Password does not match Password Confirmation");
               return false;
-            }else {
-              var checked = document.forms['regForm']['checkbox1'].checked;
+            }
+            else {
+              checked = document.forms['regForm']['checkbox1'].checked;
               if (checked == true) {
                 setCookie("username", user, 30);
                 setCookie("password", password, 30);
+                setCookie("numChecked", 0, 30);
                 redir();
-              } else{
+              }
+              if(checked == false){
+                setCookie("username", "", 30);
+                setCookie("password", "", 30);
+                setCookie("numChecked", 0, 30);
                 redir();
               }
             }
@@ -249,19 +268,25 @@
         if (user == null || user == "") {
           alert("Name must be filled out");
           return false;
-        } else {
+        } 
+        else {
           var password = document.forms['loginForm']['loginPassword'].value;
           if (password == null || password == "") {
-            alert("Name must be filled out");
+            alert("Password must be filled out");
             return false;
           }
           else {
-            var checked = document.forms['loginForm']['checkbox2'].checked;
+            checked = document.forms['loginForm']['checkbox2'].checked;
             if(checked == true) {
               setCookie("username", user, 30);
               setCookie("password", password, 30);
+              setCookie("numChecked", 0, 30);
               redir();
-            } else {
+            } 
+            else {
+              setCookie("username", "", 30);
+              setCookie("password", "", 30);
+              setCookie("numChecked", 0, 30);
               redir();
             }
           }
