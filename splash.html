@@ -20,7 +20,7 @@
       <div class="large-2  xlarge-2 columns">
         <a><img src="img/logoSm.png" id="mainLogo"/></a>
       </div>
-      <div class="large-2 columns">
+      <div class="large-4 columns">
         <ul class="button-group radius even-2 " id="loginButtons">
           <li><a href="#" data-reveal-id="regModal" class="button clearRegForm">Sign up</a></li>
           <li><a href="#" data-reveal-id="loginModal" class=" button clearLoginForm" id="btnLogin">Log in</a></li>
@@ -31,7 +31,16 @@
     <div id="middle" >
       <div class="row">
         <div class="large-10  large-centered columns">
-           <h1 data-tooltip aria-haspopup="true" class="has-tip" title="did this work???">Features</h1>
+           <h1 data-tooltip aria-haspopup="true" class="has-tip" title="Our goal is to help remind you to pay your bills before they become overdue">
+             Features of  <img src="img/paiditkyle.png" height="102" width="152"><h6 align = "right">(*verification is required for each phone/email)</h6></h1>
+           <p>- Create Bills to receive notification reminders</p>
+           <p>- Receieve your Bill notifications via email* and/or text*</p>
+           <p>- View your Bill information on useful charts and graphs</p>
+           <p>- You can attach multiple emails*/phone numbers* so you and anyone else who needs to know about a bill due date can be notified</p>
+           <p>- A log is kept so you can know what has been sent/created/deleted</p>
+           <p>- Calendar to easily view upcoming and late bills</p>
+           <p>- Include reminders so notifications can be sent before a bill is due</p>
+
         </div>
       </div>
     </div>
@@ -81,7 +90,7 @@
         <div class="row">
           <div class="large-6 large-centered columns">
             <label>First Name
-              <input type="text" placeholder="first name" id='regFirstName'/>
+              <input type="text" placeholder="first name" id='regFirstName' name='regFirstName'/>
             </label>
           </div>
         </div>
@@ -168,11 +177,13 @@
 
     <script>
       $(document).foundation();
+<<<<<<< HEAD
 
+=======
+      var checked;
+>>>>>>> be6e3ba0ec6060ed5d19a7fcb806fdba1c7f1985
       
       function redir(){
-        window.location.replace("index.html");
-        alert().Redirecting;
         window.location.replace("index.html");
       }
       
@@ -197,20 +208,37 @@
       }
       
       function checkCookie() {
+        var numChecked = getCookie("numChecked");
         var user=getCookie("username");
         var password =getCookie("password");
-        if (user != "" && password != ""){
+        if (user == "" && password == "" && numChecked == "") {
+          //do nothing but load the page
+        }
+        else if(user == "" && password == "" && numChecked == 0) {
+          setCookie("numChecked", "", 30);
+          redir();
+        }
+        else if (user != "" && password != "" && numChecked == 0) {
+          setCookie("numChecked", 1, 30);
+          redir();
+        }
+        else if (user != "" && password != "" && numChecked == 1) {
+          var firstName = getCookie("firstName");
+          if (firstName != "" && firstName != null) user = firstName;
           if (confirm("  Welcome back " + user +"!\n(Not " + user + "? Press Cancel)") == true) {
             redir(); //also submit login info to server
-          } else {
+          } 
+          else {
             setCookie("username", "", 30);
             setCookie("password", "", 30);
+            setCookie("numChecked", "", 30);
+            setCookie("firstName", "", 30);
             window.location.reload();
           }
         }
       }
       
-      function validateForm() {
+      function validateForm() {   
       var user = document.forms["regForm"]["regUsername"].value;
         if (user == null || user == "") {
           alert("Name must be filled out");
@@ -231,13 +259,24 @@
             else if(passConfirm != password){
               alert("Password does not match Password Confirmation");
               return false;
-            }else {
-              var checked = document.forms['regForm']['checkbox1'].checked;
+            }
+            else {
+              checked = document.forms['regForm']['checkbox1'].checked;
+              var firstName = document.forms['regForm']['regFirstName'].value;
               if (checked == true) {
+                if (firstName != "" && firstName != null) setCookie("firstName", firstName, 30);
+                //send new user info to server
                 setCookie("username", user, 30);
                 setCookie("password", password, 30);
+                setCookie("numChecked", 0, 30);
                 redir();
-              } else{
+              }
+              if(checked == false){
+                //send new user info to server before clearing cookies
+                setCookie("username", "", 30);
+                setCookie("password", "", 30);
+                setCookie("numChecked", 0, 30);
+                setCookie("firstName", "", 30);
                 redir();
               }
             }
@@ -250,19 +289,27 @@
         if (user == null || user == "") {
           alert("Name must be filled out");
           return false;
-        } else {
+        } 
+        else {
           var password = document.forms['loginForm']['loginPassword'].value;
           if (password == null || password == "") {
-            alert("Name must be filled out");
+            alert("Password must be filled out");
             return false;
           }
           else {
-            var checked = document.forms['loginForm']['checkbox2'].checked;
+            checked = document.forms['loginForm']['checkbox2'].checked;
             if(checked == true) {
               setCookie("username", user, 30);
               setCookie("password", password, 30);
+              setCookie("numChecked", 0, 30);
+              //send login info to server and verify before redirecting
               redir();
-            } else {
+            } 
+            else {
+              setCookie("username", "", 30);
+              setCookie("password", "", 30);
+              setCookie("numChecked", 0, 30);
+              //send login info to server and verify before redirecting
               redir();
             }
           }

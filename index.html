@@ -9,7 +9,7 @@
     
     <script src="js/vendor/modernizr.js"></script>
   </head>
-  <body>
+  <body onload="changeWelcome()">
     
       
       <div class="icon-bar five-up">
@@ -52,7 +52,7 @@
     <div class="row">
       
       <div class="large-8 columns">
-          <h2>Welcome to Paidit!</h2>
+          <h1 style="font-size:300%" id = "welcome"><b>Welcome to <img src="img/paiditkyleblack.png" height="102" width="152">!</b></h1>
           <div class="panel">
           <p>This is out home page, and it under construction.</p>
           
@@ -104,6 +104,31 @@
     <script src="js/foundation.min.js"></script>
     <script>
       $(document).foundation();
+      function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+            }
+          }
+        return "";
+      }
+      
+      function changeWelcome(){
+        var user = getCookie("firstName");
+        if (user != "" && user != null){
+          document.getElementById("welcome").innerHTML = user.bold() + "! ".bold() + document.getElementById("welcome").innerHTML;
+          return;
+        }
+        user = getCookie("username");
+        if (user != "" && user != null){
+          document.getElementById("welcome").innerHTML = user.bold() + "! ".bold() + document.getElementById("welcome").innerHTML;
+        }
+        return;
+      }
     </script>
   </body>
 </html>
