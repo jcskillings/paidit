@@ -46,12 +46,14 @@
     <div class="row">
       
       <div class="small-12 small-centered large-12 large-centered columns">
-        <a href="#" class='button radius' id='addBill' >Add Bill</a>
-          <h2 class="awesome">Welcome to Bill Page!</h2>
-        
+       
+          <h2>Welcome to Bill Page!</h2>
+          <div class="large-1 columns">
+          <a href="#" class='button radius' id='addBill' >Add Bill</a>
+          </div>
           <!-- BILL LIST -->
-          <table class="small-12 large-12 responsive" id="billTable">
-            <thead class="responsive" id="billTableHeader">
+          <table class="small-11 large-11 columns" id="billTable">
+            <thead  id="billTableHeader">
               <tr>
                 <th>Bill</th>
                 <th>Due On</th>
@@ -60,7 +62,7 @@
                 <th>Edit</th>
               </tr>
             </thead>
-            <tbody class="responsive">
+            <tbody >
               <tr>
                 <td>Bill name</td>
                 <td>1st of month</td>
@@ -73,8 +75,9 @@
                 
             </tbody>
           </table>
-        
           
+          <a href="#" class="button radius" id="saveBtn">Save</a>
+          <a href="#" class="button radius" id="cancelBtn">Cancel</a>
       </div> 
         
         <div class="large-4 columns">
@@ -110,15 +113,8 @@
     
     
     <script>
-      $('junk').click(function() {
-          alert('you found junk');
-      });
-       $('#mine').click(function() {
-          alert('you found mine');
-      });
-      $('.awesome').click(function() {
-          alert('awsome');
-      });
+      //$('#dp1').fdatepicker();
+    
       //var billsExist = true;
       var i = 0;
       // GET BILLS - Runs on pageload gets all bills stored in cookies ======
@@ -163,31 +159,29 @@
         this.amount = amount;
         this.notifs = notifs;
 
-      }; 
+      } 
     
       $('#addBill').click(function(){
-        $('#billTable').find('tbody').append($('<tr>')
+        $('#billTable').find('tbody').append($('<tr id="createBill">')
         .append($('<td><input type="text" placeholder="bill name" id="billname" /></td>'))
         .append($('<td><input type="date" placeholder="due date" id="dp1" /></td>'))
         .append($('<td><input type="text" placeholder="amount" id="amount"  /></td>'))
-        .append($('<td><div class="switch"><input id="exampleCheckboxSwitch" type="checkbox"><label for="exampleCheckboxSwitch"></label></div> </td>'))
-        .append($('<td><a href="#" class="button radius" id="saveBill" name="saveBill" width="40px">Save</a></td>'))
+        .append($('<td><input id="emailCheckbox" type="checkbox"><label for="emailCheckbox">Email</label></td>'))
+        .append($('<td><input id="smsCheckbox" type="checkbox"><label for="smsCheckbox">SMS</label></td>'))
         
         )
+        $('#saveBtn').css('visibility','visible');
+        $('#cancelBtn').css('visibility','visible');
         //alert("added bill");
         
         
       });
       
-      $("#tableID").find('tbody')
-      .append($('<tr>')
-          .append($('<td>')
-              .append($('<img>')
-                  .attr('src', 'img.png')
-                  .text('Image cell')
-              )
-          )
-      );
+      $('#cancelBtn').click( function() {
+          $('#createBill').remove();
+          $('#saveBtn').css('visibility','hidden');
+          $('#cancelBtn').css('visibility','hidden');
+      });
       
       
    

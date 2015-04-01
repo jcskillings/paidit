@@ -50,3 +50,7 @@ tr {
 margin-left: auto;
 margin-right: auto;
 float: none !important; }
+
+#saveBtn, #cancelBtn {
+    visibility: hidden;
+}
