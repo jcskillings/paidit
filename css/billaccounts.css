@@ -22,21 +22,11 @@ background: black !important;
 }
 
 
-#bills, #bills  {
-    background: #809C78 !important;
 
-}
-#bills > label {
-    color: black !important;
-}
-
-#bills:hover, #bills:hover > label{
-    background: #000 !important;
-    color: white !important;
-}
 
 table {
     border-collapse: collapse;
+    box-shadow: 10 10 20px #444F43  !important;
     
 }
 
@@ -46,7 +36,8 @@ th {
 }
 
 tr {
-    border-bottom: 4pt solid #809C78;
+    
+    box-shadow: 5 0 50px #444F43  !important;
 }
 .editBox {
     border-left: 4pt solid #809C78;

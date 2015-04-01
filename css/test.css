@@ -3,11 +3,9 @@
 
   }
 body {
-  background:#fff !important;
+  background: #e9eedd  !important;
 }
-.top-bar {
-    background: gray !important;
-}
+
 
 .icon-bar >a:hover {
 background: green !important;
@@ -29,3 +27,8 @@ background: green !important;
 margin-left: auto;
 margin-right: auto;
 float: none !important; }
+
+.junk {
+    ; 
+
+}

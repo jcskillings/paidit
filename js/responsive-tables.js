@@ -59,9 +59,9 @@ $(document).ready(function() {
 
     });
 
-    tr_copy.each(function (index) {
-      $(this).height(heights[index]);
-    });
+    //tr_copy.each(function (index) {
+     // $(this).height(heights[index]);
+   //});
   }
 
 });

@@ -7,8 +7,10 @@
     <link rel="stylesheet" href="css/billaccounts.css" />
     <link rel="stylesheet" href="css/foundation.css" />
     <link rel="stylesheet" href="css/responsive-tables.css"/>
+    <link rel="stylesheet" href="css/test.css"/>
+    
     <script type="text/javascript" src="js/bills.js"></script>
-  <script type="text/javascript" src="js/responsive-tables.js"></script>
+    <script type="text/javascript" src="js/responsive-tables.js"></script>
     <link rel="shortcut icon" href="img/icon/checkMark.png"/>
 
     <script src="js/vendor/modernizr.js"></script>
@@ -43,9 +45,9 @@
     
     <div class="row">
       
-      <div class=" small-12 small-centered large-12 large-centered columns">
+      <div class="small-12 small-centered large-12 large-centered columns">
         <a href="#" class='button radius' id='addBill' >Add Bill</a>
-          <h2>Welcome to Bill Page!</h2>
+          <h2 class="awesome">Welcome to Bill Page!</h2>
         
           <!-- BILL LIST -->
           <table class="small-12 large-12 responsive" id="billTable">
@@ -68,11 +70,10 @@
                 </td> -->
                 <td>Email, SMS</td>
                 <td class="editBox"><img src="img/icon/editIcon40px.png" /></td>
-              </tr>
+                
             </tbody>
           </table>
-          
-       
+        
           
       </div> 
         
@@ -94,6 +95,7 @@
     
     <script src="js/vendor/jquery.js"></script>
     <script src="js/foundation.min.js"></script>
+    
     <script>
       $(document).foundation();
       
@@ -108,6 +110,15 @@
     
     
     <script>
+      $('junk').click(function() {
+          alert('you found junk');
+      });
+       $('#mine').click(function() {
+          alert('you found mine');
+      });
+      $('.awesome').click(function() {
+          alert('awsome');
+      });
       //var billsExist = true;
       var i = 0;
       // GET BILLS - Runs on pageload gets all bills stored in cookies ======
