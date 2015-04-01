@@ -6,31 +6,31 @@
     <title>Kyle Schenk | Bill Analysis</title>
     <link rel="stylesheet" href="css/billaccounts.css" />
     <link rel="stylesheet" href="css/foundation.css" />
-    
+    <script type="text/javascript" src="js/bills.js"></script>
     <script src="js/vendor/modernizr.js"></script>
   </head>
-  <body>
+  <body onload="getBills()">
     
       
       <div class="icon-bar five-up">
         <a class="item" href="index.html">
-          <img src="img/icon/homeIconD.png" height="20" width="20"  >
+          <img src="img/icon/homeIconG.png" height="20" width="20"  >
           <label class="show-for-medium-up">Home</label>
         </a>
         <a class="item" href="analysis.html">
-          <img src="img/icon/chartsIconD.png" height="20" width="20">
+          <img src="img/icon/chartsIconG.png" height="20" width="20">
           <label class="show-for-medium-up">Bill Analysis</label>
         </a>
         <a class="item" href="billaccounts.html" id="bills">
           <img src="img/icon/billIconG.png" height="20" width="20">
-          <label class="show-for-medium-up">Bills</label>
+          <label class="show-for-medium-up"><b>Bills</b></label>
         </a>
         <a class="item" href="notificationslog.html">
-          <img src="img/icon/gridD.png" height="20" width="20">
+          <img src="img/icon/smsIconG.png" height="20" width="20">
           <label class="show-for-medium-up">Notification Log</label>
         </a>
         <a class="item" href="usersettings.html">
-          <img src="img/icon/gearIconLite.png" height="20" width="20">
+          <img src="img/icon/gearIconG.png" height="20" width="20">
           <label class="show-for-medium-up">Settings</label>
         </a>
       </div>
@@ -47,11 +47,11 @@
           <table id="billTable">
             <thead id="billTableHeader">
               <tr>
-                <th width="200">Bill</th>
-                <th width="150">Due On</th>
-                <th width="150">Amount</th>
-                <th width="250">Notifications</th>
-                <th width="50"></th>
+                <th width="25%">Bill</th>
+                <th width="20%">Due On</th>
+                <th width="20%">Amount</th>
+                <th width="25%">Notifications</th>
+                <th width="5%"></th>
               </tr>
             </thead>
             <tbody>
@@ -99,31 +99,112 @@
         document.cookie = cname+"="+cvalue+"; "+expires;
       }
     </script>
-    <!-- GET ALL USER BILLS, RUNS ON PAGE LOAD -->
     
-    <!-- ADD BILL -->
+    
+    
     <script>
+      //var billsExist = true;
+      var i = 0;
+      // GET BILLS - Runs on pageload gets all bills stored in cookies ======
+      function getBills() {
+        //alert(document.cookie);
+        for  (i=0; i < 100; i++){
+          var bill = JSON.parse(getCookie("bill"+i));
+          //alert("got bill " + i  + " = " +bill);
+          if (bill === null || i > 1000){
+            alert("no bills left");
+            break;
+          }
+          else {
+            alert("got bill " + i  + " = " + bill.name);
+            
+          }
+        }
+      }
+      // appends individual bill to billTable
+      function loadBill(bill){
+        
+      }
+      
+      // Gets a cookie by name
+      function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+            }
+          }
+        return "";
+      }
+      
+      // Bill object constructor
+      function Bill(name, dueDate, amount, notifs ){
+        this.name = name;
+        this.dueDate = dueDate;
+        this.amount = amount;
+        this.notifs = notifs;
+
+      }; 
+    
       $('#addBill').click(function(){
         $('#billTable').find('tbody').append($('<tr>')
-        .append('<td><input type="text" placeholder="bill name"  required/></td>')
-        .append('<td>'
-          +'<div class="datepicker datepicker-dropdown dropdown-menu">'
-          +'<div class="datepicker-days" style="display:block;">'
-          +' </td>')
-        .append('<td><input type="text" placeholder="amount"  required/></td>')
-        .append('<td><div class="switch"><input id="exampleCheckboxSwitch" type="checkbox"><label for="exampleCheckboxSwitch"></label></div> </td>')
-        .append('<td><a href="#" class="button radius" width="40px">Save</a></td>')
+        .append($('<td><input type="text" placeholder="bill name" id="billname" /></td>'))
+        .append($('<td><input type="date" placeholder="due date" id="dp1" /></td>'))
+        .append($('<td><input type="text" placeholder="amount" id="amount"  /></td>'))
+        .append($('<td><div class="switch"><input id="exampleCheckboxSwitch" type="checkbox"><label for="exampleCheckboxSwitch"></label></div> </td>'))
+        .append($('<td><a href="#" class="button radius" id="saveBill" name="saveBill" width="40px">Save</a></td>'))
         
-        );
-        
+        )
+        //alert("added bill");
         
         
       });
+      
+      $("#tableID").find('tbody')
+      .append($('<tr>')
+          .append($('<td>')
+              .append($('<img>')
+                  .attr('src', 'img.png')
+                  .text('Image cell')
+              )
+          )
+      );
+      
+      
+   
+      
+      $(document).on('click', '#saveBill', function() {
+        
+        var name = document.getElementById("billname").value;
+        
+        var dueDate =  document.getElementById("dueDate").value;
+        var amount = document.getElementById("amount").value;
+        
+        
+        var newBill = new Bill(name, dueDate, amount, "none");
+        //alert(newBill.name + " " + newBill.dueDate);
+        //alert(JSON.stringify(newBill));
+        
+        setCookie("bill0",(JSON.stringify(newBill)),30);
+      });
+      
+      function setCookie(cname,cvalue,exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        var expires = "expires=" + d.toGMTString();
+        document.cookie = cname+"="+cvalue+"; "+expires;
+      }
+      
+     
+      
     </script>
     
     <!-- EDIT BILL -->
     
-    <!--  
+    
     
     
     </body>

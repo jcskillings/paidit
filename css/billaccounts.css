@@ -31,7 +31,7 @@ background: black !important;
 }
 
 #bills:hover, #bills:hover > label{
-    background: #67ADCC !important;
+    background: #000 !important;
     color: white !important;
 }
 
