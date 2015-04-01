@@ -6,11 +6,11 @@
     <title>Paidit | Bill Analysis</title>
     <link rel="stylesheet" href="css/billaccounts.css" />
     <link rel="stylesheet" href="css/foundation.css" />
-<<<<<<< HEAD
+    <link rel="stylesheet" href="css/responsive-tables.css"/>
     <script type="text/javascript" src="js/bills.js"></script>
-=======
+  <script type="text/javascript" src="js/responsive-tables.js"></script>
     <link rel="shortcut icon" href="img/icon/checkMark.png"/>
->>>>>>> 9e193f0dd22bd3b81ba62d62ac352961225d11bf
+
     <script src="js/vendor/modernizr.js"></script>
   </head>
   <body onload="getBills()">
@@ -43,29 +43,30 @@
     
     <div class="row">
       
-      <div class="large-12 columns">
+      <div class=" small-12 small-centered large-12 large-centered columns">
         <a href="#" class='button radius' id='addBill' >Add Bill</a>
           <h2>Welcome to Bill Page!</h2>
         
           <!-- BILL LIST -->
-          <table id="billTable">
-            <thead id="billTableHeader">
+          <table class="small-12 large-12 responsive" id="billTable">
+            <thead class="responsive" id="billTableHeader">
               <tr>
-                <th width="25%">Bill</th>
-                <th width="20%">Due On</th>
-                <th width="20%">Amount</th>
-                <th width="25%">Notifications</th>
-                <th width="5%"></th>
+                <th>Bill</th>
+                <th>Due On</th>
+                <th>Amount</th>
+                <th>Notifications</th>
+                <th>Edit</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody class="responsive">
               <tr>
                 <td>Bill name</td>
                 <td>1st of month</td>
                 <td>$500.00</td>
-                <td ><img src="img/icon/emailIcon40px.png"/>
+                <!--<td ><img src="img/icon/emailIcon40px.png"/>
                 <img src="img/icon/smsIcon40px.png"/>
-                </td>
+                </td> -->
+                <td>Email, SMS</td>
                 <td class="editBox"><img src="img/icon/editIcon40px.png" /></td>
               </tr>
             </tbody>
