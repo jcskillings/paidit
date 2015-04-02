@@ -14,7 +14,7 @@ $app->register(new Silex\Provider\MonologServiceProvider(), array(
 
 $app->get('/', function() use($app) {
   $app['monolog']->addDebug('logging output.');
-  return str_repeat('Hello', getenv('TIMES'));
+  return 'Hello';
 });
 
 $app->run();
