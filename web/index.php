@@ -1,8 +1,8 @@
 <?php
 
 //require('../vendor/autoload.php');
-
-$app = fopen("../splash.html", "r") or die("Unable to open page");
+include('../splash.html');
+//$app = fopen("../splash.html", "r") or die("Unable to open page");
 //$app['debug'] = true;
 
 // Register the monolog logging service
