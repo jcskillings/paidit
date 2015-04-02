@@ -2,7 +2,7 @@
 
 require('../vendor/autoload.php');
 
-$app = "../splash.html";
+$app = fopen("../splash.html", "r") or die("Unable to open page");
 //$app['debug'] = true;
 
 // Register the monolog logging service
@@ -17,7 +17,7 @@ $app->get('/', function() use($app) {
   //$app['monolog']->addDebug('logging output.');
   return 'Hello';
 });
-*/
-$app->run();
 
+$app->run();
+*/
 ?>
