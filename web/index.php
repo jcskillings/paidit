@@ -2,9 +2,6 @@
 
 //require('../vendor/autoload.php');
 include('../splash.html');
-include('../css/test.css');
-include('../css/foudation.css');
-include('../css/splash.css');
 //$app = fopen("../splash.html", "r") or die("Unable to open page");
 //$app['debug'] = true;
 
