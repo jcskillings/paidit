@@ -2,7 +2,8 @@
 
 //require('../vendor/autoload.php');
 include_once('../splash.html');
-include_once('../index.html');
+echo HttpRequest::getUrl;
+
 //$app = fopen("../splash.html", "r") or die("Unable to open page");
 //$app['debug'] = true;
 
