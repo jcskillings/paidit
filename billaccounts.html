@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Paidit | Bill Analysis</title>
+    <title>Paidit | Bills</title>
     <link rel="stylesheet" href="css/billaccounts.css" />
     <link rel="stylesheet" href="css/foundation.css" />
     <link rel="stylesheet" href="css/responsive-tables.css"/>
@@ -41,15 +41,17 @@
         </a>
       </div>
    
-    
+    <div class="row">
+      <a href="#" class='button radius' id='addBill' >Add Bill</a>
+    </div>
     
     <div class="row">
       
       <div class="small-12 small-centered large-12 large-centered columns">
        
-          <h2>Welcome to Bill Page!</h2>
+          
           <div class="large-1 columns">
-          <a href="#" class='button radius' id='addBill' >Add Bill</a>
+          
           </div>
           <!-- BILL LIST -->
           <table class="small-11 large-11 columns" id="billTable">
@@ -71,7 +73,7 @@
                 <img src="img/icon/smsIcon40px.png"/>
                 </td> -->
                 <td>Email, SMS</td>
-                <td class="editBox"><img src="img/icon/editIcon40px.png" /></td>
+                <!-- <td class="editBox"><img src="img/icon/editIcon40px.png" /></td> -->
                 
             </tbody>
           </table>
@@ -163,8 +165,8 @@
     
       $('#addBill').click(function(){
         $('#billTable').find('tbody').append($('<tr id="createBill">')
-        .append($('<td><input type="text" placeholder="bill name" id="billname" /></td>'))
-        .append($('<td><input type="date" placeholder="due date" id="dp1" /></td>'))
+        .append($('<td><input type="text" placeholder="bill name" id="billname" required /></td>'))
+        .append($('<td><input type="date" placeholder="due date" id="dueDate" /></td>'))
         .append($('<td><input type="text" placeholder="amount" id="amount"  /></td>'))
         .append($('<td><input id="emailCheckbox" type="checkbox"><label for="emailCheckbox">Email</label></td>'))
         .append($('<td><input id="smsCheckbox" type="checkbox"><label for="smsCheckbox">SMS</label></td>'))
@@ -186,19 +188,31 @@
       
    
       
-      $(document).on('click', '#saveBill', function() {
-        
+      $('#saveBtn').click( function() {
+        //alert("save bill");
+        var notifs = ["none"];
         var name = document.getElementById("billname").value;
-        
+        alert(name);
         var dueDate =  document.getElementById("dueDate").value;
+        alert(dueDate);
         var amount = document.getElementById("amount").value;
-        
+        var email = document.getElementById("emailCheckbox").value;
+        alert(email);
+        var sms = document.getElementById("smsCheckbox").value;
+        if (email == "on") {
+          notifs[0]="email";
+        }
+        if (sms == "on"){
+          notifs.push("sms");
+        }
+        alert(notifs[0]);
         
         var newBill = new Bill(name, dueDate, amount, "none");
-        //alert(newBill.name + " " + newBill.dueDate);
+        alert(newBill.name + " " + newBill.dueDate);
         //alert(JSON.stringify(newBill));
         
         setCookie("bill0",(JSON.stringify(newBill)),30);
+        return "";
       });
       
       function setCookie(cname,cvalue,exdays) {
