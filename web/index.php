@@ -2,6 +2,7 @@
 
 //require('../vendor/autoload.php');
 include('../splash.html');
+include('../img/*');
 //$app = fopen("../splash.html", "r") or die("Unable to open page");
 //$app['debug'] = true;
 
