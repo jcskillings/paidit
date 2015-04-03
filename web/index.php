@@ -1,7 +1,7 @@
 <?php
 
 //require('../vendor/autoload.php');
-include('../splash.html');
+include_once('../splash.html');
 //$app = fopen("../splash.html", "r") or die("Unable to open page");
 //$app['debug'] = true;
 
