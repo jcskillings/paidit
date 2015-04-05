@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Paidit | Bills</title>
+    <title>Paidit | Bill Analysis</title>
     <link rel="stylesheet" href="css/billaccounts.css" />
     <link rel="stylesheet" href="css/foundation.css" />
     <link rel="stylesheet" href="css/responsive-tables.css"/>
@@ -15,7 +15,7 @@
 
     <script src="js/vendor/modernizr.js"></script>
   </head>
-  <body>
+  <body onload="getBills()">
     
       
       <div class="icon-bar five-up">
@@ -41,17 +41,15 @@
         </a>
       </div>
    
-    <div class="row">
-      <a href="#" class='button radius' id='addBill' >Add Bill</a>
-    </div>
+    
     
     <div class="row">
       
       <div class="small-12 small-centered large-12 large-centered columns">
        
-          
+          <h2>Welcome to Bill Page!</h2>
           <div class="large-1 columns">
-          
+          <a href="#" class='button radius' id='addBill' >Add Bill</a>
           </div>
           <!-- BILL LIST -->
           <table class="small-11 large-11 columns" id="billTable">
@@ -73,7 +71,7 @@
                 <img src="img/icon/smsIcon40px.png"/>
                 </td> -->
                 <td>Email, SMS</td>
-                <!-- <td class="editBox"><img src="img/icon/editIcon40px.png" /></td> -->
+                <td class="editBox"><img src="img/icon/editIcon40px.png" /></td>
                 
             </tbody>
           </table>
@@ -119,7 +117,6 @@
     
       //var billsExist = true;
       var i = 0;
-      var getSuccess = 'no';
       // GET BILLS - Runs on pageload gets all bills stored in cookies ======
       function getBills() {
         //alert(document.cookie);
@@ -136,31 +133,6 @@
           }
         }
       }
-      
-      function testGet(){
-        $.getJSON('https://pdit-backend-jcskillings.c9.io/users/22.json', function( data ){
-          var items = [];
-          alert(JSON.parse(data));
-          $.each( data, function( key, val ) {
-          items.push( "<li id='" + key + "'>" + val + "</li>" );
-          });
- 
-          $( "<ul/>", {
-            "class": "my-new-list",
-            html: items.join( "" )
-          }).appendTo( "body" );
-          });
-      }
-      
-      function testGet2(){
-        $.getJSON('https://pdit-backend-jcskillings.c9.io/users/22', null, function(data){
-          alert('did this work???');
-          alert(JSON.parse(data));
-        });
-        
-      }
-        
-      
       // appends individual bill to billTable
       function loadBill(bill){
         
@@ -190,15 +162,14 @@
       } 
     
       $('#addBill').click(function(){
-        testGet2();
         $('#billTable').find('tbody').append($('<tr id="createBill">')
-        .append($('<td><input type="text" placeholder="bill name" id="billname" required /></td>'))
-        .append($('<td><input type="date" placeholder="due date" id="dueDate" /></td>'))
+        .append($('<td><input type="text" placeholder="bill name" id="billname" /></td>'))
+        .append($('<td><input type="date" placeholder="due date" id="dp1" /></td>'))
         .append($('<td><input type="text" placeholder="amount" id="amount"  /></td>'))
         .append($('<td><input id="emailCheckbox" type="checkbox"><label for="emailCheckbox">Email</label></td>'))
         .append($('<td><input id="smsCheckbox" type="checkbox"><label for="smsCheckbox">SMS</label></td>'))
         
-        );
+        )
         $('#saveBtn').css('visibility','visible');
         $('#cancelBtn').css('visibility','visible');
         //alert("added bill");
@@ -215,31 +186,19 @@
       
    
       
-      $('#saveBtn').click( function() {
-        //alert("save bill");
-        var notifs = ["none"];
+      $(document).on('click', '#saveBill', function() {
+        
         var name = document.getElementById("billname").value;
-        alert(name);
+        
         var dueDate =  document.getElementById("dueDate").value;
-        alert(dueDate);
         var amount = document.getElementById("amount").value;
-        var email = document.getElementById("emailCheckbox").value;
-        alert(email);
-        var sms = document.getElementById("smsCheckbox").value;
-        if (email == "on") {
-          notifs[0]="email";
-        }
-        if (sms == "on"){
-          notifs.push("sms");
-        }
-        alert(notifs[0]);
+        
         
         var newBill = new Bill(name, dueDate, amount, "none");
-        alert(newBill.name + " " + newBill.dueDate);
+        //alert(newBill.name + " " + newBill.dueDate);
         //alert(JSON.stringify(newBill));
         
         setCookie("bill0",(JSON.stringify(newBill)),30);
-        return "";
       });
       
       function setCookie(cname,cvalue,exdays) {
