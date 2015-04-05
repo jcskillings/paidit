@@ -2,7 +2,7 @@
 include_once("splash.html"); 
 //require('../vendor/autoload.php');
 require('../splash.html');
-set_include_path('paidit/');
+set_include_path('/paidit');
 //set_include_path('classes/');
 //set_include_path('classes/');
 
