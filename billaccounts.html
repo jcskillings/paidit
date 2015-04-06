@@ -53,18 +53,19 @@
         <table class="small-11 large-11 columns" id="billTable" name = "billTable">
           <thead  id="billTableHeader">
             <tr>
-              <th>Bill</th>
-              <th>Due On</th>
-              <th>Amount</th>
-              <th>URL</th>
-              <th>Notifications</th>
-              <th>Edit</th>
+              <th width="15%">Bill</th>
+              <th width="10%">Due On</th>
+              <th width="10%">Amount</th>
+              <th width="15%">URL</th>
+              <th width="15%">Notifications</th>
+              <th width="15%">Repeat</th>
+              <th width = "20%">Edit</th>
             </tr>
           </thead>
           <tbody >
             <tr>
               <td>Bill name</td>
-              <td>1st of month</td>
+              <td>05-19-2015</td>
               <td>$500.00</td>
               <!--<td ><img src="img/icon/emailIcon40px.png"/>
               <img src="img/icon/smsIcon40px.png"/>
@@ -72,7 +73,10 @@
               
               <td>www.charter.com</td>
               
-              <td>Email, SMS</td>
+              <td>Email SMS</td>
+              <td>Monthly</td>
+            
+              <td><button>Edit</button><button>Delete</button></td>
               <!-- <td class="editBox"><img src="img/icon/editIcon40px.png" /></td> -->
               
           </tbody>
@@ -101,37 +105,35 @@
       //var billsExist = true;
       var i;
       var getSuccess = 'no';
-      var allBills = '{"bills":[]}';
+      var allBills;
+      var numBills;
+      var obj;
+      
       // GET BILLS - Runs on pageload gets all bills stored in cookies ======
       function getBills() {
-        //alert(document.cookie);
-        for  (i=0; i < 100; i++){
-          var obj = JSON.parse(getCookie("allBills"));
-          //alert("got bill " + i  + " = " +obj);
-          var name = obj.bills[i].name;
-          //alert(name);
-          var date = obj.bills[i].date;
-          var amount = obj.bills[i].amount;
-          var url = obj.bills[i].url;
-          //alert("got bill " + i  + " = " +obj + "name = " +name+ " date = " + date);
-          
-          if (name == null || name == ""){
-            alert("no bills left");
-            break;
-          }
-          else {
-            
-            putBill(obj, i);
-            //alert("got bill " + i  + " = " + name);
+        if (getCookie("allBills") == null || getCookie("allBills") =="" || getCookie("allBills") == '{"bills":[]}'){
+          setCookie("allBills",'{"bills":[]}',30);
+          allBills = '{"bills":[]}';
+          numBills = 0;
+        }
+        else {
+          obj = JSON.parse(getCookie("allBills"));
+          numBills = obj.bills.length;
+        
+          for  (i=0; i < numBills; i++){
+            //alert("num bills is " +obj.bills.length);
+            var name = obj.bills[i].name;
+            //alert(name);
+            var date = obj.bills[i].date;
+            var amount = obj.bills[i].amount;
+            var url = obj.bills[i].url;
+            //alert("got bill " + i  + " = " +obj + "name = " +name+ " date = " + date);
+            putBill(i);
           }
         }
-        //if (i==0) {
-        //  setCookie("allBills",allBills,30);
-        //}
-        //alert("i equals " + i);
       }
       
-      function putBill(jParse, index) {
+      function putBill(index) {
         var table = document.getElementById("billTable");
         var row = table.insertRow(index+2);
         var cell1 = row.insertCell(0);
@@ -139,11 +141,55 @@
         var cell3 = row.insertCell(2);
         var cell4 = row.insertCell(3);
         var cell5 = row.insertCell(4);
-        cell1.innerHTML = jParse.bills[index].name;
-        cell2.innerHTML = jParse.bills[index].date;
-        cell3.innerHTML = jParse.bills[index].amount;
-        cell4.innerHTML = jParse.bills[index].url;
-        cell5.innerHTML = jParse.bills[index].notifs;
+        var cell6 = row.insertCell(5);
+        var cell7 = row.insertCell(6);
+        var editName = "editRow(" + index + ")";
+        var delName = "deleteRow(" + (index+2) + ")";
+        cell1.innerHTML = obj.bills[index].name;
+        cell2.innerHTML = obj.bills[index].dueDate;
+        cell3.innerHTML = obj.bills[index].amount;
+        cell4.innerHTML = obj.bills[index].url;
+        cell5.innerHTML = obj.bills[index].notifs;
+        cell6.innerHTML = obj.bills[index].repeat;
+        cell7.innerHTML = '<button onClick="editName">Edit</button><button onClick="deleteRow(this)">Delete</button>';
+      }
+      
+      function deleteRow(o){
+        if (confirm("Are you sure?  Deleting this bill cannot be undone!") == true){
+        var p=o.parentNode.parentNode;
+        p.parentNode.removeChild(p);
+        updateJson();
+        }
+      }
+      
+      function updateJson(){
+        var j;
+        var table = document.getElementById("billTable");
+        for(j = 2; j < numBills+1; j++){
+          var name = obj.bills[j-2].name;
+          var row = table.rows.item(j).cells[0].firstChild.data;
+          if (name != row) {
+            var find = '{"name":"' +name;
+            allBills = getCookie("allBills");
+            var tempCookie = allBills.substring(0, allBills.indexOf(find));
+            //alert(tempCookie);
+            var find2 = '{"name":"' +row;
+            var tempCookie2 = allBills.substring(allBills.indexOf(find2), allBills.length);
+            tempCookie2 = tempCookie + tempCookie2;
+            //alert(tempCookie2);
+            //alert("removed the " + j + "th bill! named " + name +" row is " + row);
+            setCookie("allBills", tempCookie2, 30);
+            return;
+          }
+        }
+        name = obj.bills[(numBills-1)].name;
+        //alert("removed last bill! Named " +  name);
+        allBills = getCookie("allBills");
+        //alert(allBills);
+        var find = ',{"name":"' +name;
+        var tempCookie = allBills.substring(0, allBills.indexOf(find))+"]}";
+        //alert(tempCookie);
+        setCookie("allBills", tempCookie, 30);
       }
       
       function testGet(){
@@ -190,30 +236,32 @@
       }
       
       // Bill object constructor
-      function Bill(name, dueDate, amount, url, notifs ){
+      function Bill(name, dueDate, amount, url, notifs, repeat ){
         this.name = name;
         this.dueDate = dueDate;
         this.amount = amount;
         this.notifs = notifs;
         this.url = url;
+        this.repeat= repeat;
       } 
     
       $('#addBill').click(function(){
         testGet2();
         $('#billTable').find('tbody').append($('<tr id="createBill">')
         .append($('<td><input type="text" placeholder="bill name" id="billname" required /></td>'))
-        .append($('<td><input type="date" placeholder="due date" id="dueDate" /></td>'))
+        .append($('<td><input type="text" placeholder="XX-XX-XXXX" id="dueDate" /></td>'))
         .append($('<td><input type="text" placeholder="amount" id="amount"  /></td>'))
         .append($('<td><input type="text" placeholder="url" id="url"  /></td>'))
-        .append($('<td><input id="emailCheckbox" type="checkbox"><label for="emailCheckbox">Email</label></td>'))
-        .append($('<td><input id="smsCheckbox" type="checkbox"><label for="smsCheckbox">SMS</label></td>'))
-        
+        .append($('<td><input id="emailCheckbox" type="checkbox"><label for="emailCheckbox">Email</label><input id="smsCheckbox" type="checkbox"><label for="smsCheckbox">SMS</label></td>'))
+        .append($('<td><input type="radio" id="never" name="rep"><label for="never">Never</label><input type="radio" id="weekly" name="rep"><label for="weekly">Weekly</label><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></td>'))
         );
         $('#saveBtn').css('visibility','visible');
         $('#cancelBtn').css('visibility','visible');
         //alert("added bill");
-        
-        
+      });
+      
+      $('table').on('click', '.delete', function(){
+        $(this).closest('tr').remove();
       });
       
       $('#cancelBtn').click( function() {
@@ -221,9 +269,6 @@
           $('#saveBtn').css('visibility','hidden');
           $('#cancelBtn').css('visibility','hidden');
       });
-      
-      
-   
       
       $('#saveBtn').click( function() {
         //alert("save bill");
@@ -237,40 +282,32 @@
         var email = document.getElementById("emailCheckbox").checked;
         //alert(email);
         var sms = document.getElementById("smsCheckbox").checked;
+        var repeat;
+        if(document.getElementById("never").checked == true) repeat = "Never";
+        else if(document.getElementById("weekly").checked == true) repeat = "Weekly";
+        else if(document.getElementById("monthly").checked == true) repeat = "Monthly";
         if (email == true) {
-          notifs[0] = ("email");
-          if (sms == true) notifs[1] = ("sms");
+          notifs[0] = ("Email");
+          if (sms == true) notifs[1] = ("SMS(text)");
         }
         if (email == false){
-          if (sms == true) notifs[0] = ("sms");
+          if (sms == true) notifs[0] = ("SMS(text)");
         }
         //alert(notifs[0]);
         
-        var newBill = new Bill(name, dueDate, amount, url, notifs);
+        var newBill = new Bill(name, dueDate, amount, url, notifs, repeat);
         //alert(newBill.name + " " + newBill.dueDate);
         var stringy = JSON.stringify(newBill);
-        
-        if (i == 0) {
-          //alert(allBills + " before with i=0");
-          //alert("allBills length is " + allBills.length)
-          var tempBills = allBills.substring(0, allBills.length - 2);
+        allBills = (getCookie("allBills"));
+        var tempBills = allBills.substring(0, allBills.length - 2);
+        if (numBills == 0) {
           allBills = tempBills + stringy + "]}";
         }
         else{
-          allBills = (getCookie("allBills"));
-          //alert(allBills + " before with i>0");
-          //alert("allBills length is " + allBills.length)
-          var tempBills = allBills.substring(0, allBills.length - 2);
           allBills = tempBills + "," + stringy + "]}";
         }
-        //alert("added new bill at " + i);
-        //alert(allBills +" after");
-        
         setCookie("allBills",allBills,30);
-        
         window.location.reload();
-        
-        return "";
       });
       
       function setCookie(cname,cvalue,exdays) {
