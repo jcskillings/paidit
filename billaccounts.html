@@ -81,6 +81,9 @@
               
           </tbody>
         </table>
+        
+        <a href="#" class="button radius" id="saveEdit">Save</a>
+        <a href="#" class="button radius" id="cancelEdit">Cancel</a>        
           
         <a href="#" class="button radius" id="saveBtn">Save</a>
         <a href="#" class="button radius" id="cancelBtn">Cancel</a>
@@ -143,15 +146,90 @@
         var cell5 = row.insertCell(4);
         var cell6 = row.insertCell(5);
         var cell7 = row.insertCell(6);
-        var editName = "editRow(" + index + ")";
-        var delName = "deleteRow(" + (index+2) + ")";
         cell1.innerHTML = obj.bills[index].name;
         cell2.innerHTML = obj.bills[index].dueDate;
         cell3.innerHTML = obj.bills[index].amount;
         cell4.innerHTML = obj.bills[index].url;
         cell5.innerHTML = obj.bills[index].notifs;
         cell6.innerHTML = obj.bills[index].repeat;
-        cell7.innerHTML = '<button onClick="editName">Edit</button><button onClick="deleteRow(this)">Delete</button>';
+        cell7.innerHTML = '<button onClick="editRow(this)">Edit</button><button onClick="deleteRow(this)">Delete</button>';
+      }
+      
+      function editRow(o) {
+        var p=o.parentNode.parentNode;
+        p.parentNode.removeChild(p);
+        putInEditField();
+      }
+      
+      var newJson;
+      
+      function putInEditField() {
+        var j;
+        var table = document.getElementById("billTable");
+        var name = null;
+        var date = null;
+        var amount = null;
+        var url = null;
+        var notifs = null;
+        var repeat = null;
+        newJson = null;
+        for(j = 2; j < numBills+1; j++){
+          var named = obj.bills[j-2].name;
+          var row = table.rows.item(j).cells[0].firstChild.data;
+          if (named != row) {
+            var find = '{"name":"' +named;
+            name = obj.bills[j-2].name;
+            date = obj.bills[j-2].date;
+            amount = obj.bills[j-2].amount;
+            url = obj.bills[j-2].url;
+            notifs = obj.bills[j-2].notifs;
+            repeat = obj.bills[j-2].repeat;
+            allBills = getCookie("allBills");
+            var tempCookie = allBills.substring(0, allBills.indexOf(find));
+            //alert(tempCookie);
+            var find2 = '{"name":"' +row;
+            newJson = allBills.substring(allBills.indexOf(find2), allBills.length);
+            newJson = tempCookie + newJson;
+            //editField = allBills.substring(allBills.indexOf(find), allBills.indexOf(find2));
+            //alert("removed the " + j + "th bill! named " + name +" row is " + row);
+             
+            //setCookie("allBills", tempCookie2, 30);
+            //return;
+          }
+        }
+        if(newJson == null) { //editing last  & there is more than 1 bill
+          name = obj.bills[(numBills-1)].name;
+          date = obj.bills[(numBills-1)].date;
+          amount = obj.bills[(numBills-1)].amount;
+          url = obj.bills[(numBills-1)].url;
+          notifs = obj.bills[(numBills-1)].notifs;
+          repeat = obj.bills[(numBills-1)].repeat;
+          
+          //alert("removed last bill! Named " +  name);
+          allBills = getCookie("allBills");
+          //alert(allBills);
+          var find = ',{"name":"' +name;
+          newJson = allBills.substring(0, allBills.indexOf(find))+"]}";
+        }
+        $('#addBill').css('visibility','hidden');
+        testGet2();
+        $('#billTable').find('tbody').append($('<tr id="createBill">')
+        .append($('<td><input type="text" placeholder="bill name" id="billname" value = \''+name+'\' required /></td>'))
+        .append($('<td><input type="text" placeholder="XX-XX-XXXX" id="dueDate" value = \''+date+'\' /></td>'))
+        .append($('<td><input type="text" placeholder="amount" id="amount"  value = \''+amount+'\'/></td>'))
+        .append($('<td><input type="text" placeholder="url" id="url"  value = \''+url+'\'/></td>'))
+        .append($('<td><input id="emailCheckbox" type="checkbox"><label for="emailCheckbox">Email</label><input id="smsCheckbox" type="checkbox"><label for="smsCheckbox">SMS</label></td>'))
+        .append($('<td><input type="radio" id="never" name="rep"><label for="never">Never</label><input type="radio" id="weekly" name="rep"><label for="weekly">Weekly</label><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></td>'))
+        );
+        if(notifs.length == 2){
+          document.getElementById("emailCheckbox").checked = true;
+          document.getElementById("smsCheckbox").checked = true;
+        }
+        $('#saveEdit').css('visibility','visible');
+        $('#cancelEdit').css('visibility','visible');
+        
+        //alert(tempCookie);
+        //setCookie("allBills", tempCookie, 30);
       }
       
       function deleteRow(o){
@@ -244,8 +322,10 @@
         this.url = url;
         this.repeat= repeat;
       } 
-    
+      
+      
       $('#addBill').click(function(){
+        $('#addBill').css('visibility','hidden');
         testGet2();
         $('#billTable').find('tbody').append($('<tr id="createBill">')
         .append($('<td><input type="text" placeholder="bill name" id="billname" required /></td>'))
@@ -253,12 +333,13 @@
         .append($('<td><input type="text" placeholder="amount" id="amount"  /></td>'))
         .append($('<td><input type="text" placeholder="url" id="url"  /></td>'))
         .append($('<td><input id="emailCheckbox" type="checkbox"><label for="emailCheckbox">Email</label><input id="smsCheckbox" type="checkbox"><label for="smsCheckbox">SMS</label></td>'))
-        .append($('<td><input type="radio" id="never" name="rep"><label for="never">Never</label><input type="radio" id="weekly" name="rep"><label for="weekly">Weekly</label><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></td>'))
+        .append($('<td><input type="radio" id="never" name="rep" checked><label for="never">Never</label><input type="radio" id="weekly" name="rep"><label for="weekly">Weekly</label><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></td>'))
         );
         $('#saveBtn').css('visibility','visible');
         $('#cancelBtn').css('visibility','visible');
         //alert("added bill");
       });
+      
       
       $('table').on('click', '.delete', function(){
         $(this).closest('tr').remove();
@@ -268,10 +349,56 @@
           $('#createBill').remove();
           $('#saveBtn').css('visibility','hidden');
           $('#cancelBtn').css('visibility','hidden');
+          $('#addBill').css('visibility','visible');
+      });
+      
+      $('#cancelEdit').click( function() {
+          $('#createBill').remove();
+          $('#saveEdit').css('visibility','hidden');
+          $('#cancelEdit').css('visibility','hidden');
+          $('#addBill').css('visibility','visible');
+          window.location.reload();
+      });
+      
+      $('#saveEdit').click( function() {
+        //alert("save bill");
+        $('#saveEdit').click(null);
+        var notifs = [];
+        var name = document.getElementById("billname").value;
+        var dueDate =  document.getElementById("dueDate").value;
+        var amount = document.getElementById("amount").value;
+        var url = document.getElementById("url").value;
+        var email = document.getElementById("emailCheckbox").checked;
+        var sms = document.getElementById("smsCheckbox").checked;
+        var repeat;
+        if(document.getElementById("never").checked == true) repeat = "Never";
+        else if(document.getElementById("weekly").checked == true) repeat = "Weekly";
+        else if(document.getElementById("monthly").checked == true) repeat = "Monthly";
+        if (email == true) {
+          notifs[0] = ("Email");
+          if (sms == true) notifs[1] = ("SMS(text)");
+        }
+        if (email == false){
+          if (sms == true) notifs[0] = ("SMS(text)");
+        }
+        //alert(notifs[0]);
+        
+        var newBill = new Bill(name, dueDate, amount, url, notifs, repeat);
+        //alert(newBill.name + " " + newBill.dueDate);
+        var stringy = JSON.stringify(newBill);
+        allBills = newJson;
+        var tempBills = allBills.substring(0, allBills.length - 2);
+
+        allBills = tempBills + "," + stringy + "]}";
+
+        setCookie("allBills",allBills,30);
+        $('#addBill').css('visibility','visible');
+        window.location.reload();
       });
       
       $('#saveBtn').click( function() {
         //alert("save bill");
+        $('#saveBtn').click(null);
         var notifs = [];
         var name = document.getElementById("billname").value;
         //alert(name);
@@ -307,6 +434,7 @@
           allBills = tempBills + "," + stringy + "]}";
         }
         setCookie("allBills",allBills,30);
+        $('#addBill').css('visibility','visible');
         window.location.reload();
       });
       
@@ -317,14 +445,6 @@
         document.cookie = cname+"="+cvalue+"; "+expires;
       }
       
-     
-      
     </script>
-    
-    <!-- EDIT BILL -->
-    
-    
-    
-    
-    </body>
+  </body>
 </html>

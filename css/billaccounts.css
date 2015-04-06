@@ -23,7 +23,6 @@ background: black !important;
 
 
 
-
 table {
     border-collapse: collapse;
     box-shadow: 10 10 20px #444F43  !important;
@@ -51,6 +50,10 @@ margin-left: auto;
 margin-right: auto;
 float: none !important; }
 
-#saveBtn, #cancelBtn {
+#saveBtn, #cancelBtn , #saveEdit, #cancelEdit{
     visibility: hidden;
+}
+
+#bills {
+    background:#707070 !important;
 }
