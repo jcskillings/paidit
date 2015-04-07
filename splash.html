@@ -12,7 +12,7 @@
 
   </head>
  
-  <body onload="checkCookie()">
+  <body onload="newCheckCookie()">
 
     <div class="row fullWidth" id="tipTopRow"></div>
     
@@ -98,7 +98,7 @@
         <div class="row">
           <div class="large-6 large-centered columns">
             <label>Last Name
-              <input type="text" placeholder="last name" id='regLastName'/>
+              <input type="text" placeholder="last name" id='regLastName' name='regLastName'/>
             </label>
           </div>
         </div>
@@ -106,7 +106,7 @@
         <div class="row">
           <div class="large-6 large-centered columns">
             <label>Email Address
-              <input type="text" placeholder="you@example.com" id='regEmail'/>
+              <input type="text" placeholder="you@example.com" id='regEmail' name = 'regEmail'/>
             </label>
           </div>
         </div>
@@ -115,7 +115,7 @@
           <div class="large-6 large-centered columns">
             <!-- tooltip not displaying correctly -->
             <label>Cell Phone <span data-tooltip aria-haspopup="true" class="has-tip right" title="to receive text notifications a cell phone number is required">?</span>
-              <input type="text" placeholder="555-123-4567" id='regEmail'/>
+              <input type="text" placeholder="555-123-4567" id='regCell' name = 'regCell'/>
             </label>
           </div>
         </div>
@@ -205,6 +205,61 @@
         return "";
       }
       
+      
+      var numUsers;
+      var obj;
+      var allUsers;
+      var numLogs;
+      var numMethods;
+      var numBills;
+      var parse;
+      var NL;
+      var NM;
+      var allBills;
+      
+      function newCheckCookie() {
+        if (getCookie("NL") == null || getCookie("NL") == "" || getCookie("NL") == '{"logs":[]}'){
+          setCookie("NL",'{"logs":[]}',30);
+          NL = '{"logs":[]}';
+          numLogs = 0;
+        }
+        else {
+          parse = JSON.parse(getCookie("NL"));
+          numLogs = parse.logs.length; 
+        }
+        if (getCookie("NM") == null || getCookie("NM") == "" || getCookie("NM") == '{"methods":[]}'){
+          setCookie("NM",'{"methods":[]}',30);
+          NM = '{"methods":[]}';
+          numMethods = 0;
+        }
+        else {
+          parse = JSON.parse(getCookie("NM"));
+          numMethods = parse.methods.length;
+        }
+        if (getCookie("allBills") == null || getCookie("allBills") =="" || getCookie("allBills") == '{"bills":[]}'){
+          setCookie("allBills",'{"bills":[]}',30);
+          allBills = '{"bills":[]}';
+          numBills = 0;
+        }
+        else {
+          parse = JSON.parse(getCookie("allBills"));
+          numBills = parse.bills.length;
+        }
+        if (getCookie("allUsers") == null || getCookie("allUsers") =="" || getCookie("allUsers") == '{"users":[]}'){
+          setCookie("allUsers",'{"users":[]}',30);
+          allUsers = '{"users":[]}';
+          numUsers = 0;
+        }
+        else {
+          obj = JSON.parse(getCookie("allUsers"));
+          numUsers = obj.users.length;
+          if (getCookie("currUser") != "" && getCookie("currUser") != null){
+            redir();
+          }
+        }
+      }
+      
+      
       function checkCookie() {
         var numChecked = getCookie("numChecked");
         var user=getCookie("username");
@@ -237,7 +292,158 @@
         }
       }
       
+      // Bill object constructor
+      function User(userName, password, firstName, lastName, id, userStatus){
+        this.userName = userName;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.id = id;
+        this.userStatus= userStatus;
+      }
+      
+      function Log(logArray, id) {
+        this.logArray = logArray;
+        this.id = id;
+      }
+      
+      function Method(methodArray, id) {
+        this.methodArray = methodArray;
+        this.id = id;
+      }
+      
+      function Bill(billArray, id) {
+        this.billArray = billArray;
+        this.id = id;
+      }
+      
       function validateForm() {   
+        var userName = document.forms["regForm"]["regUsername"].value;
+        var i;
+        for  (i=0; i < numUsers; i++){
+          var named = obj.users[i].userName;
+          if(userName == named) {
+            alert("Please choose another username, " + userName + " is taken");
+            return false;
+          }
+        }
+        if (userName == null || userName == "") {
+          alert("Name must be filled out");
+          return false;
+        } 
+        else {
+          var password = document.forms['regForm']['regPassword'].value;
+          if(password.length < 6) {
+            alert("Password must be at least 6 characters long");
+            return false;
+          }
+          if (password == null || password == "") {
+            alert("Password must be filled out");
+            return false;
+          }
+          else {
+            var passConfirm = document.forms['regForm']['regPassConfirm'].value;
+            if (passConfirm == null || passConfirm == "") {
+              alert("Password Confirmation must be filled out");
+              return false;
+            }
+            else if(passConfirm != password){
+              alert("Password does not match Password Confirmation");
+              return false;
+            }
+            else {
+              var checked = document.forms['regForm']['checkbox1'].checked;
+              var firstName = document.forms['regForm']['regFirstName'].value;
+              var lastName = document.forms['regForm']['regLastName'].value;
+              var id = numUsers+1;
+              var userStatus = "signed in";
+              var newUser = new User(userName, password, firstName, lastName, id, userStatus);
+              
+              var stringy = JSON.stringify(newUser);
+              allUsers = getCookie("allUsers");
+              var temp = allUsers.substring(0, allUsers.length - 2);
+              if (numUsers == 0) {
+                allUsers = temp + stringy + "]}";
+              }
+              else{
+                allUsers = temp + "," + stringy + "]}";
+              }
+              
+              //update allUsers and currUser
+              setCookie("allUsers",allUsers,30);
+              setCookie("currUser", id, 30);
+              
+              //update notificationLogs and notificationMethods
+              var currDate = Date();
+              var currTime = currDate.substring(16, 24);
+              var currDay = currDate.substring(0, 3);
+              currDate = currDate.substring(4, 15);
+             
+              var tempArray =[{"type":"email", "destination":"document.forms['regForm']['regEmail'].value", "carrier":null, "verified":false}];
+              //var tempArray = [{"type":"email", "destination":document.forms['regForm']['regEmail'].value, "carrier":null, "verified":false},
+              //            {"type":"cell", "destination":document.forms['regForm']['regCell'].value, "carrier":"", "verified":false}];
+              var newMethod = new Method(tempArray, id);
+              alert(newMethod);
+              var stringy1 = JSON.stringify(newMethod);
+              NM = getCookie("NM");
+              var temp1 = NM.substring(0, NM.length - 2);
+              if (numMethods == 0) {
+                NM = temp1 + stringy1 + "]}";
+              }
+              else {
+                NM = temp1 + "," + stringy1 + "]}";
+              }
+              alert("NM is " + NM);
+              setCookie("NM", NM, 30);
+              
+              if (document.forms['regForm']['regEmail'].value == "" && document.forms['regForm']['regCell'].value == ""){
+                tempArray = [{"info":"You joined Paidit!", "date":currDate, "time":currTime}];
+              }
+              else if(document.forms['regForm']['regEmail'].value != "") {
+                tempArray = [{"info":"You joined Paidit!", "date":currDate, "time":currTime},
+                  {"info":"You added an unverified Email address!</br>(Please enter the verification code sent to that address at the homepage or in settings!)", "date":currDate, "time":currTime}];
+              }
+              else if(document.forms['regForm']['regCell'].value != "") {
+                tempArray = [{"info":"You joined Paidit!", "date":currDate, "time":currTime},
+                  {"info":"You added an unverified cellphone number!</br>(Please select the cellphone carrier in settings so we can send you verification code!)", "date":currDate, "time":currTime}];
+              }
+              var newLog = new Log(tempArray, id);
+              stringy = JSON.stringify(newLog);
+              NL = (getCookie("NL"));
+              temp = NL.substring(0, NL.length - 2);
+              if (numLogs == 0) {
+                NL = temp + stringy + "]}";
+              }
+              else{
+                NL = temp + "," + stringy + "]}";
+              }
+              alert("NL is " + NL);
+              setCookie("NL",NL,30);
+              
+              tempArray = [];
+              var newBill = new Bill(tempArray, id);
+              stringy = JSON.stringify(newBill);
+              allBills = getCookie("allBills");
+              temp = allBills.substring(0, allBills.length - 2);
+              if (numBills == 0) {
+                allBills = temp + stringy + "]}";
+              }
+              else {
+                allBills = temp + "," + stringy + "]}";
+              }
+              
+              setCookie("allBills", allBills, 30);
+              
+              redir();
+              
+            }
+          }
+        }
+      }
+      
+      
+      
+      function oldValidateForm() {   
       var user = document.forms["regForm"]["regUsername"].value;
         if (user == null || user == "") {
           alert("Name must be filled out");
@@ -245,10 +451,16 @@
         } 
         else {
           var password = document.forms['regForm']['regPassword'].value;
+          
           if (password == null || password == "") {
             alert("Password must be filled out");
             return false;
           }
+          if(password.length < 6) {
+            alert("Password must be at least 6 characters long");
+            return false;
+          }
+          
           else {
             var passConfirm = document.forms['regForm']['regPassConfirm'].value;
             if (passConfirm == null || passConfirm == "") {
@@ -284,6 +496,48 @@
       }
       
       function validateLoginForm() {   
+        var userName = document.forms["loginForm"]["loginUsername"].value;
+        var i;
+        var found = false;
+        var id;
+        if (userName == null || userName == "") {
+          alert("Name must be filled out");
+          return false;
+        }
+        for  (i=0; i < numUsers; i++){
+          var named = obj.users[i].userName;
+          if(userName == named) {
+            found = true;
+            id = obj.users[i].id;
+            break;
+          }
+        }
+        if(found == false) {
+          alert("username not found");
+          return false;
+        }
+        else {
+          var password = document.forms['loginForm']['loginPassword'].value;
+          if (password == null || password == "") {
+            alert("Password must be filled out");
+            return false;
+          }
+          named = obj.users[i].password;
+          if(password != named) {
+            alert("incorrect password");
+            return false;
+          }
+          else {
+            obj.users[i].userStatus = "signed in";
+            obj = JSON.stringify(obj);
+            setCookie("allUsers", obj, 30);
+            setCookie("currUser", id, 30);
+            redir();
+          }
+        }
+      }
+      
+      function oldValidateLoginForm() {   
       var user = document.forms["loginForm"]["loginUsername"].value;
         if (user == null || user == "") {
           alert("Name must be filled out");

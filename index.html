@@ -35,8 +35,8 @@
       </a>
     </div>
 
-    <div class="row">
-      <div class="large-8 columns">
+    <div class="container navigation">
+      <div class="large-8 columns" align = "center">
         <h1 style="font-size:300%" id = "welcome"><b>Welcome to <img src="img/paiditkyleblack.png" height="102" width="152">!</b></h1>
         <div class="panel">
           <p><b>Here is a list of all your upcoming bills:</b></p>
@@ -44,6 +44,7 @@
         </div> <!-- panel -->
       </div> 
       <div align = "right" class="large-4 columns">
+        <h5><button onClick="logout()" id="logout">Logout</button></h5>
         <h3><u> Useful Links </u></h3>
         <ul style="list-style-type:none">
           <li><a href="http://cfs.wisc.edu/">Center of Financial Security</a></li>
@@ -93,6 +94,40 @@
     <script>
       $(document).foundation();
       
+      function logout() {
+        var obj = JSON.parse(getCookie("allUsers"));
+        var test = getCookie("allUsers");
+        var numUsers = obj.users.length;
+        setCookie("currUser", "", 30);
+        alert("before" + test);
+        obj.users[index].userStatus = "signed out";
+        obj = JSON.stringify(obj);
+        setCookie("allUsers", obj, 30);
+        alert("after" + obj);
+        window.location.replace("splash.html");
+        return;
+      }
+      
+      function setCookie(cname,cvalue,exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        var expires = "expires=" + d.toGMTString();
+        document.cookie = cname+"="+cvalue+"; "+expires;
+      }
+
+      function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+            }
+          }
+        return "";
+      }
+      
       function getCookie(cname) {
         var name = cname + "=";
         var ca = document.cookie.split(';');
@@ -117,19 +152,32 @@
             alert("Code must be of length 10!");
             return false;
           }
-          
         }
       }
       
+      var index;
+      var obj;
+      var name;
+      var id;
       function changeWelcome(){
-        var user = getCookie("firstName");
-        if (user != "" && user != null){
-          document.getElementById("welcome").innerHTML = user.bold() + "! ".bold() + document.getElementById("welcome").innerHTML;
+        id = getCookie("currUser");
+        obj = JSON.parse(getCookie("allUsers"));
+        var numUsers = obj.users.length;
+        for  (var i=0; i < numUsers; i++){
+          var named = obj.users[i].id;
+          if(id == named) {
+            index = i;
+            break;
+          }
+        }
+        name = obj.users[index].firstName;
+        if (name != "" && name != null){
+          document.getElementById("welcome").innerHTML = name.bold() + "! ".bold() + document.getElementById("welcome").innerHTML;
           return;
         }
-        user = getCookie("username");
-        if (user != "" && user != null){
-          document.getElementById("welcome").innerHTML = user.bold() + "! ".bold() + document.getElementById("welcome").innerHTML;
+        name = obj.users[index].userName;
+        if (name != "" && name != null){
+          document.getElementById("welcome").innerHTML = name.bold() + "! ".bold() + document.getElementById("welcome").innerHTML;
         }
         return;
       }
