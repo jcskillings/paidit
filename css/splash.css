@@ -29,6 +29,20 @@
 #regModal, #loginModal {
     background: #809C78 !important;
 }
+.left{
+  float:left;
+}
+.right{
+  float:right;
+}
+
+.row{
+
+    overflow:auto;
+}
+.clear{
+  clear:both;
+}
 .fullWidth {
    width: 100% !important;
    margin-left: auto;

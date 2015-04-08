@@ -52,7 +52,7 @@
     </div>
     
     <!--  registration modal-->
-    <div div id="regModal" class="reveal-modal tiny" data-reveal aria-labelledby="Sign Up" aria-hidden="true" role="dialog">
+    <div div id="regModal" class="reveal-modal small" data-reveal aria-labelledby="Sign Up" aria-hidden="true" role="dialog">
       <div class="row">
           <div class="large-6 large-centered columns">
             <a><img src="img/logoSm.png" /></a>
@@ -110,24 +110,43 @@
             </label>
           </div>
         </div>
+
+      <div class="large-6 large-centered columns">
+        <div class = "row">
+        <div class="left">
+          <label>Cell Phone <span data-tooltip aria-haspopup="true" class="has-tip right" title="to receive text notifications a cell phone number is required">?</span>
+            <input type="text" placeholder="555-123-4567" id='regCell' name = 'regCell' style="width:120px;"/>
+          </label>
+        </div>
+        <div class="right">
+          <label>Provider</label>
+          <select id="mydropdown" name="mydropdown" style="width:100px;">
+            <option value="">Select</option>
+            <option value="at&t">at&t</option>
+            <option value="sprint">Sprint</option>
+            <option value="t-mobile">T-Mobile</option>
+            <option value="verizon">Verizon</option>
+            <option value="virgin">Virgin</option>
+            <option value="boost">Boost</option>
+            <option value="alltel">Alltel</option>
+          </select>
+          
+        </div>
         
+      </div>
+      <div class="clear"></div>
+    </div>
         <div class="row">
-          <div class="large-6 large-centered columns">
-            <!-- tooltip not displaying correctly -->
-            <label>Cell Phone <span data-tooltip aria-haspopup="true" class="has-tip right" title="to receive text notifications a cell phone number is required">?</span>
-              <input type="text" placeholder="555-123-4567" id='regCell' name = 'regCell'/>
+          <div class="large-3 large-centered columns">
+            <label>
+            <input id="checkbox1" type="checkbox"> Remember Me
             </label>
           </div>
+          
         </div>
-        
+  
         <div class="row">
-          <div class="large-6 large-centered columns">
-            <input id="checkbox1" type="checkbox"><label for="checkbox1">Remember Me</label>
-          </div>
-        </div>
-        
-        <div class="row">
-          <div class="large-6 large-centered columns">
+          <div class="large-3 large-centered columns">
             <input href="#" type="submit" class="radius button" value="Sign up"/>
           </div>
         </div>
@@ -369,8 +388,9 @@
               var currDay = currDate.substring(0, 3);
               currDate = currDate.substring(4, 15);
              
-              var newMethod = new Method("email", email, null, false);
-              var newMethod2 = new Method("cell", phone, null, false);
+              var provider = document.forms['regForm']['mydropdown'].value;
+              var newMethod = new Method("email", email, provider, false);
+              var newMethod2 = new Method("cell", phone, provider, false);
               //alert(newMethod);
               var stringy1 = JSON.stringify(newMethod);
               var stringy2 = JSON.stringify(newMethod2);
@@ -382,12 +402,14 @@
               
               var newLog = new Log("You joined Paidit!", currDate, currTime);
               stringy = JSON.stringify(newLog);
-              if(document.forms['regForm']['regEmail'].value != "") {
+              if(email != "") {
                 temp = new Log("You added an unverified Email address!(Please enter the verification code sent to that address at the homepage or in settings!)", currDate, currTime);
                 stringy = stringy + "," + JSON.stringify(temp);
               }
-              if(document.forms['regForm']['regCell'].value != "") {
-                var temp2 = new Log("You added an unverified cellphone number!(Please select the cellphone carrier in settings so we can send you verification code!)", currDate, currTime);
+              if(phone != "") {
+                var temp2;
+                if(provider == "") temp2 = new Log("You added an unverified phone#!(Please select the cellphone carrier in settings so we can send you verification code!)", currDate, currTime);
+                else temp2 = new Log("You added an unverified phone#!(Please enter the verification code sent to your phone on the homepage or settings to use it)", currDate, currTime);
                 stringy = stringy + "," + JSON.stringify(temp2);
               }
    
