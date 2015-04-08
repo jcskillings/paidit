@@ -346,21 +346,18 @@
               var lastName = document.forms['regForm']['regLastName'].value;
               var email = document.forms['regForm']['regEmail'].value;
               var phone = document.forms['regForm']['regCell'].value;
-              var id = numUsers+1;
-              var userStatus = "signed in";
               var newUser = new User(userName, email, firstName, lastName, phone,  password);
               
               var stringy = JSON.stringify(newUser);
-              alert("curr user saved as " + stringy);
-              $.post('https://pdit-backend-jcskillings.c9.io/user.json', stringy, function(response){
-                alert("kyle rules");
-              },'json' );
+              
+              //$.post('https://pdit-backend-jcskillings.c9.io/user.json', stringy, function(response){
+              //  alert("kyle rules");
+              //},'json' );
               
               allUsers = getCookie("allUsers");
               var temp = allUsers.substring(0, allUsers.length - 2);
               if(numUsers == 0) allUsers = temp + stringy + "]}";
               else allUsers = temp + "," + stringy + "]}";
-              alert(allUsers);
               
               //update allUsers and currUser
               setCookie("allUsers",allUsers,30);
@@ -372,9 +369,6 @@
               var currDay = currDate.substring(0, 3);
               currDate = currDate.substring(4, 15);
              
-              //var tempArray =[{"type":"email", "destination":"document.forms['regForm']['regEmail'].value", "carrier":null, "verified":false}];
-              //var tempArray = [{"type":"email", "destination":document.forms['regForm']['regEmail'].value, "carrier":null, "verified":false},
-              //            {"type":"cell", "destination":document.forms['regForm']['regCell'].value, "carrier":"", "verified":false}];
               var newMethod = new Method("email", email, null, false);
               var newMethod2 = new Method("cell", phone, null, false);
               //alert(newMethod);
@@ -384,8 +378,6 @@
               var temp1 = NM.substring(0, NM.length - 2);
               if(numMethods == 0)  NM = temp1 + stringy1 + "," + stringy2 + "]}";
               else NM = temp1 + "," + stringy1 + "," + stringy2 + "]}";
-              alert(NM);
-              //alert("NM is " + NM);
               setCookie("NM", NM, 30);
               
               var newLog = new Log("You joined Paidit!", currDate, currTime);
@@ -398,10 +390,7 @@
                 var temp2 = new Log("You added an unverified cellphone number!(Please select the cellphone carrier in settings so we can send you verification code!)", currDate, currTime);
                 stringy = stringy + "," + JSON.stringify(temp2);
               }
-              
-              
-              alert("Stringy newlog " + stringy);
-              
+   
               NL = (getCookie("NL"));
               temp = NL.substring(0, NL.length - 2);
               if (numLogs == 0) {
@@ -410,10 +399,7 @@
               else{
                 NL = temp + "," + stringy + "]}";
               }
-              alert("NL is " + NL);
               setCookie("NL",NL,30);
-              alert("should redir");
-              
               redir();
               
             }

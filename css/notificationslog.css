@@ -34,10 +34,10 @@ table {
 th {
     color: white !important;
     background: #67ADCC !important;
+    font-size: 150% !important;
 }
 
 tr {
-    
     box-shadow: 5 0 50px #444F43  !important;
 }
 .editBox {
