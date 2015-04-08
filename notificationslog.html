@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Paidit | Welcome</title>
     <link rel="stylesheet" href="css/test.css" />
+    <link rel="stylesheet" href="css/notificationslog.css" />
     <link rel="stylesheet" href="css/foundation.css" />
     <link rel="stylesheet" href="css/test.css" />
     <link rel="shortcut icon" href="img/icon/checkMark.png"/>
     <script src="js/vendor/modernizr.js"></script>
   </head>
-  <body>
+  <body onload="loadNotifications()">
     
       
       <div class="icon-bar five-up">
@@ -35,6 +36,26 @@
           <label class="show-for-medium-up">Settings</label>
         </a>
       </div>
+    
+    <div class="container navigation">  
+      <div class="small-12 small-centered large-12 large-centered columns">
+        
+          <!-- Notification LIST -->
+        <table class="small-12 large-12 columns" id="logTable" name = "logTable">
+          <thead  id="notificationbillTableHeader">
+            <tr>
+              <th width="60%">Notification</th>
+              <th width="15%">Date</th>
+              <th width="15%">Time</th>
+              <th width="10%">Delete</th>
+            </tr>
+          </thead>
+          <tbody >
+            
+          </tbody>
+        </table>
+      </div>
+    </div>
 
     <div class="row">
       
@@ -54,6 +75,100 @@
     <script src="js/foundation.min.js"></script>
     <script>
       $(document).foundation();
+      
+      function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+            }
+          }
+        return "";
+      }
+      
+      function setCookie(cname,cvalue,exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        var expires = "expires=" + d.toGMTString();
+        document.cookie = cname+"="+cvalue+"; "+expires;
+      }
+      
+      var NL;
+      var numLogs;
+      var obj;
+      var info;
+      
+      function loadNotifications() {
+        if (getCookie("NL") == null || getCookie("NL") =="" || getCookie("NL") == '{"logs":[]}'){
+          setCookie("NL",'{"logs":[]}',30);
+          NL = '{"logs":[]}';
+          numLogs = 0;
+        }
+        else {
+          obj = JSON.parse(getCookie("NL"));
+          numLogs = obj.logs.length;
+          for  (var i=0; i < numLogs; i++){
+            putLog(i);
+          }
+        }
+      }
+      
+      function putLog(index) {
+        var table = document.getElementById("logTable");
+        var row = table.insertRow(index+1);
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
+        cell1.innerHTML = obj.logs[index].info;
+        cell2.innerHTML = obj.logs[index].date;
+        cell3.innerHTML = obj.logs[index].time;
+        cell4.innerHTML = '<button onClick="deleteRow(this)">Delete</button>';
+      }
+      
+      function deleteRow(o){
+        if (confirm("Are you sure?  Deleting this bill cannot be undone!") == true){
+        var p=o.parentNode.parentNode;
+        p.parentNode.removeChild(p);
+        updateJson();
+        }
+      }
+      
+      function updateJson(){
+        var j;
+        var tempCookie;
+        var table = document.getElementById("logTable");
+        alert("numlogs " + numLogs);
+        for(j = 1; j < numLogs; j++){
+          var info = obj.logs[j-1].info;
+          var date = obj.logs[j-1].date;
+          var time = obj.logs[j-1].time;
+          var total = '{"info":"' +info +'","date":"'+ date +'","time":"' + time + '"}';
+          var row = '{"info":"' + table.rows.item(j).cells[0].firstChild.data +
+            '","date":"'+table.rows.item(j).cells[1].firstChild.data+'","time":"'+
+            table.rows.item(j).cells[2].firstChild.data+'"}';
+          if (total != row) {
+            NL = getCookie("NL");
+            tempCookie = NL.substring(0, NL.indexOf(total));
+            var tempCookie2 = NL.substring(NL.indexOf(row), NL.length);
+            tempCookie2 = tempCookie + tempCookie2;
+            setCookie("NL", tempCookie2, 30);
+            return;
+          }
+        }
+        info = obj.logs[(numLogs-1)].info;
+        date = obj.logs[(numLogs-1)].date;
+        time = obj.logs[(numLogs-1)].time;
+        NL = getCookie("NL");
+        total = ',{"info":"' +info+'","date":"'+ date +'","time":"' + time + '"}';
+        tempCookie = NL.substring(0, NL.indexOf(total))+"]}";
+        setCookie("NL", tempCookie, 30);
+        return;
+      }
+      
     </script>
   </body>
 </html>

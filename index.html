@@ -99,11 +99,11 @@
         var test = getCookie("allUsers");
         var numUsers = obj.users.length;
         setCookie("currUser", "", 30);
-        alert("before" + test);
-        obj.users[index].userStatus = "signed out";
-        obj = JSON.stringify(obj);
-        setCookie("allUsers", obj, 30);
-        alert("after" + obj);
+        //alert("before" + test);
+        //obj.users[index].userStatus = "signed out";
+        //obj = JSON.stringify(obj);
+        //setCookie("allUsers", obj, 30);
+        //alert("after" + obj);
         window.location.replace("splash.html");
         return;
       }

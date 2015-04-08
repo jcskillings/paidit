@@ -211,12 +211,10 @@
       var allUsers;
       var numLogs;
       var numMethods;
-      var numBills;
       var parse;
       var NL;
       var NM;
-      var allBills;
-      
+       
       function newCheckCookie() {
         if (getCookie("NL") == null || getCookie("NL") == "" || getCookie("NL") == '{"logs":[]}'){
           setCookie("NL",'{"logs":[]}',30);
@@ -236,15 +234,7 @@
           parse = JSON.parse(getCookie("NM"));
           numMethods = parse.methods.length;
         }
-        if (getCookie("allBills") == null || getCookie("allBills") =="" || getCookie("allBills") == '{"bills":[]}'){
-          setCookie("allBills",'{"bills":[]}',30);
-          allBills = '{"bills":[]}';
-          numBills = 0;
-        }
-        else {
-          parse = JSON.parse(getCookie("allBills"));
-          numBills = parse.bills.length;
-        }
+        
         if (getCookie("allUsers") == null || getCookie("allUsers") =="" || getCookie("allUsers") == '{"users":[]}'){
           setCookie("allUsers",'{"users":[]}',30);
           allUsers = '{"users":[]}';
@@ -293,29 +283,28 @@
       }
       
       // Bill object constructor
-      function User(userName, password, firstName, lastName, id, userStatus){
+      function User(userName, email, firstName, lastName, phone,  password){
         this.userName = userName;
+        this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.phone = phone;
         this.password = password;
-        this.id = id;
-        this.userStatus= userStatus;
       }
       
-      function Log(logArray, id) {
-        this.logArray = logArray;
-        this.id = id;
+      function Log(info, date, time) {
+        this.info = info;
+        this.date = date;
+        this.time = time;
       }
       
-      function Method(methodArray, id) {
-        this.methodArray = methodArray;
-        this.id = id;
+      function Method(type, destination, carrier, verified) {
+        this.type = type;
+        this.destination = destination;
+        this.carrier = carrier;
+        this.verified = verified;
       }
-      
-      function Bill(billArray, id) {
-        this.billArray = billArray;
-        this.id = id;
-      }
+ 
       
       function validateForm() {   
         var userName = document.forms["regForm"]["regUsername"].value;
@@ -355,23 +344,27 @@
               var checked = document.forms['regForm']['checkbox1'].checked;
               var firstName = document.forms['regForm']['regFirstName'].value;
               var lastName = document.forms['regForm']['regLastName'].value;
+              var email = document.forms['regForm']['regEmail'].value;
+              var phone = document.forms['regForm']['regCell'].value;
               var id = numUsers+1;
               var userStatus = "signed in";
-              var newUser = new User(userName, password, firstName, lastName, id, userStatus);
+              var newUser = new User(userName, email, firstName, lastName, phone,  password);
               
               var stringy = JSON.stringify(newUser);
+              alert("curr user saved as " + stringy);
+              $.post('https://pdit-backend-jcskillings.c9.io/user.json', stringy, function(response){
+                alert("kyle rules");
+              },'json' );
+              
               allUsers = getCookie("allUsers");
               var temp = allUsers.substring(0, allUsers.length - 2);
-              if (numUsers == 0) {
-                allUsers = temp + stringy + "]}";
-              }
-              else{
-                allUsers = temp + "," + stringy + "]}";
-              }
+              if(numUsers == 0) allUsers = temp + stringy + "]}";
+              else allUsers = temp + "," + stringy + "]}";
+              alert(allUsers);
               
               //update allUsers and currUser
               setCookie("allUsers",allUsers,30);
-              setCookie("currUser", id, 30);
+              setCookie("currUser", stringy, 30);
               
               //update notificationLogs and notificationMethods
               var currDate = Date();
@@ -379,36 +372,36 @@
               var currDay = currDate.substring(0, 3);
               currDate = currDate.substring(4, 15);
              
-              var tempArray =[{"type":"email", "destination":"document.forms['regForm']['regEmail'].value", "carrier":null, "verified":false}];
+              //var tempArray =[{"type":"email", "destination":"document.forms['regForm']['regEmail'].value", "carrier":null, "verified":false}];
               //var tempArray = [{"type":"email", "destination":document.forms['regForm']['regEmail'].value, "carrier":null, "verified":false},
               //            {"type":"cell", "destination":document.forms['regForm']['regCell'].value, "carrier":"", "verified":false}];
-              var newMethod = new Method(tempArray, id);
-              alert(newMethod);
+              var newMethod = new Method("email", email, null, false);
+              var newMethod2 = new Method("cell", phone, null, false);
+              //alert(newMethod);
               var stringy1 = JSON.stringify(newMethod);
+              var stringy2 = JSON.stringify(newMethod2);
               NM = getCookie("NM");
               var temp1 = NM.substring(0, NM.length - 2);
-              if (numMethods == 0) {
-                NM = temp1 + stringy1 + "]}";
-              }
-              else {
-                NM = temp1 + "," + stringy1 + "]}";
-              }
-              alert("NM is " + NM);
+              if(numMethods == 0)  NM = temp1 + stringy1 + "," + stringy2 + "]}";
+              else NM = temp1 + "," + stringy1 + "," + stringy2 + "]}";
+              alert(NM);
+              //alert("NM is " + NM);
               setCookie("NM", NM, 30);
               
-              if (document.forms['regForm']['regEmail'].value == "" && document.forms['regForm']['regCell'].value == ""){
-                tempArray = [{"info":"You joined Paidit!", "date":currDate, "time":currTime}];
-              }
-              else if(document.forms['regForm']['regEmail'].value != "") {
-                tempArray = [{"info":"You joined Paidit!", "date":currDate, "time":currTime},
-                  {"info":"You added an unverified Email address!</br>(Please enter the verification code sent to that address at the homepage or in settings!)", "date":currDate, "time":currTime}];
-              }
-              else if(document.forms['regForm']['regCell'].value != "") {
-                tempArray = [{"info":"You joined Paidit!", "date":currDate, "time":currTime},
-                  {"info":"You added an unverified cellphone number!</br>(Please select the cellphone carrier in settings so we can send you verification code!)", "date":currDate, "time":currTime}];
-              }
-              var newLog = new Log(tempArray, id);
+              var newLog = new Log("You joined Paidit!", currDate, currTime);
               stringy = JSON.stringify(newLog);
+              if(document.forms['regForm']['regEmail'].value != "") {
+                temp = new Log("You added an unverified Email address!(Please enter the verification code sent to that address at the homepage or in settings!)", currDate, currTime);
+                stringy = stringy + "," + JSON.stringify(temp);
+              }
+              if(document.forms['regForm']['regCell'].value != "") {
+                var temp2 = new Log("You added an unverified cellphone number!(Please select the cellphone carrier in settings so we can send you verification code!)", currDate, currTime);
+                stringy = stringy + "," + JSON.stringify(temp2);
+              }
+              
+              
+              alert("Stringy newlog " + stringy);
+              
               NL = (getCookie("NL"));
               temp = NL.substring(0, NL.length - 2);
               if (numLogs == 0) {
@@ -419,20 +412,7 @@
               }
               alert("NL is " + NL);
               setCookie("NL",NL,30);
-              
-              tempArray = [];
-              var newBill = new Bill(tempArray, id);
-              stringy = JSON.stringify(newBill);
-              allBills = getCookie("allBills");
-              temp = allBills.substring(0, allBills.length - 2);
-              if (numBills == 0) {
-                allBills = temp + stringy + "]}";
-              }
-              else {
-                allBills = temp + "," + stringy + "]}";
-              }
-              
-              setCookie("allBills", allBills, 30);
+              alert("should redir");
               
               redir();
               
@@ -528,10 +508,11 @@
             return false;
           }
           else {
-            obj.users[i].userStatus = "signed in";
-            obj = JSON.stringify(obj);
-            setCookie("allUsers", obj, 30);
-            setCookie("currUser", id, 30);
+            //obj.users[i].userStatus = "signed in";
+            //obj = JSON.stringify(obj);
+            //setCookie("allUsers", obj, 30);
+            
+            setCookie("currUser", obj.users[i], 30);
             redir();
           }
         }

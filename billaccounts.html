@@ -237,14 +237,18 @@
         var table = document.getElementById("billTable");
         for(j = 2; j < numBills+1; j++){
           var name = obj.bills[j-2].name;
-          var row = table.rows.item(j).cells[0].firstChild.data;
-          if (name != row) {
-            var find = '{"name":"' +name;
+          var dueDate = obj.bills[j-2].dueDate;
+          var amount = obj.bills[j-2].amount;
+          var total = '{"name":"'+name+'","dueDate":"'+dueDate+'","amount":"'+amount;
+          var row = '{"name":"'+table.rows.item(j).cells[0].firstChild.data+'","dueDate":"'+
+            table.rows.item(j).cells[1].firstChild.data+'","amount":"'+table.rows.item(j).cells[2].firstChild.data;
+          if (total != row) {
+            //var find = '{"name":"' +name;
             allBills = getCookie("allBills");
-            var tempCookie = allBills.substring(0, allBills.indexOf(find));
+            var tempCookie = allBills.substring(0, allBills.indexOf(total));
             //alert(tempCookie);
-            var find2 = '{"name":"' +row;
-            var tempCookie2 = allBills.substring(allBills.indexOf(find2), allBills.length);
+            // find2 = '{"name":"' +row;
+            var tempCookie2 = allBills.substring(allBills.indexOf(row), allBills.length);
             tempCookie2 = tempCookie + tempCookie2;
             //alert(tempCookie2);
             //alert("removed the " + j + "th bill! named " + name +" row is " + row);
@@ -253,11 +257,14 @@
           }
         }
         name = obj.bills[(numBills-1)].name;
+        dueDate = obj.bills[(numBills-1)].dueDate;
+        amount = obj.bills[(numBills-1)].amount;
+        
         //alert("removed last bill! Named " +  name);
         allBills = getCookie("allBills");
         //alert(allBills);
-        var find = ',{"name":"' +name;
-        var tempCookie = allBills.substring(0, allBills.indexOf(find))+"]}";
+        total = ',{"name":"'+name+'","dueDate":"'+dueDate+'","amount":"'+amount;
+        tempCookie = allBills.substring(0, allBills.indexOf(total))+"]}";
         //alert(tempCookie);
         setCookie("allBills", tempCookie, 30);
       }
