@@ -58,8 +58,8 @@
               <th width="10%">Amount</th>
               <th width="17%">URL</th>
               <th width="13%">Notifications</th>
-              <th width="15%">Repeat</th>
-              <th width = "20%"></th>
+              <th width="20%">Repeat</th>
+              <th width = "15%"></th>
             </tr>
           </thead>
           <tbody >
@@ -76,7 +76,7 @@
               <td>Email SMS</td>
               <td>Monthly</td>
             
-              <td><button>Edit</button><button>Delete</button></td>
+              <td><button>Edit</button> <button>Delete</button></td>
               <!-- <td class="editBox"><img src="img/icon/editIcon40px.png" /></td> -->
               
           </tbody>
@@ -140,7 +140,7 @@
         cell4.innerHTML = obj.bills[index].url;
         cell5.innerHTML = obj.bills[index].notifs;
         cell6.innerHTML = obj.bills[index].repeat;
-        cell7.innerHTML = '<button onClick="editRow(this)" id="edit"+index>Edit</button><button onClick="deleteRow(this)">Delete</button>';
+        cell7.innerHTML = '<button onClick="editRow(this)" id="edit"+index>Edit</button> <button onClick="deleteRow(this)">Delete</button>';
       }
       
       function editRow(o) {
@@ -191,7 +191,8 @@
           //alert("removed last bill! Named " +  name);
           allBills = getCookie("allBills");
           //alert(allBills);
-          find = ',{"name":"' +name;
+          if(numBills == 1) find = '{"name":"' +name;
+          else find = ',{"name":"' +name;
           newJson = allBills.substring(0, allBills.indexOf(find))+"]}";
         }
         $('#addBill').css('visibility','hidden');
@@ -381,22 +382,20 @@
           if (sms == true) notifs[0] = "SMS(text)";
           else notifs[0] = "None";
         }
-        
         var newBill = new Bill(name, dueDate, amount, url, notifs, repeat);
-        //alert(newBill.name + " " + newBill.dueDate);
         var stringy = JSON.stringify(newBill);
+
         allBills = newJson;
         var tempBills = allBills.substring(0, allBills.length - 2);
-
-        allBills = tempBills + "," + stringy + "]}";
-
+        if (numBills == 1) allBills = tempBills + stringy + "]}";
+        else allBills = tempBills + "," + stringy + "]}";
+        
         setCookie("allBills",allBills,30);
         $('#addBill').css('visibility','visible');
         window.location.reload();
       });
       
       $('#saveBtn').click( function() {
-        alert("save bill");
         $('#saveBtn').click(null);
         var notifs = [];
         var name = document.getElementById("billname").value;
@@ -418,6 +417,7 @@
         }
         if (email == false){
           if (sms == true) notifs[0] = ("SMS(text)");
+          else notifs[0] = ("None");
         }
         //alert(notifs[0]);
         
