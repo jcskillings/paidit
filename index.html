@@ -161,22 +161,13 @@
       var name;
       var id;
       function changeWelcome(){
-        id = getCookie("currUser");
-        obj = JSON.parse(getCookie("allUsers"));
-        var numUsers = obj.users.length;
-        for  (var i=0; i < numUsers; i++){
-          var named = obj.users[i].id;
-          if(id == named) {
-            index = i;
-            break;
-          }
-        }
-        name = obj.users[index].firstName;
+        var currUser = JSON.parse(getCookie("currUser"));
+        name = currUser.firstName;
         if (name != "" && name != null){
           document.getElementById("welcome").innerHTML = name.bold() + "! ".bold() + document.getElementById("welcome").innerHTML;
           return;
         }
-        name = obj.users[index].userName;
+        name = currUser.userName;
         if (name != "" && name != null){
           document.getElementById("welcome").innerHTML = name.bold() + "! ".bold() + document.getElementById("welcome").innerHTML;
         }
