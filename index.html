@@ -45,7 +45,8 @@
         </div> <!-- panel -->
       </div> 
       <div align = "right" class="large-4 columns">
-        <h5><button onClick="logout()" id="logout">Logout</button></h5>
+         <ul class="button-group radius even-1 ">
+        <h5><button onClick="logout()" id="logout">Logout</button></h5></ul>
         <h3><u> Useful Links </u></h3>
         <ul style="list-style-type:none">
           <li><a href="http://cfs.wisc.edu/">Center of Financial Security</a></li>
@@ -116,19 +117,6 @@
         document.cookie = cname+"="+cvalue+"; "+expires;
       }
 
-      function getCookie(cname) {
-        var name = cname + "=";
-        var ca = document.cookie.split(';');
-        for(var i=0; i<ca.length; i++) {
-          var c = ca[i];
-          while (c.charAt(0)==' ') c = c.substring(1);
-            if (c.indexOf(name) == 0) {
-              return c.substring(name.length, c.length);
-            }
-          }
-        return "";
-      }
-      
       function getCookie(cname) {
         var name = cname + "=";
         var ca = document.cookie.split(';');
