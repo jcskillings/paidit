@@ -15,6 +15,8 @@ You can then open splash.html and press run in the Cloud 9 IDE.  This will start
 will show up down where the command window was with a link to the served HTML.  You can either press this
 link and have it displayed within Cloud 9, or cut and paste this link into a new window or browser.
 
+You can also go to https://paidit-kyleschenk1.c9.io/splash.html if the server has not timed out.
+
 From the splash page you can register a new user, or login as an existing user.  All of the data, user, 
 bills, notifications log, and notification methods are all saved in JSON format as cookies.  You can
 create users and check the saved cookies for that browser to test their correctness (allUsers and currUser
