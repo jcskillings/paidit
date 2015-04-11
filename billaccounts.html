@@ -53,10 +53,10 @@
         <table class="small-11 large-11 columns" id="billTable" name = "billTable">
           <thead  id="billTableHeader">
             <tr>
-              <th width="15%">Bill</th>
-              <th width="10%">Due On</th>
-              <th width="10%">Amount</th>
-              <th width="17%">URL</th>
+              <th width="10%">Bill</th>
+              <th width="14%">Amount</th>
+              <th width="14%">Due Date</th>
+              <th width="14%">Due Time</th>
               <th width="13%">Notifications</th>
               <th width="20%">Repeat</th>
               <th width = "15%"></th>
@@ -65,21 +65,22 @@
           <tbody >
             <tr>
               <td><b>Example Bill</b></td>
+              <td><b>$55.00 - $65.00</b></td>
               <td><b>05/19/2099</b></td>
-              <td><b>$500.00</b></td>
               <!--<td ><img src="img/icon/emailIcon40px.png"/>
               <img src="img/icon/smsIcon40px.png"/>
               </td> -->
               
-              <td><b>www.wisconsin.edu/paidit</b></td>
+              <td><b>12:55 p.m.</b></td>
               
               <td><b>Email SMS</b></td>
               <td><b>Monthly</b></td>
             
               <td><button>Edit</button> <button>Delete</button></td>
               <!-- <td class="editBox"><img src="img/icon/editIcon40px.png" /></td> -->
+              </tr>
               
-          </tbody>
+            </tbody>
         </table>
         
         <a href="#" class="button radius" id="saveEdit">Save</a>
@@ -134,12 +135,39 @@
         var cell5 = row.insertCell(4);
         var cell6 = row.insertCell(5);
         var cell7 = row.insertCell(6);
+        var dueD = obj.bills[index].dueDate;
+        var year = dueD.substr(0, 4);
+        var month = dueD.substr(5, 2);
+        var day = dueD.substr(8, 2);
+        var date = month +"/"+day+"/"+year;
+        
+        var hour = dueD.substr(11,2);
+        var minute= dueD.substr(14, 2);
+        hour = parseInt(hour);
+        //minute = parseInt(minute);
+        var time;
+        if (hour >0 && hour < 12) {
+          time= hour+":"+minute +" a.m.";
+        }
+        else if(hour>12) {
+          hour = hour-12;
+          time= hour+":"+minute +" p.m.";
+        }
+        else{
+          if (hour == 0) time= "12:"+minute +" a.m.";
+          if (hour == 12) time= hour+":"+minute +" p.m.";
+        }
+        var numReminders;
+        if(obj.bills[index].reminder1 == "" && obj.bills[index].reminder2 =="") numReminders=0;
+        else if (obj.bills[index].reminder1 == "" || obj.bills[index].reminder2 =="")numReminders=1;
+        else numReminders = 2;
+        
         cell1.innerHTML = obj.bills[index].name;
-        cell2.innerHTML = obj.bills[index].dueDate;
-        cell3.innerHTML = obj.bills[index].amount;
-        cell4.innerHTML = obj.bills[index].url;
-        cell5.innerHTML = obj.bills[index].notifs;
-        cell6.innerHTML = obj.bills[index].repeat;
+        cell2.innerHTML = obj.bills[index].amountLo+"-"+obj.bills[index].amountHi;
+        cell3.innerHTML = date;
+        cell4.innerHTML = time;
+        cell5.innerHTML = obj.bills[index].category;
+        cell6.innerHTML = obj.bills[index].repeat + " with "+ numReminders +" reminder(s)";
         cell7.innerHTML = '<button onClick="editRow(this)" id="edit"+index>Edit</button> <button onClick="deleteRow(this)">Delete</button>';
       }
       
@@ -318,13 +346,18 @@
       }
       
       // Bill object constructor
-      function Bill(name, dueDate, amount, url, notifs, repeat ){
+      function Bill(name, category, paymentType, loginPage, dueDate, repeat, amountLo, amountHi, user_name, reminder1, reminder2){
         this.name = name;
+        this.category = category;
+        this.paymentType = paymentType;
+        this.loginPage = loginPage;
         this.dueDate = dueDate;
-        this.amount = amount;
-        this.notifs = notifs;
-        this.url = url;
         this.repeat= repeat;
+        this.amountLo = amountLo;
+        this.amountHi = amountHi;
+        this.user_name = user_name;
+        this.reminder1 = reminder1;
+        this.reminder2 = reminder2;
       } 
       
       
@@ -334,12 +367,81 @@
         //testGet2();
         $('#billTable').find('tbody').append($('<tr id="createBill">')
         .append($('<td><input type="text" placeholder="bill name" id="billname" required /></td>'))
-        .append($('<td><input type="text" placeholder="XX-XX-XXXX" id="dueDate" /></td>'))
-        .append($('<td><input type="text" placeholder="amount" id="amount"  /></td>'))
-        .append($('<td><input type="text" placeholder="url" id="url"  /></td>'))
+        .append($('<td><div class="left"><div class="left"><label>$</label></div><div class="left">'+
+        '<input type="text" placeholder="amount(low)" id="amountLo" style="width:100px;" /></div><div class="clear"></div></div>-'+
+        '<div class="right"><input type="text" placeholder="amount(high)" id="amountHi" style="width:105px;" /></div><div class="clear"></td>'))
+        .append($('<td><select id="month" style="width:70px;"><option value="01">Jan</option>'+
+          '<option value="02">Feb</option><option value="03">Mar</option><option value="04">Apr</option>'+
+          '<option value="05">May</option><option value="06">Jun</option><option value="07">Jul</option>'+
+          '<option value="08">Aug</option><option value="09">Sep</option><option value="10">Oct</option>'+
+          '<option value="11">Nov</option><option value="12">Dec</option></select>'+
+          '<select id="day" style="width:60px;"><option value="01">01</option>'+
+          '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
+          '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
+          '<option value="08">08</option><option value="09">09</option><option value="10">10</option>'+
+          '<option value="11">11</option><option value="12">12</option><option value="13">13</option>'+
+          '<option value="14">14</option><option value="15">15</option><option value="16">16</option>'+
+          '<option value="17">17</option><option value="18">18</option><option value="19">19</option>'+
+          '<option value="20">20</option><option value="21">21</option><option value="22">22</option>'+
+          '<option value="23">23</option><option value="24">24</option><option value="25">25</option>'+
+          '<option value="26">26</option><option value="27">27</option><option value="28">28</option>'+
+          '<option value="29">29</option><option value="30">30</option><option value="31">31</option></select>'+
+          '<select id="year" style="width:75px;"><option value="2015">2015</option>'+
+          '<option value="2016">2016</option><option value="2017">2017</option></select></td>'))
+        .append($('<td><select id="hour" style="width:60px;"><option value="01">01</option>'+
+          '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
+          '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
+          '<option value="08">08</option><option value="09">09</option><option value="10">10</option>'+
+          '<option value="11">11</option><option value="12">12</option></select>'+
+          '<select id="minute" style="width:60px;"><option value="00">00</option>'+
+          '<option value="05">05</option><option value="10">10</option><option value="15">15</option>'+
+          '<option value="20">20</option><option value="25">25</option><option value="30">30</option>'+
+          '<option value="35">35</option><option value="40">40</option><option value="45">45</option>'+
+          '<option value="50">50</option><option value="55">55</option></select>'+
+          '<select id="ampm" style="width:65px;"><option value="am">am</option>'+
+          '<option value="pm">pm</option></select></td>'))
         .append($('<td><input id="emailCheckbox" type="checkbox"><label for="emailCheckbox">Email</label><input id="smsCheckbox" type="checkbox"><label for="smsCheckbox">SMS</label></td>'))
-        .append($('<td><input type="radio" id="never" name="rep" checked><label for="never">Never</label><input type="radio" id="weekly" name="rep"><label for="weekly">Weekly</label><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></td>'))
+        .append($('<td><input type="radio" id="never" name="rep" checked><label for="never">Never</label>'+
+        '<input type="radio" id="weekly" name="rep"><label for="weekly">Weekly</label><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></td>'))
+        .append($('<td></td></tr>'))
         );
+        $('#billTable tr:last').after($('<tr id="extraRow"><td></td><td><b>Reminders:</b></td>'+
+        '<td><div class = "left"><label>Days before + </label><select id="reminder1days" style="width:80px;">'+
+        '<option value="00">00</option><option value="01">01</option>'+
+        '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
+        '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
+        '<option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option>'+
+        '<option value="12">12</option><option value="13">13</option><option value="14">14</option></select></div>'+
+        '<div class = "left"><label>Hours before due</label><select id="reminder1hours" style="width:80px;">'+
+        '<option value="00">00</option><option value="01">01</option>'+
+        '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
+        '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
+        '<option value="08">08</option><option value="09">09</option><option value="10">10</option>'+
+        '<option value="11">11</option><option value="12">12</option><option value="13">13</option>'+
+        '<option value="14">14</option><option value="15">15</option><option value="16">16</option>'+
+        '<option value="17">17</option><option value="18">18</option><option value="19">19</option>'+
+        '<option value="20">20</option><option value="21">21</option><option value="22">22</option>'+
+        '<option value="23">23</option></select></div><div class = "clear"></div>'+
+        '</td><td><div class = "left"><label>Days before + </label><select id="reminder2days" style="width:80px;">'+
+        '<option value="00">00</option><option value="01">01</option>'+
+        '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
+        '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
+        '<option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option>'+
+        '<option value="12">12</option><option value="13">13</option><option value="14">14</option></select></div>'+
+        '<div class = "left"><label>Hours before due</label><select id="reminder2hours" style="width:80px;">'+
+        '<option value="00">00</option><option value="01">01</option>'+
+        '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
+        '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
+        '<option value="08">08</option><option value="09">09</option><option value="10">10</option>'+
+        '<option value="11">11</option><option value="12">12</option><option value="13">13</option>'+
+        '<option value="14">14</option><option value="15">15</option><option value="16">16</option>'+
+        '<option value="17">17</option><option value="18">18</option><option value="19">19</option>'+
+        '<option value="20">20</option><option value="21">21</option><option value="22">22</option>'+
+        '<option value="23">23</option></select></div><div class = "clear"></div></td>'+
+        '<td><label>Payment Process</label><select id="paymentType" style="width:100px;"><option value="">Select</option>'+
+          '<option value="in person">In person</option><option value="online">Online</option>'+
+          '<option value="by phone">By phone</option><option value="autopay">Autopay</option></select></td><td>'+
+        '<input type="text" placeholder="www.wheretopaythisbill.com or 1-555-Pay-Bill" id="url"  /></td></tr>'));
         $('#saveBtn').css('visibility','visible');
         $('#cancelBtn').css('visibility','visible');
         //alert("added bill");
@@ -352,6 +454,7 @@
       
       $('#cancelBtn').click( function() {
           $('#createBill').remove();
+          $('#extraRow').remove();
           $('#saveBtn').css('visibility','hidden');
           $('#cancelBtn').css('visibility','hidden');
           $('#addBill').css('visibility','visible');
@@ -359,6 +462,7 @@
       
       $('#cancelEdit').click( function() {
           $('#createBill').remove();
+          $('#extraRow').remove();
           $('#saveEdit').css('visibility','hidden');
           $('#cancelEdit').css('visibility','hidden');
           $('#addBill').css('visibility','visible');
@@ -368,26 +472,91 @@
       $('#saveEdit').click( function() {
         //alert("save bill");
         $('#saveEdit').css('visibility','hidden');
-        var notifs = [];
+
         var name = document.getElementById("billname").value;
-        var dueDate =  document.getElementById("dueDate").value;
-        var amount = document.getElementById("amount").value;
-        var url = document.getElementById("url").value;
+        
+        var currDate = Date();
+        var currTZ = currDate.substring(30, 33);
+        
+        var year = document.getElementById("year").value;
+        var month = document.getElementById("month").value;
+        var day = document.getElementById("day").value;
+        
+        var date = year +"-"+ month+"-"+day;
+          
+        var ampm = document.getElementById("ampm").value;
+        var hour = document.getElementById("hour").value;
+        var minute = document.getElementById("minute").value;
+        
+        hour = parseInt(hour);
+        minute = parseInt(minute);
+        var time;
+        if(ampm == "am" && hour != 12) {
+          time = hour + ":" + minute + ":00";
+        }
+        else if (ampm == "pm" && hour != 12) {
+          hour = hour + 12;
+          time = hour + ":" + minute + ":00";
+        }
+        else {
+          if(ampm == "am") time = "00:" + minute + ":00";
+          else time = "12:" + minute + ":00";
+        }
+        
+        var dueDate = date + " "+ time +" +"+currTZ;
+        alert(dueDate);
+        
         var email = document.getElementById("emailCheckbox").checked;
         var sms = document.getElementById("smsCheckbox").checked;
+        var notifs;
+        if (email == true) {
+          notifs = ("Email");
+          if (sms == true) notifs = notifs + ",SMS";
+        }
+        if (email == false){
+          if (sms == true) notifs[0] = "SMS";
+          else notifs = "";
+        }
+        var category = notifs;
+        
+        var loginPage = document.getElementById("url").value;
+        
         var repeat;
         if(document.getElementById("never").checked == true) repeat = "Never";
         else if(document.getElementById("weekly").checked == true) repeat = "Weekly";
         else if(document.getElementById("monthly").checked == true) repeat = "Monthly";
-        if (email == true) {
-          notifs[0] = ("Email");
-          if (sms == true) notifs[1] = "SMS(text)";
+        
+        var amountLo = document.getElementById("amountLo").value;
+        var amountHi = document.getElementById("amountHi").value;
+        
+        if(amountLo == null || amountLo == ""){
+          amountLo = amountHi;
         }
-        if (email == false){
-          if (sms == true) notifs[0] = "SMS(text)";
-          else notifs[0] = "None";
+        if(amountHi == null || amountHi == "") {
+          amountHi = amountLo;
         }
-        var newBill = new Bill(name, dueDate, amount, url, notifs, repeat);
+        
+        var currUser = JSON.parse(getCookie("currUser"));
+        var user_name = currUser.userName;
+        
+        var reminder1days = document.getElementById("reminder1days").value;
+        var reminder1hours = document.getElementById("reminder1hours").value;
+        var reminder2days = document.getElementById("reminder2days").value;
+        var reminder2hours = document.getElementById("reminder2hours").value;
+        var reminder1;
+        var reminder2;
+        if(reminder1days == "00" && reminder1hours == "00") {
+          reminder1 = "";
+        }
+        else reminder1 = getDateTime(year, month, day, hour, minute, reminder1days, reminder1hours);
+        if(reminder2days == "00" && reminder2hours == "00") {
+          reminder2 = "";
+        }
+        else reminder2 = getDateTime(year, month, day, hour, minute, reminder2days, reminder2hours);
+        
+        var paymentType = document.getElementById("paymentType").value;
+        
+        var newBill = new Bill(name, category, paymentType, loginPage, dueDate, repeat, amountLo, amountHi, user_name, reminder1, reminder2);
         var stringy = JSON.stringify(newBill);
         alert(newJson);
         allBills = newJson;
@@ -402,41 +571,117 @@
       
       $('#saveBtn').click( function() {
         $('#saveBtn').css('visibility','hidden');
-        var notifs = [];
         var name = document.getElementById("billname").value;
-        //alert(name);
-        var dueDate =  document.getElementById("dueDate").value;
-        //alert(dueDate);
-        var amount = document.getElementById("amount").value;
-        var url = document.getElementById("url").value;
+        
+        var currDate = Date();
+        var currTZ = currDate.substring(30, 33);
+        
+        var year = document.getElementById("year").value;
+        var month = document.getElementById("month").value;
+        var day = document.getElementById("day").value;
+        
+        var date = year +"-"+ month+"-"+day;
+          
+        var ampm = document.getElementById("ampm").value;
+        var hour = document.getElementById("hour").value;
+        var minute = document.getElementById("minute").value;
+        
+        //hour = parseInt(hour);
+        //minute = parseInt(minute);
+        var time;
+        if(ampm == "am" && hour != "12") {
+          time = hour + ":" + minute + ":00";
+        }
+        else if (ampm == "pm" && hour != "12") {
+          hour = parseInt(hour) + 12;
+          time = hour + ":" + minute + ":00";
+        }
+        else {
+          if(ampm == "am") time = "00:" + minute + ":00";
+          else time = "12:" + minute + ":00";
+        }
+        
+        var dueDate = date + " "+ time +" +"+currTZ;
+        alert(dueDate);
+        
         var email = document.getElementById("emailCheckbox").checked;
-        //alert(email);
         var sms = document.getElementById("smsCheckbox").checked;
+        var notifs;
+        if (email == true) {
+          notifs = ("Email");
+          if (sms == true) notifs = notifs + ",SMS";
+        }
+        if (email == false){
+          if (sms == true) notifs = "SMS";
+          else notifs = "";
+        }
+        var category = notifs;
+        
+        var loginPage = document.getElementById("url").value;
+        
         var repeat;
         if(document.getElementById("never").checked == true) repeat = "Never";
         else if(document.getElementById("weekly").checked == true) repeat = "Weekly";
         else if(document.getElementById("monthly").checked == true) repeat = "Monthly";
-        if (email == true) {
-          notifs[0] = ("Email");
-          if (sms == true) notifs[1] = ("SMS(text)");
-        }
-        if (email == false){
-          if (sms == true) notifs[0] = ("SMS(text)");
-          else notifs[0] = ("None");
-        }
-        //alert(notifs[0]);
         
-        var newBill = new Bill(name, dueDate, amount, url, notifs, repeat);
-        //alert(newBill.name + " " + newBill.dueDate);
+        var amountLo = document.getElementById("amountLo").value;
+        var amountHi = document.getElementById("amountHi").value;
+        
+        if(amountLo == null || amountLo == ""){
+          amountLo = amountHi;
+        }
+        if(amountHi == null || amountHi == "") {
+          amountHi = amountLo;
+        }
+        
+        var currUser = JSON.parse(getCookie("currUser"));
+        var user_name = currUser.userName;
+        
+        var reminder1days = document.getElementById("reminder1days").value;
+        var reminder1hours = document.getElementById("reminder1hours").value;
+        var reminder2days = document.getElementById("reminder2days").value;
+        var reminder2hours = document.getElementById("reminder2hours").value;
+        var reminder1;
+        var reminder2;
+        if(reminder1days == "00" && reminder1hours == "00") {
+          reminder1 = "";
+        }
+        else reminder1 = getDateTime(year, month, day, hour, minute, reminder1days, reminder1hours);
+        if(reminder2days == "00" && reminder2hours == "00") {
+          reminder2 = "";
+        }
+        else reminder2 = getDateTime(year, month, day, hour, minute, reminder2days, reminder2hours);
+        //alert("made it");
+        var paymentType = document.getElementById("paymentType").value;
+        //alert("name "+ name);
+        //alert("category "+category);
+        //alert("paymenttype "+ paymentType);
+        //alert("loginpage "+loginPage);
+        //alert("duedate "+ dueDate);
+        //alert("repeat "+ repeat);
+        //alert("amountlo "+amountLo);
+        //alert("amountHI "+amountHi);
+        //alert("user_name "+user_name);
+        //alert("reminder1 "+reminder1);
+        //alert("reminder2 "  + reminder2);
+        var newBill = new Bill(name, category, paymentType, loginPage, dueDate, repeat, amountLo, amountHi, user_name, reminder1, reminder2);
+        
         var stringy = JSON.stringify(newBill);
-        allBills = (getCookie("allBills"));
+        alert(stringy);
+        //allBills = newJson;
+        allBills = getCookie("allBills");
+        alert("all bills = " +allBills);
         var tempBills = allBills.substring(0, allBills.length - 2);
-        if (numBills == 0) {
+        alert("enter?");
+        if (numBills == 0){
+          alert("entered if");
           allBills = tempBills + stringy + "]}";
         }
-        else{
+        else {
+          alert("entered else");
           allBills = tempBills + "," + stringy + "]}";
         }
+        alert("should set cookie of " + allBills);
         setCookie("allBills",allBills,30);
         $('#addBill').css('visibility','visible');
         window.location.reload();
@@ -447,6 +692,64 @@
         d.setTime(d.getTime() + (exdays*24*60*60*1000));
         var expires = "expires=" + d.toGMTString();
         document.cookie = cname+"="+cvalue+"; "+expires;
+      }
+      
+      function getDateTime(year, month, day, hour, minute, reminderDays, reminderHours) {
+        var finalYear;
+        var finalMonth;
+        var finalDay;
+        var finalHour;
+        var daysInPrev;
+        var isLeap =new Date(year, 1, 29).getMonth() == 1;
+        year = parseInt(year);
+        month = parseInt(month);
+        hour = parseInt(hour);
+        reminderDays = parseInt(reminderDays);
+        reminderHours = parseInt(reminderHours);
+        minute = parseInt(minute);
+        
+        if(month == 5 || month == 7 || month == 10 || month == 12) {
+          daysInPrev = 30;
+        }
+        
+        else if(month == 4 || month == 6 || month ==11 || month == 9 || month == 1 || month == 8 || month ==2) {
+          daysInPrev = 31;
+        }
+        else{
+          if(isLeap == true) daysInPrev = 29;
+          else daysInPrev = 28;
+        }
+ 
+        if(hour - reminderHours >= 0) {
+          finalHour = hour - reminderHours;
+        }
+        else {
+          finalHour = hour - reminderHours + 24;
+          day = day-1;
+        }
+        if(day - reminderDays >= 1) {
+          finalDay = day - reminderDays;
+        }
+        else {
+          month = month -1;
+          finalDay = day - reminderDays + daysInPrev;
+        }
+        if(month > 0){
+          finalMonth = month;
+          finalYear = year;
+        }
+        else {
+          finalMonth = 12;
+          finalYear = year - 1;
+        }
+        
+        var currDate = Date();
+        var currTZ = currDate.substring(30, 33);
+        
+        var date = finalYear+"-"+finalMonth+"-"+finalDay;
+        var time = finalHour +":"+minute+":00";
+        var toReturn = date + " " + time + " +" + currTZ;
+        return toReturn;
       }
       
     </script>

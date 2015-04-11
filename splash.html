@@ -385,8 +385,11 @@
               
               //update notificationLogs and notificationMethods
               var currDate = Date();
+              //alert(currDate);
               var currTime = currDate.substring(16, 24);
-              var currDay = currDate.substring(0, 3);
+              //alert(currTime);
+              var currTZ = currDate.substring(30, 33);
+              //alert(currTZ);
               currDate = currDate.substring(4, 15);
              
               var provider = document.forms['regForm']['mydropdown'].value;
