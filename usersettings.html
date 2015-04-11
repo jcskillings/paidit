@@ -15,100 +15,83 @@
   <body onload="getUserInfo()">
     
       
-    <div class="icon-bar five-up">
-      <a class="item" href="index.html">
-        <img src="img/icon/homeIconG.png" height="20" width="20"  >
-        <label class="show-for-medium-up">Home</label>
-      </a>
-      <a class="item" href="analysis.html">
-        <img src="img/icon/chartsIconG.png" height="20" width="20">
-        <label class="show-for-medium-up">Bill Analysis</label>
-      </a>
-      <a class="item" href="billaccounts.html">
-        <img src="img/icon/billIconG.png" height="20" width="20">
-        <label class="show-for-medium-up">Bills</label>
-      </a>
-      <a class="item" href="notificationslog.html">
-        <img src="img/icon/smsIconG.png" height="20" width="20">
-        <label class="show-for-medium-up">Notification Log</label>
-      </a>
-      <a class="item" href="usersettings.html" id="settings">
-        <img src="img/icon/gearIconG.png" height="20" width="20">
-        <label class="show-for-medium-up" id="settingstext">Settings</label>
-      </a>
-    </div>
+  <div class="icon-bar five-up">
+    <a class="item" href="index.html">
+      <img src="img/icon/homeIconG.png" height="20" width="20"  >
+      <label class="show-for-medium-up">Home</label>
+    </a>
+    <a class="item" href="analysis.html">
+      <img src="img/icon/chartsIconG.png" height="20" width="20">
+      <label class="show-for-medium-up">Bill Analysis</label>
+    </a>
+    <a class="item" href="billaccounts.html">
+      <img src="img/icon/billIconG.png" height="20" width="20">
+      <label class="show-for-medium-up">Bills</label>
+    </a>
+    <a class="item" href="notificationslog.html">
+      <img src="img/icon/smsIconG.png" height="20" width="20">
+      <label class="show-for-medium-up">Notification Log</label>
+    </a>
+    <a class="item" href="usersettings.html" id="settings">
+      <img src="img/icon/gearIconG.png" height="20" width="20">
+      <label class="show-for-medium-up" id="settingstext">Settings</label>
+    </a>
+  </div>
     
-  <div class="container navigation" style = "width:70%; margin:2% 15% 0% 15%">
-   
-        <div class="left">
-          <h2><b>Welcome to Settings!</b></h2>
-          <table class="large-20 columns" id="userTable" name="userTable">
+  <div class="container navigation" style = "width:100%; margin:2% 0% 0% 0%">
+    <div class="left">
+      <h2><b>Welcome to Settings!</b></h2>
+      <table class="large-20 columns" id="userTable" name="userTable">
+        <tr>
+          <th>Username:</th>
+          <td><input id="username" type="text" placeholder="username" name="username"/></td>
+        </tr>
+        <tr>
+          <th>First Name:</th>
+          <td><input id="firstname" type="text" placeholder="firstname" name="firstname" /></td>
+        </tr>
+        <tr>
+          <th>Lase Name:</th>
+          <td><input id="lastname" type="text" placeholder="lastname" name="lastname" /></td>
+        </tr>
+        <tr>
+          <th>Password:</th>
+          <td><input id="password" type="text" placeholder="password" name="password" /></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><button style="width:100%;" onClick="saveUser()" id="save">Save User</button></td>
+        </tr>
+      </table>
+    </div>
+    <div class="right">
+      <ul class="button-group radius even-1 ">
+        <button onClick="logout()" id="logout">Logout</button>
+      </ul>
+      <div class="small-12 large-12 columns">
+        <h1><a href="#" data-reveal-id="verModal" class="button radius">Enter Verification Code</a>
+        Notification Methods<a href="#" class='button radius' id='addNotif'>Add Notification Method</a></h1>
+        <table id="userTable2" name="userTable2">
+          <thead  id="billTableHeader">
             <tr>
-              <th>Username:</th>
-              <td><input id="username" type="text" placeholder="username" name="username" /></td>
+              <th width="20%">Name</th>
+              <th width="20%">Phone#/Email</th>
+              <th width="10%">Type</th>
+              <th width="10%">Carrier</th>
+              <th width="10%"></th>
+              <th width="30%"></th>
             </tr>
-            <tr>
-              <th>First Name:</th>
-              <td><input id="firstname" type="text" placeholder="firstname" name="firstname" /></td>
-            </tr>
-            <tr>
-              <th>Lase Name:</th>
-              <td><input id="lastname" type="text" placeholder="lastname" name="lastname" /></td>
-            </tr>
-            <tr>
-              <th>Password:</th>
-              <td><input id="password" type="text" placeholder="password" name="password" /></td>
-            </tr>
-            <tr>
-              <td></td>
-              <td><button style="width:100%;" onClick="saveUser()" id="save">Save User</button></td>
-            </tr>
-          </table>
+          </thead>
+          <tbody id ="tbody"></tbody>
+        </table>
+        <a href="#" class="button radius" id="saveEdit">Save</a>
+        <a href="#" class="button radius" id="cancelEdit">Cancel</a>        
+        <a href="#" class="button radius" id="saveBtn">Save</a>
+        <a href="#" class="button radius" id="cancelBtn">Cancel</a>
       </div>
-
-  
-      
-        <div class="right">
-          <h2>
-          <div class = "left">
-            
-          <ul class="button-group radius even-1 " id="verificationButton">
-            <a href="#" data-reveal-id="verModal" class="button clearRegForm">Enter Verification Code Here</a>
-          </ul>
-          
-          </div>
-          <div class = "right">
-            <ul class="button-group radius even-1 ">
-            <button onClick="logout()" id="logout">Logout</button>
-            </ul>
-          </div>
-          </h2>
-          <div class="clear"></div>
-          <br/>
-          
-          <br/>
-          
-          <table style="width:100%" id="userTable2" name="userTable2">
-            
-            <tr>
-              
-              <td><input id="email" type="text" placeholder="email" name="email" /></td>
-              <th>:Email</th>
-            </tr>
-            <tr>
-              
-              <td><input id="phone" type="text" placeholder="phone" name="phone" /></td>
-              <th>:Phone Number</th>
-            </tr>
-            <tr>
-              
-              <td><button style="width:100%;" onClick="saveNotifs()" id="save">Save Phone/Email</button></td>
-              <td></td>
-            </tr>
-          </table>
-      </div>
-
- 
+    </div>
+    <div class="clear"></div>
+  </div>
     <hr />
     
     <!--  verification modal-->
@@ -154,34 +137,253 @@
         var currUser = JSON.parse(getCookie("currUser"));
         firstName = currUser.firstName;
         userName = currUser.userName;
-        firstName = currUser.firstName;
         lastName = currUser.lastName;
         password = currUser.password;
-        //email = currUser.email;
-        //phone = currUser.phone;
+        document.getElementById("username").value = userName;
+        document.getElementById("firstname").value = firstName;
+        document.getElementById("lastname").value = lastName;
+        document.getElementById("password").value = password;
         notifs = JSON.parse(getCookie("NM"));
-        numNotifs = notifs.length;
-        //alert(notifs.methods[0].destination);
-        email = notifs.methods[0].destination;
-        phone = notifs.methods[1].destination;
-        document.getElementById("username").value= userName;
-        document.getElementById("lastname").value= lastName;
-        document.getElementById("firstname").value= firstName;
-        document.getElementById("password").value= password;
-        document.getElementById("email").value= email;
-        document.getElementById("phone").value= phone;
+        numNotifs = notifs.methods.length;
+        for  (var j=1; j < numNotifs+1; j++){
+            putNotif(j);
+          }
       }
       
+      function putNotif(index){
+        var table = document.getElementById("userTable2");
+        var row = table.insertRow(index);
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
+        var cell5 = row.insertCell(4);
+        var cell6 = row.insertCell(5);
+       
+        cell1.innerHTML = notifs.methods[index-1].name;
+        cell2.innerHTML = notifs.methods[index-1].destination;
+        cell3.innerHTML = notifs.methods[index-1].type;
+        cell4.innerHTML = notifs.methods[index-1].carrier;
+        cell5.innerHTML = notifs.methods[index-1].verified;
+        cell6.innerHTML = '<button onClick="editRow(this)" id="edit"+index>Edit</button> <button onClick="deleteRow(this)">Delete</button>';
+      }
+      
+      function youCannot(){
+        alert("You cannot edit/delete a notification method while currently editing one");
+      }
+      
+      function editRow(o) {
+        var p=o.parentNode.parentNode;
+        p.parentNode.removeChild(p);
+        putInEditField();
+      }
+      
+      var newJson;
+      var NM;
+      var type;
+      var name;
+      var destination;
+      var carrier;
+      var verified;
+      
+      function putInEditField() {
+        var j;
+        var table = document.getElementById("userTable2");
+        name = null;
+        destination = null;
+        carrier = null;
+        type = null;
+        verified = null;
+        newJson = null;
+        var find;
+        
+        for(j = 1; j < numNotifs; j++){
+          var named = notifs.methods[j-1].name;
+          var row = table.rows.item(j).cells[0].firstChild.data;
+          if (named != row) {
+            alert("entered");
+            name = notifs.methods[j-1].name;
+            destination = notifs.methods[j-1].destination;
+            carrier = notifs.methods[j-1].carrier;
+            type = notifs.methods[j-1].type;
+            verified = notifs.methods[j-1].verified;
+            NM = getCookie("NM");
+            find = '{"type":"' +type+'","destination":"'+destination+'","carrier":"'+carrier+
+              '","verified":"'+verified+'","name":"'+name;
+            var tempCookie = NM.substring(0, NM.indexOf(find));
+            var find2 = '{"type":"' +notifs.methods[j].type+'","destination":"'+
+              notifs.methods[j].destination+'","carrier":"'+notifs.methods[j].carrier+
+              '","verified":"'+notifs.methods[j].verified+'","name":"'+
+              table.rows.item(j).cells[0].firstChild.data;
+            newJson = NM.substring(NM.indexOf(find2), NM.length);
+            newJson = tempCookie + newJson;
+            break;
+          }
+        }
+        if(newJson == null) { //editing last  & there is more than 1 bill
+          alert("second");
+          name = notifs.methods[(numNotifs-1)].name;
+          destination = notifs.methods[(numNotifs-1)].destination;
+          carrier = notifs.methods[(numNotifs-1)].carrier;
+          type = notifs.methods[(numNotifs-1)].type;
+          verified = notifs.methods[(numNotifs-1)].verified;
+          NM = getCookie("NM");
+          alert("NM is " +NM);
+          if(numNotifs == 1) find = '{"type":"' +type+'","destination":"'+destination+'","carrier":"'+carrier+
+              '","verified":"'+verified+'","name":"'+name;
+          else find = ',{"type":"' +type+'","destination":"'+destination+'","carrier":"'+carrier+
+              '","verified":"'+verified+'","name":"'+name;
+          alert("find is " +find);
+          newJson = NM.substring(0, NM.indexOf(find))+"]}";
+          alert("NJ before is " + newJson);
+        }
+        $('#addNotif').css('visibility','hidden');
+    
+        $('#userTable2').find('tbody').append($('<tr id="createNotif">')
+        .append($('<td><input type="text" placeholder="bill name" id="name" value = \''+name+'\' required /></td>'))
+        .append($('<td>\''+destination+'\'</td>'))
+        .append($('<td>\''+type+'\'</td>'))
+        .append($('<td>\''+carrier+'\'</td>'))
+        .append($('<td>\''+verified+'\'</td>'))
+        );
+        $('#saveEdit').css('visibility','visible');
+        $('#cancelEdit').css('visibility','visible');
+        var myTable = document.getElementById("userTable2");
+        for(var i = 1; i < numNotifs+1; i++){
+          myTable.rows[i].cells[5].innerHTML = '<button onClick="youCannot()">Edit</button><button onClick="youCannot()">Delete</button>';
+        }
+      }
+      
+      function deleteRow(o){
+        if (confirm("Are you sure?  Deleting this Notification Method cannot be undone!") == true){
+        var p=o.parentNode.parentNode;
+        p.parentNode.removeChild(p);
+        updateJson();
+        }
+      }
+      
+      function updateJson(){
+        var j;
+        var table = document.getElementById("userTable2");
+        for(j = 1; j < numNotifs; j++){
+          var name = notifs.methods[j-1].name;
+          var destination = notifs.methods[j-1].destination;
+          var carrier = notifs.methods[j-1].carrier;
+          var type = notifs.methods[j-1].type;
+          var verified = notifs.methods[j-1].verified;
+          var total = '{"type":"' +type+'","destination":"'+destination+'","carrier":"'+carrier+
+              '","verified":'+verified+',"name":"'+name;
+          var row = '{"type":"' +type+'","destination":"'+
+              destination+'","carrier":"'+carrier+
+              '","verified":'+verified+',"name":"'+
+              table.rows.item(j).cells[0].firstChild.data;
+          if (total != row) {
+            NM = getCookie("NM");
+            var tempCookie = NM.substring(0, NM.indexOf(total));
+            var tempCookie2 = NM.substring(NM.indexOf(row), NM.length);
+            tempCookie2 = tempCookie + tempCookie2;
+            var message = "You deleted a " + type + " Notification Method named " +
+              name + " for " + destination;
+            addNL(message);
+            //alert("removed the " + j + "th method! named " + name +" row is " + table.rows.item(j).cells[0].firstChild.data);
+            setCookie("NM", tempCookie2, 30);
+            return;
+          }
+        }
+        name = notifs.methods[j-1].name;
+        destination = notifs.methods[j-1].destination;
+        carrier = notifs.methods[j-1].carrier;
+        type = notifs.methods[j-1].type;
+        verified = notifs.methods[j-1].verified;
+        NM = getCookie("NM");
+        total = '{"type":"' +type+'","destination":"'+destination+'","carrier":"'+carrier+
+              '","verified":'+verified+',"name":"'+name;
+        tempCookie = NM.substring(0, NM.indexOf(total))+"]}";
+        setCookie("NM", tempCookie, 30);
+      }
+      
+      $('#addNotif').click(function(){
+        $('#addNotif').css('visibility','hidden');
+        //testGet2();
+        
+        $('#userTable2').find('tbody').append($('<tr id="createNotif">')
+        .append($('<td><input type="text" placeholder="Notification name" id="name" required /></td>'))
+        .append($('<td><input type="text" placeholder="destination address" id="destination"  /></td>'))
+        .append($('<td><select style="width:100px;" id="typeDrop">'+
+          '<option value="email" id="email">Email</option><option id="phone" value="phone">Phone#</option></select></td>'))
+        .append($('<td><select style="width:100px;" id="carrierDrop"><option value="none" id="none">Select</option>'+
+          '<option value="at&t" id="at&t">at&t</option><option id="sprint" value="sprint">Sprint</option>'+
+          '<option value="t-mobile" id="t-mobile">T-Mobile</option><option id="verizon" value="verizon">Verizon</option>'+
+          '<option value="virgin" id="virgin">Virgin</option><option value="boost" id="boost">Boost</option>'+
+          '<option value="alltel" id="alltel">Alltel</option></select></td>'))
+        .append($('<td>not verified</td>'))
+        );
+        $('#saveBtn').css('visibility','visible');
+        $('#cancelBtn').css('visibility','visible');
+      });
+      
+      $('table').on('click', '.delete', function(){
+        $(this).closest('tr').remove();
+      });
+      
+      $('#cancelBtn').click( function() {
+          $('#createNotif').remove();
+          $('#saveBtn').css('visibility','hidden');
+          $('#cancelBtn').css('visibility','hidden');
+          $('#addNotif').css('visibility','visible');
+      });
+      
+      $('#cancelEdit').click( function() {
+          $('#createNotif').remove();
+          $('#saveEdit').css('visibility','hidden');
+          $('#cancelEdit').css('visibility','hidden');
+          $('#addNotif').css('visibility','visible');
+          window.location.reload();
+      });
+      
+      $('#saveEdit').click( function() {
+        $('#saveEdit').click(null);
+        var name1 = document.getElementById("name").value;
+        var newNotif = new Method(type, destination, carrier, verified, name1);
+        var stringy = JSON.stringify(newNotif);
+        NM = newJson;
+        alert("NJ is " + newJson);
+        var tempBills = NM.substring(0, NM.length - 2);
+        if (numNotifs == 1) NM = tempBills + stringy + "]}";
+        else NM = tempBills + "," + stringy + "]}";
+        alert("NM is " + NM);
+        setCookie("NM",NM,30);
+        $('#addNotif').css('visibility','visible');
+        window.location.reload();
+      });
+      
+      $('#saveBtn').click( function() {
+        $('#saveBtn').click(null);
+        var name = document.getElementById("name").value;
+        var carrier =  document.getElementById("carrierDrop").value;
+        var type = document.getElementById("typeDrop").value;
+        var destination = document.getElementById("destination").value;
+        var newNotif = new Method(type, destination, carrier, "not verified", name);
+        var stringy = JSON.stringify(newNotif);
+        NM = (getCookie("NM"));
+        var tempBills = NM.substring(0, NM.length - 2);
+        if (numNotifs == 0) {
+          NM = tempBills + stringy + "]}";
+        }
+        else{
+          NM = tempBills + "," + stringy + "]}";
+        }
+        alert(NM);
+        setCookie("NM",NM,30);
+        $('#addNotif').css('visibility','visible');
+        var message = "You added a new " + type + " Notification Method named " +
+          name + " to be sent to " + destination;
+        addNL(message);
+        window.location.reload();
+      });
+      
       function logout() {
-        //var obj = JSON.parse(getCookie("allUsers"));
-        //var test = getCookie("allUsers");
-        //var numUsers = obj.users.length;
         setCookie("currUser", "", 30);
-        //alert("before" + test);
-        //obj.users[index].userStatus = "signed out";
-        //obj = JSON.stringify(obj);
-        //setCookie("allUsers", obj, 30);
-        //alert("after" + obj);
         window.location.replace("splash.html");
         return;
       }
@@ -230,11 +432,12 @@
         this.password = password;
       }
       
-      function Method(type, destination, carrier, verified) {
+      function Method(type, destination, carrier, verified, name) {
         this.type = type;
         this.destination = destination;
         this.carrier = carrier;
         this.verified = verified;
+        this.name = name;
       }
       
       function Log(info, date, time) {
@@ -244,14 +447,16 @@
       }
       
       function addNL(message){
-        
         var currDate = Date();
         var currTime = currDate.substring(16, 24);
         currDate = currDate.substring(4, 15);
         var newLog = new Log(message, currDate, currTime);
         var stringy = JSON.stringify(newLog);
-        var NL = (getCookie("NL"));
-        var numLogs = NL.length;
+        var NL = JSON.parse(getCookie("NL"));
+        //alert(NL);
+        var numLogs = NL.logs.length;
+        //alert(numLogs);
+        NL=getCookie("NL");
         var temp = NL.substring(0, NL.length - 2);
         if (numLogs == 0) {
           NL = temp + stringy + "]}";
@@ -262,49 +467,20 @@
         setCookie("NL",NL,30);
       }
       
-      function saveNotifs(){
-        var email1 = document.getElementById("email").value;
-        var phone1 = document.getElementById("phone").value;
-        var newMessage = "";
-        if(email==email1 && phone==phone1){
-          alert("No changes were made/saved!");
-          return;
-        }
-        else {
-          if(email != email1) {
-            newMessage = "You changed your email address";
-            if(phone != phone1) newMessage = "You changed your email address and phone number";
-          }
-          else{
-            newMessage = "You changed your phone number";
-          }
-          var update = new User(userName, email1, firstName, lastName, phone1, password);
-          var stringy = JSON.stringify(update);
-          setCookie("currUser", stringy, 30);
-          
-          var method1 = new Method("email", email1, notifs.methods[0].carrier , notifs.methods[0].verified);
-          var method2 = new Method("phone", phone1, notifs.methods[1].carrier , notifs.methods[1].verified);
-          var stringy1 = JSON.stringify(method1);
-          var stringy2 = JSON.stringify(method2);
-          var nM = '{"methods":[' + stringy1 + "," + stringy2 + "]}";
-          setCookie("NM", nM, 30);
-          addNL(newMessage);
-          window.location.reload();
-        }
-      }
       
       function saveUser(){
-        //var notifs = [];
+        var obj = JSON.parse(getCookie("allUsers"));
+        var numUsers = obj.users.length;
+        var userIndex;
         var userName1 = document.getElementById("username").value;
-        //alert(name);
-        //var email1 =  document.getElementById("email").value;
-        //alert(dueDate);
+        var named;
+        for  (userIndex=0; userIndex < numUsers; userIndex++){
+          named = obj.users[userIndex].userName;
+          if(userName == named) break;
+        }
         var firstName1 = document.getElementById("firstname").value;
         var lastName1 = document.getElementById("lastname").value;
-        //var phone1 = document.getElementById("phone").value;
-        //alert(email);
         var password1 = document.getElementById("password").value;
-        
         var newMessage = "";
         var numChanged = 0;
         
@@ -315,6 +491,13 @@
         }
         else{
           if(userName != userName1) {
+            for  (var i=0; i < numUsers; i++){
+              named = obj.users[i].userName;
+              if(userName1 == named) {
+                alert("That username is taken, please enter another");
+                return;
+              }
+            }
             newMessage=newMessage + "You changed your username";
             numChanged++;
           }

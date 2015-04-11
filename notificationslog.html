@@ -118,7 +118,19 @@
         cell4.innerHTML = '<button onClick="deleteRow(this)">Delete</button>';
       }
       
+      function stopDelete(){
+        var table;
+        var row;
+        for  (var i=0; i < numLogs-1; i++){
+          table = document.getElementById("logTable");
+          row = table.insertRow(i+1);
+          row.cells[3].innerHTML = '<button>Delete</button>';
+        }
+        return;
+      }
+      
       function deleteRow(o){
+        
         if (confirm("Are you sure?  Deleting this bill cannot be undone!") == true){
         var p=o.parentNode.parentNode;
         p.parentNode.removeChild(p);
@@ -127,35 +139,45 @@
       }
       
       function updateJson(){
+        if(numLogs == 1) {
+          setCookie("NL",'{"logs":[]}',30);
+          return;
+        }
         var j;
         var tempCookie;
         var table = document.getElementById("logTable");
-        alert("numlogs " + numLogs);
+        NL=JSON.parse(getCookie("NL"));
+        numLogs = NL.logs.length;
         for(j = 1; j < numLogs; j++){
           var info = obj.logs[j-1].info;
           var date = obj.logs[j-1].date;
           var time = obj.logs[j-1].time;
           var total = '{"info":"' +info +'","date":"'+ date +'","time":"' + time + '"}';
-          var row = '{"info":"' + table.rows.item(j).cells[0].firstChild.data +
-            '","date":"'+table.rows.item(j).cells[1].firstChild.data+'","time":"'+
-            table.rows.item(j).cells[2].firstChild.data+'"}';
+          
+          var row = '{"info":"' + table.rows[j].cells[0].firstChild.data +
+            '","date":"'+table.rows[j].cells[1].firstChild.data+'","time":"'+
+            table.rows[j].cells[2].firstChild.data+'"}';
           if (total != row) {
             NL = getCookie("NL");
             tempCookie = NL.substring(0, NL.indexOf(total));
             var tempCookie2 = NL.substring(NL.indexOf(row), NL.length);
             tempCookie2 = tempCookie + tempCookie2;
             setCookie("NL", tempCookie2, 30);
-            return;
+            stopDelete();
+            window.location.reload();
           }
         }
         info = obj.logs[(numLogs-1)].info;
         date = obj.logs[(numLogs-1)].date;
         time = obj.logs[(numLogs-1)].time;
         NL = getCookie("NL");
-        total = ',{"info":"' +info+'","date":"'+ date +'","time":"' + time + '"}';
+        numLogs = NL.length;
+        if(numLogs == 0) total = '{"info":"' +info+'","date":"'+ date +'","time":"' + time + '"}';
+        else total = ',{"info":"' +info+'","date":"'+ date +'","time":"' + time + '"}';
         tempCookie = NL.substring(0, NL.indexOf(total))+"]}";
         setCookie("NL", tempCookie, 30);
-        return;
+         stopDelete();
+        window.location.reload();
       }
       
     </script>

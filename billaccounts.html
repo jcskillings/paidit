@@ -64,17 +64,17 @@
           </thead>
           <tbody >
             <tr>
-              <td>Example Bill</td>
-              <td>05/19/2099</td>
-              <td>$500.00</td>
+              <td><b>Example Bill</b></td>
+              <td><b>05/19/2099</b></td>
+              <td><b>$500.00</b></td>
               <!--<td ><img src="img/icon/emailIcon40px.png"/>
               <img src="img/icon/smsIcon40px.png"/>
               </td> -->
               
-              <td>www.wisconsin.edu/paidit</td>
+              <td><b>www.wisconsin.edu/paidit</b></td>
               
-              <td>Email SMS</td>
-              <td>Monthly</td>
+              <td><b>Email SMS</b></td>
+              <td><b>Monthly</b></td>
             
               <td><button>Edit</button> <button>Delete</button></td>
               <!-- <td class="editBox"><img src="img/icon/editIcon40px.png" /></td> -->
@@ -229,6 +229,10 @@
         if (confirm("Are you sure?  Deleting this bill cannot be undone!") == true){
         var p=o.parentNode.parentNode;
         p.parentNode.removeChild(p);
+        if(numBills == 1) {
+          setCookie("allBills",'{"bills":[]}',30);
+          return;
+        }
         updateJson();
         }
       }
@@ -326,7 +330,8 @@
       
       $('#addBill').click(function(){
         $('#addBill').css('visibility','hidden');
-        testGet2();
+        
+        //testGet2();
         $('#billTable').find('tbody').append($('<tr id="createBill">')
         .append($('<td><input type="text" placeholder="bill name" id="billname" required /></td>'))
         .append($('<td><input type="text" placeholder="XX-XX-XXXX" id="dueDate" /></td>'))
@@ -362,7 +367,7 @@
       
       $('#saveEdit').click( function() {
         //alert("save bill");
-        $('#saveEdit').click(null);
+        $('#saveEdit').css('visibility','hidden');
         var notifs = [];
         var name = document.getElementById("billname").value;
         var dueDate =  document.getElementById("dueDate").value;
@@ -384,7 +389,7 @@
         }
         var newBill = new Bill(name, dueDate, amount, url, notifs, repeat);
         var stringy = JSON.stringify(newBill);
-
+        alert(newJson);
         allBills = newJson;
         var tempBills = allBills.substring(0, allBills.length - 2);
         if (numBills == 1) allBills = tempBills + stringy + "]}";
@@ -396,7 +401,7 @@
       });
       
       $('#saveBtn').click( function() {
-        $('#saveBtn').click(null);
+        $('#saveBtn').css('visibility','hidden');
         var notifs = [];
         var name = document.getElementById("billname").value;
         //alert(name);

@@ -121,7 +121,7 @@
         <div class="right">
           <label>Provider</label>
           <select id="mydropdown" name="mydropdown" style="width:100px;">
-            <option value="">Select</option>
+            <option value="none">Select</option>
             <option value="at&t">at&t</option>
             <option value="sprint">Sprint</option>
             <option value="t-mobile">T-Mobile</option>
@@ -317,11 +317,12 @@
         this.time = time;
       }
       
-      function Method(type, destination, carrier, verified) {
+      function Method(type, destination, carrier, verified, name) {
         this.type = type;
         this.destination = destination;
         this.carrier = carrier;
         this.verified = verified;
+        this.name = name;
       }
  
       
@@ -389,8 +390,8 @@
               currDate = currDate.substring(4, 15);
              
               var provider = document.forms['regForm']['mydropdown'].value;
-              var newMethod = new Method("email", email, provider, false);
-              var newMethod2 = new Method("cell", phone, provider, false);
+              var newMethod = new Method("email", email, "none", "not verified", "email1");
+              var newMethod2 = new Method("cell", phone, provider, "not verified", "cell1");
               //alert(newMethod);
               var stringy1 = JSON.stringify(newMethod);
               var stringy2 = JSON.stringify(newMethod2);
