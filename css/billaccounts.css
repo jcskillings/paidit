@@ -13,6 +13,21 @@ body {
 background: black !important;
 }
 
+.left{
+  float:left;
+}
+.right{
+  float:right;
+}
+
+.row{
+
+    overflow:auto;
+}
+.clear{
+  clear:both;
+}
+
 .top-bar-section li a:not(.button):hover {
     background: #67ADCC !important; 
 }

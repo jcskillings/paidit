@@ -24,17 +24,44 @@ background: black !important;
     background: black;
 }
 
+.left{
+  float:left;
+}
+.right{
+  float:right;
+}
+
+.row{
+
+    overflow:auto;
+}
+.clear{
+  clear:both;
+}
 
 table {
     border-collapse: collapse;
     box-shadow: 10 10 20px #444F43  !important;
-    
 }
 
 th {
     color: white !important;
     background: #67ADCC !important;
     font-size: 150% !important;
+    text-align: left !important;
+    
+}
+
+#userTable{
+    width:100%;
+}
+
+#userTable2{
+    width:100%;
+}
+
+#saveBtn, #cancelBtn , #saveEdit, #cancelEdit{
+    visibility: hidden;
 }
 
 tr {

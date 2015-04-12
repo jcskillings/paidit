@@ -161,9 +161,27 @@
         if(obj.bills[index].reminder1 == "" && obj.bills[index].reminder2 =="") numReminders=0;
         else if (obj.bills[index].reminder1 == "" || obj.bills[index].reminder2 =="")numReminders=1;
         else numReminders = 2;
-        
         var category = obj.bills[index].category;
-        if(category == "") category = "No notifications selected";
+        var catLength = category.length;
+        if(catLength == 3) category = "None selected";
+        else {
+          while(category.charAt(catLength-1) == ","){
+            category = category.substring(0, catLength-1);
+            catLength = category.length;
+          }
+          while(category.charAt(0) == ","){
+            category = category.substring(1, catLength);
+            catLength = category.length;
+          }
+        }
+        var find = ",,";
+        //alert(category.indexOf(find));
+        while(category.indexOf(find) != -1){
+          var temp1 = category.substring(0, category.indexOf(find));
+          var temp2 = category.substring(category.indexOf(find)+1, category.length);
+          category = temp1 + temp2;
+        }
+        
         cell1.innerHTML = obj.bills[index].name;
         cell2.innerHTML = "$" +obj.bills[index].amountLo+"-$"+obj.bills[index].amountHi;
         cell3.innerHTML = date;
@@ -208,7 +226,7 @@
             category = obj.bills[j-2].category;
             paymentType = obj.bills[j-2].paymentType;
             loginPage = obj.bills[j-2].loginPage;
-            dueDate = obj.bills[j-2].notifs;
+            dueDate = obj.bills[j-2].dueDate;
             repeat = obj.bills[j-2].repeat;
             amountLo = obj.bills[j-2].amountLo;
             amountHi = obj.bills[j-2].amountHi;
@@ -249,6 +267,7 @@
           }
         }
         
+       
         $('#addBill').css('visibility','hidden');
         //testGet2();
         $('#billTable').find('tbody').append($('<tr id="editBill">')
@@ -286,10 +305,10 @@
           '<option value="50">50</option><option value="55">55</option></select>'+
           '<select id="ampm" style="width:65px;"><option value="am">am</option>'+
           '<option value="pm">pm</option></select></td>'))
-        .append($('<td><input id="method1" type="checkbox"/><label id="label1">'+methods[0]+'</label>'+
-        '<input id="method2" type="checkbox"/><label id="label2">'+methods[1]+'</label>'+
-        '<input id="method3" type="checkbox"/><label id="label3">'+methods[2]+'</label>'+
-        '<input id="method4" type="checkbox"/><label id="label4">'+methods[3]+'</label></td>'))
+        .append($('<td><div class = "left"><input id="method1" type="checkbox"/><label id="label1">'+methods[0]+'</label></div>'+
+        '<div class = "right"><input id="method2" type="checkbox"/><label id="label2">'+methods[1]+'</label></div><div class="clear"></div>'+
+        '<div class = "left"><input id="method3" type="checkbox"/><label id="label3">'+methods[2]+'</label></div>'+
+        '<div class = "right"><input id="method4" type="checkbox"/><label id="label4">'+methods[3]+'</label></div><div class = "clear"></div></td>'))
         .append($('<td><input type="radio" id="never" name="rep" checked><label for="never">Never</label>'+
         '<input type="radio" id="weekly" name="rep"><label for="weekly">Weekly</label><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></td>'))
         .append($('<td></td></tr>'))
@@ -331,6 +350,87 @@
           '<option value="in person">In person</option><option value="online">Online</option>'+
           '<option value="by phone">By phone</option><option value="autopay">Autopay</option></select></td><td>'+
         '<input type="text" placeholder="www.wheretopaythisbill.com or 1-555-Pay-Bill" id="url" value ="'+loginPage+'" /></td></tr>'));
+        var posCom;
+        var find = ",";
+        if(category.charAt(0) != ",") {
+          posCom = category.indexOf(find);
+          document.getElementById("method1").checked = true;
+          category=category.substring(posCom+1, category.length);
+        }
+        else{
+          category = category.substring(1, category.length);
+        }
+        if(category.charAt(0) != ",") {
+          posCom = category.indexOf(find);
+          document.getElementById("method2").checked = true;
+          category=category.substring(posCom+1, category.length);
+        }
+        else{
+          category = category.substring(1, category.length);
+        }
+        if(category.charAt(0) != ",") {
+          posCom = category.indexOf(find);
+          document.getElementById("method3").checked = true;
+          category=category.substring(posCom+1, category.length);
+        }
+        else{
+          category = category.substring(1, category.length);
+        }
+        if(category.length != 0) document.getElementById("method4").checked = true;
+        
+        var year = dueDate.substr(0, 4);
+        var month = dueDate.substr(5, 2);
+        var day = dueDate.substr(8, 2);
+        var hour = dueDate.substr(11, 2);
+        var minute = dueDate.substr(14, 2);
+        var ampm;
+        
+        var reminderArray1 = ["",""];
+        var reminderArray2 = ["",""];
+        if (reminder1 != "") {
+          reminderArray1 = reverse(year, month, day, hour, reminder1);
+          if(reminderArray1[0] == "" || reminderArray1[0] == "0") {
+            reminderArray1[0] = "00";
+          }
+          if(reminderArray1[1] == "" || reminderArray1[1] == "0") {
+            reminderArray1[1] = "00";
+          }
+          document.getElementById("reminder1days").value = reminderArray1[0];
+          document.getElementById("reminder1hours").value = reminderArray1[1];
+        }
+        if (reminder2 != "") {
+          reminderArray2 = reverse(year, month, day, hour, reminder2);
+          if(reminderArray2[0] == "" || reminderArray2[0] == "0") {
+            reminderArray2[0] = "00";
+          }
+          if(reminderArray2[1] == "" || reminderArray2[1] == "0") {
+            reminderArray2[1] = "00";
+          }
+          document.getElementById("reminder2days").value = reminderArray2[0];
+          document.getElementById("reminder2hours").value = reminderArray2[1];
+        }
+        
+        hour = parseInt(hour);
+        if (hour >12) {
+          hour = hour-12;
+          ampm = "pm";
+        }        
+        else if (hour == 0){
+          hour = 12;
+          ampm = "am";
+        }
+        else if (hour == 12) ampm = "pm";
+        else ampm = "am";
+        if (hour < 10) hour = "0"+hour;
+
+        document.getElementById("month").value = month;
+        document.getElementById("year").value = year;
+        document.getElementById("day").value = day;
+        document.getElementById("hour").value = hour;
+        document.getElementById("minute").value = minute;
+        document.getElementById("ampm").value = ampm;
+        document.getElementById("paymentType").value = paymentType;
+        
         var numHidden = 0;
         if(methods[3] == "") {
           $('#method4').css('visibility','hidden');
@@ -361,8 +461,7 @@
           $('#label1').css('visibility','visible');
           document.getElementById("label1").innerHTML = "PLEASE VERIFY YOUR <br/>NOTIFICATION METHODS ASAP!".bold();
         }
-        var numCommas =(category.match(/,/g) || []).length;
-        alert(numCommas);
+        
         if(repeat == "Never") document.getElementById("never").checked = true;
         else if(repeat == "Weekly") document.getElementById("weekly").checked = true;
         else document.getElementById("monthly").checked = true;
@@ -370,7 +469,7 @@
         $('#cancelEdit').css('visibility','visible');
         var myTable = document.getElementById("billTable");
         for(i = 2; i < numBills+2; i++){
-          myTable.rows[i].cells[6].innerHTML = '<button onClick="youCant()">Edit</button><button onClick="youCant">Delete</button>';
+          myTable.rows[i].cells[6].innerHTML = '<button onClick="youCant()">Edit</button><button onClick="youCant()">Delete</button>';
         }
       }
       
@@ -525,10 +624,10 @@
           '<option value="50">50</option><option value="55">55</option></select>'+
           '<select id="ampm" style="width:65px;"><option value="am">am</option>'+
           '<option value="pm">pm</option></select></td>'))
-        .append($('<td><input id="method1" type="checkbox"/><label id="label1">'+methods[0]+'</label>'+
-        '<input id="method2" type="checkbox"/><label id="label2">'+methods[1]+'</label>'+
-        '<input id="method3" type="checkbox"/><label id="label3">'+methods[2]+'</label>'+
-        '<input id="method4" type="checkbox"/><label id="label4">'+methods[3]+'</label></td>'))
+        .append($('<td><div class = "left"><input id="method1" type="checkbox"/><label id="label1">'+methods[0]+'</label></div>'+
+        '<div class = "right"><input id="method2" type="checkbox"/><label id="label2">'+methods[1]+'</label></div><div class="clear"></div>'+
+        '<div class = "left"><input id="method3" type="checkbox"/><label id="label3">'+methods[2]+'</label></div>'+
+        '<div class = "right"><input id="method4" type="checkbox"/><label id="label4">'+methods[3]+'</label></div><div class = "clear"></div></td>'))
         .append($('<td><input type="radio" id="never" name="rep" checked><label for="never">Never</label>'+
         '<input type="radio" id="weekly" name="rep"><label for="weekly">Weekly</label><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></td>'))
         .append($('<td></td></tr>'))
@@ -665,22 +764,16 @@
         var method4 = document.getElementById("method4").checked;
         
         var notifs = "";
-        if (method1 == true) notifs = methods[0];
-        if (method2 == true){
-          if(notifs == "") notifs = methods[1];
-          else notifs = notifs + ","+ methods[1];
-        } 
-        if (method3 == true) {
-          if(notifs == "") notifs = methods[2];
-          else notifs = notifs + ","+ methods[2];
-        }
-        if (method4 == true) {
-          if(notifs == "") notifs = methods[3];
-          else notifs = notifs + ","+ methods[3];
-        }
+        if (method1 == true) notifs = methods[0] +",";
+        else notifs = ",";
+        if (method2 == true) notifs = notifs + methods[1] +",";
+        else notifs = notifs +",";
+        if (method3 == true) notifs = notifs + methods[2] +",";
+        else notifs = notifs + ",";
+        if (method4 == true) notifs = notifs + methods[3];
+       
         
         var category = notifs;
-        alert(category);
         var loginPage = document.getElementById("url").value;
         
         var repeat;
@@ -773,22 +866,15 @@
         var method4 = document.getElementById("method4").checked;
         
         var notifs = "";
-        if (method1 == true) notifs = methods[0];
-        if (method2 == true){
-          if(notifs == "") notifs = methods[1];
-          else notifs = notifs + ","+ methods[1];
-        } 
-        if (method3 == true) {
-          if(notifs == "") notifs = methods[2];
-          else notifs = notifs + ","+ methods[2];
-        }
-        if (method4 == true) {
-          if(notifs == "") notifs = methods[3];
-          else notifs = notifs + ","+ methods[3];
-        }
+        if (method1 == true) notifs = methods[0] +",";
+        else notifs = ",";
+        if (method2 == true) notifs = notifs + methods[1] +",";
+        else notifs = notifs +",";
+        if (method3 == true) notifs = notifs + methods[2] +",";
+        else notifs = notifs + ",";
+        if (method4 == true) notifs = notifs + methods[3];
         
         var category = notifs;
-        alert(category);
         var loginPage = document.getElementById("url").value;
         
         var repeat;
@@ -847,18 +933,66 @@
         document.cookie = cname+"="+cvalue+"; "+expires;
       }
       
+      function reverse(year, month, day, hour, passedR) {
+        var finalRD;
+        var finalRH;
+        var pyear = parseInt(passedR.substr(0, 4));
+        var pmonth = parseInt(passedR.substr(5, 2));
+        var pday = parseInt(passedR.substr(8, 2));
+        var phour = parseInt(passedR.substr(11, 2));
+        
+        hour = parseInt(hour);
+        year = parseInt(year);
+        month = parseInt(month);
+        day = parseInt(day);
+        
+        var isLeap =new Date(year, 1, 29).getMonth() == 1;
+        var daysInPrev;
+        
+        if(month == 5 || month == 7 || month == 10 || month == 12) {
+          daysInPrev = 30;
+        }
+        
+        else if(month == 4 || month == 6 || month ==11 || month == 9 || month == 1 || month == 8 || month ==2) {
+          daysInPrev = 31;
+        }
+        else{
+          if(isLeap == true) daysInPrev = 29;
+          else daysInPrev = 28;
+        }
+        
+        if(hour - phour >= 0) {
+          finalRH = hour - phour;
+        }
+        else {
+          finalRH = hour - phour + 24;
+          pday = pday + 1;
+        }
+        if(day - pday >= 0){
+          finalRD = day - pday;
+        }
+        else{
+          finalRD = day - pday + daysInPrev;
+        }
+        
+        if(finalRD < 10) finalRD = "0" +finalRD;
+        if(finalRH < 10) finalRH = "0" +finalRH;
+        return [finalRD, finalRH];
+      }
+      
       function getDateTime(year, month, day, hour, minute, reminderDays, reminderHours) {
         var finalYear;
         var finalMonth;
         var finalDay;
         var finalHour;
         var daysInPrev;
-        var isLeap =new Date(year, 1, 29).getMonth() == 1;
+        
         year = parseInt(year);
         month = parseInt(month);
         hour = parseInt(hour);
         reminderDays = parseInt(reminderDays);
         reminderHours = parseInt(reminderHours);
+        var isLeap =new Date(year, 1, 29).getMonth() == 1;
         
         if(month == 5 || month == 7 || month == 10 || month == 12) {
           daysInPrev = 30;

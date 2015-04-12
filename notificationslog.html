@@ -163,8 +163,9 @@
             var tempCookie2 = NL.substring(NL.indexOf(row), NL.length);
             tempCookie2 = tempCookie + tempCookie2;
             setCookie("NL", tempCookie2, 30);
-            stopDelete();
-            window.location.replace("notificationslog.html");
+            obj = JSON.parse(getCookie("NL"));
+            numLogs = obj.logs.length;
+            return;
           }
         }
         info = obj.logs[(numLogs-1)].info;
@@ -177,8 +178,9 @@
         else total = ',{"info":"' +info+'","date":"'+ date +'","time":"' + time + '"}';
         tempCookie = NL.substring(0, NL.indexOf(total))+"]}";
         setCookie("NL", tempCookie, 30);
-         stopDelete();
-        window.location.replace("notificationslog.html");
+        obj = JSON.parse(getCookie("NL"));
+        numLogs = obj.logs.length;
+        return;
       }
       
     </script>

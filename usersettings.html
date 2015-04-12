@@ -201,7 +201,10 @@
           var named = notifs.methods[j-1].name;
           var row = table.rows.item(j).cells[0].firstChild.data;
           if (named != row) {
-            alert("entered");
+            if(isActive(named) == true) {
+              alert("You cannot change the name of a notification method that is currently attached to a bill");
+              window.location.replace("usersettings.html");
+            }
             name = notifs.methods[j-1].name;
             destination = notifs.methods[j-1].destination;
             carrier = notifs.methods[j-1].carrier;
@@ -221,21 +224,21 @@
           }
         }
         if(newJson == null) { //editing last  & there is more than 1 bill
-          alert("second");
           name = notifs.methods[(numNotifs-1)].name;
+          if(isActive(name) == true) {
+            alert("You cannot change the name of a notification method that is currently attached to a bill");
+            window.location.replace("usersettings.html");
+          }
           destination = notifs.methods[(numNotifs-1)].destination;
           carrier = notifs.methods[(numNotifs-1)].carrier;
           type = notifs.methods[(numNotifs-1)].type;
           verified = notifs.methods[(numNotifs-1)].verified;
           NM = getCookie("NM");
-          alert("NM is " +NM);
           if(numNotifs == 1) find = '{"type":"' +type+'","destination":"'+destination+'","carrier":"'+carrier+
               '","verified":"'+verified+'","name":"'+name;
           else find = ',{"type":"' +type+'","destination":"'+destination+'","carrier":"'+carrier+
               '","verified":"'+verified+'","name":"'+name;
-          alert("find is " +find);
           newJson = NM.substring(0, NM.indexOf(find))+"]}";
-          alert("NJ before is " + newJson);
         }
         $('#addNotif').css('visibility','hidden');
     
@@ -259,11 +262,25 @@
         var p=o.parentNode.parentNode;
         p.parentNode.removeChild(p);
         updateJson();
+        window.location.replace("usersettings.html");
         }
       }
       
       function updateJson(){
         var j;
+        notifs = JSON.parse(getCookie("NM"));
+        numNotifs = notifs.methods.length;
+        if (numNotifs == 1) {
+          var nameTest = notifs.methods[0].name;
+          if(isActive(nameTest) == true) {
+            alert("You cannot change the name of a notification method that is currently attached to a bill");
+            return;
+          }
+          setCookie("NM", '{"methods":[]}', 30);
+          notifs = JSON.parse(getCookie("NM"));
+          numNotifs = notifs.methods.length;
+          return;
+        }
         var table = document.getElementById("userTable2");
         for(j = 1; j < numNotifs; j++){
           var name = notifs.methods[j-1].name;
@@ -272,12 +289,16 @@
           var type = notifs.methods[j-1].type;
           var verified = notifs.methods[j-1].verified;
           var total = '{"type":"' +type+'","destination":"'+destination+'","carrier":"'+carrier+
-              '","verified":'+verified+',"name":"'+name;
-          var row = '{"type":"' +type+'","destination":"'+
-              destination+'","carrier":"'+carrier+
-              '","verified":'+verified+',"name":"'+
+              '","verified":"'+verified+'","name":"'+name;
+          var row = '{"type":"' +table.rows.item(j).cells[2].firstChild.data+'","destination":"'+
+              table.rows.item(j).cells[1].firstChild.data+'","carrier":"'+table.rows.item(j).cells[3].firstChild.data+
+              '","verified":"'+table.rows.item(j).cells[4].firstChild.data+'","name":"'+
               table.rows.item(j).cells[0].firstChild.data;
           if (total != row) {
+            if(isActive(name) == true) {
+              alert("You cannot change the name of a notification method that is currently attached to a bill");
+              return;
+            }
             NM = getCookie("NM");
             var tempCookie = NM.substring(0, NM.indexOf(total));
             var tempCookie2 = NM.substring(NM.indexOf(row), NM.length);
@@ -285,24 +306,39 @@
             var message = "You deleted a " + type + " Notification Method named " +
               name + " for " + destination;
             addNL(message);
-            //alert("removed the " + j + "th method! named " + name +" row is " + table.rows.item(j).cells[0].firstChild.data);
             setCookie("NM", tempCookie2, 30);
+            notifs = JSON.parse(getCookie("NM"));
+            numNotifs = notifs.methods.length;
             return;
           }
         }
         name = notifs.methods[j-1].name;
+        if(isActive(name) == true) {
+          alert("You cannot change the name of a notification method that is currently attached to a bill");
+          return;
+        }
         destination = notifs.methods[j-1].destination;
         carrier = notifs.methods[j-1].carrier;
         type = notifs.methods[j-1].type;
         verified = notifs.methods[j-1].verified;
-        NM = getCookie("NM");
-        total = '{"type":"' +type+'","destination":"'+destination+'","carrier":"'+carrier+
-              '","verified":'+verified+',"name":"'+name;
+        var NM = getCookie("NM");
+ 
+        total = ',{"type":"' +type+'","destination":"'+destination+'","carrier":"'+carrier+
+              '","verified":"'+verified+'","name":"'+name;
+        
         tempCookie = NM.substring(0, NM.indexOf(total))+"]}";
         setCookie("NM", tempCookie, 30);
+        notifs = JSON.parse(getCookie("NM"));
+        numNotifs = notifs.methods.length;
+        return;
       }
       
       $('#addNotif').click(function(){
+        var num = JSON.parse(getCookie("NM")).methods.length;
+        if (num == 4) {
+          alert("You cannot have more than 4 notification methods");
+          return;
+        }
         $('#addNotif').css('visibility','hidden');
         //testGet2();
         
@@ -312,11 +348,12 @@
         .append($('<td><select style="width:100px;" id="typeDrop">'+
           '<option value="email" id="email">Email</option><option id="phone" value="phone">Phone#</option></select></td>'))
         .append($('<td><select style="width:100px;" id="carrierDrop"><option value="none" id="none">Select</option>'+
+          '<option value="email" id="emailDrop">Email</option>'+
           '<option value="at&t" id="at&t">at&t</option><option id="sprint" value="sprint">Sprint</option>'+
           '<option value="t-mobile" id="t-mobile">T-Mobile</option><option id="verizon" value="verizon">Verizon</option>'+
           '<option value="virgin" id="virgin">Virgin</option><option value="boost" id="boost">Boost</option>'+
           '<option value="alltel" id="alltel">Alltel</option></select></td>'))
-        .append($('<td>not verified</td>'))
+        .append($('<td>verified</td>'))
         );
         $('#saveBtn').css('visibility','visible');
         $('#cancelBtn').css('visibility','visible');
@@ -344,15 +381,18 @@
       $('#saveEdit').click( function() {
         $('#saveEdit').click(null);
         var name1 = document.getElementById("name").value;
+        if(isActive(name1) == true) {
+          alert("You cannot change to the name of a notification method which is currently active on a bill");
+          return;
+        }
         var newNotif = new Method(type, destination, carrier, verified, name1);
         var stringy = JSON.stringify(newNotif);
         NM = newJson;
-        alert("NJ is " + newJson);
         var tempBills = NM.substring(0, NM.length - 2);
         if (numNotifs == 1) NM = tempBills + stringy + "]}";
         else NM = tempBills + "," + stringy + "]}";
-        alert("NM is " + NM);
         setCookie("NM",NM,30);
+        notifs = JSON.parse(getCookie("NM"));
         $('#addNotif').css('visibility','visible');
         window.location.replace("usersettings.html");
       });
@@ -360,12 +400,26 @@
       $('#saveBtn').click( function() {
         $('#saveBtn').click(null);
         var name = document.getElementById("name").value;
+        var NM = (getCookie("NM"));
+        var currMethods = JSON.parse(NM).methods;
+        for(var i=0;i<currMethods.length;i++){
+          //alert("comparing: " + name + " and " +  currMethods[i].name);
+          if(name == currMethods[i].name){
+            alert("You may not have multiple notification methods with the same name");
+            return;
+          }
+        }
+        var find = ",";
+        if(name.indexOf(find) != -1) {
+          alert("Notification method names cannot contain commas");
+          return;
+        }
         var carrier =  document.getElementById("carrierDrop").value;
         var type = document.getElementById("typeDrop").value;
         var destination = document.getElementById("destination").value;
-        var newNotif = new Method(type, destination, carrier, "not verified", name);
+        var newNotif = new Method(type, destination, carrier, "verified", name);
         var stringy = JSON.stringify(newNotif);
-        NM = (getCookie("NM"));
+        
         var tempBills = NM.substring(0, NM.length - 2);
         if (numNotifs == 0) {
           NM = tempBills + stringy + "]}";
@@ -373,8 +427,9 @@
         else{
           NM = tempBills + "," + stringy + "]}";
         }
-        alert(NM);
         setCookie("NM",NM,30);
+        notifs = JSON.parse(getCookie("NM"));
+        numNotifs = notifs.methods.length;
         $('#addNotif').css('visibility','visible');
         var message = "You added a new " + type + " Notification Method named " +
           name + " to be sent to " + destination;
@@ -386,6 +441,28 @@
         setCookie("currUser", "", 30);
         window.location.replace("splash.html");
         return;
+      }
+      
+      function isActive(checkName) {
+        var obj = JSON.parse(getCookie("allBills"));
+        var  numBills = obj.bills.length;
+        var test = ",";
+        for  (var k=0; k < numBills; k++){
+          var category = obj.bills[k].category;
+          while(category.length != 0) {
+            if(category.charAt(0) != ","){
+              var test2 = category.substring(0, category.indexOf(test));
+              if(checkName == test2) return true;
+              else {
+                category = category.substring(category.indexOf(test), category.length);
+              }
+            }
+            else{
+              category = category.substring(1, category.length);
+            }
+          }
+        }
+        return false;
       }
       
       function setCookie(cname,cvalue,exdays) {
@@ -453,9 +530,7 @@
         var newLog = new Log(message, currDate, currTime);
         var stringy = JSON.stringify(newLog);
         var NL = JSON.parse(getCookie("NL"));
-        //alert(NL);
         var numLogs = NL.logs.length;
-        //alert(numLogs);
         NL=getCookie("NL");
         var temp = NL.substring(0, NL.length - 2);
         if (numLogs == 0) {
