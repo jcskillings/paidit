@@ -164,20 +164,21 @@
             tempCookie2 = tempCookie + tempCookie2;
             setCookie("NL", tempCookie2, 30);
             stopDelete();
-            window.location.reload();
+            window.location.replace("notificationslog.html");
           }
         }
         info = obj.logs[(numLogs-1)].info;
         date = obj.logs[(numLogs-1)].date;
         time = obj.logs[(numLogs-1)].time;
         NL = getCookie("NL");
-        numLogs = NL.length;
-        if(numLogs == 0) total = '{"info":"' +info+'","date":"'+ date +'","time":"' + time + '"}';
+        var temp = JSON.parse(NL);
+        numLogs = temp.length;
+        if(numLogs == 0 || numLogs == 1) total = '{"info":"' +info+'","date":"'+ date +'","time":"' + time + '"}';
         else total = ',{"info":"' +info+'","date":"'+ date +'","time":"' + time + '"}';
         tempCookie = NL.substring(0, NL.indexOf(total))+"]}";
         setCookie("NL", tempCookie, 30);
          stopDelete();
-        window.location.reload();
+        window.location.replace("notificationslog.html");
       }
       
     </script>

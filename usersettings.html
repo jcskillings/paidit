@@ -354,7 +354,7 @@
         alert("NM is " + NM);
         setCookie("NM",NM,30);
         $('#addNotif').css('visibility','visible');
-        window.location.reload();
+        window.location.replace("usersettings.html");
       });
       
       $('#saveBtn').click( function() {
@@ -379,7 +379,7 @@
         var message = "You added a new " + type + " Notification Method named " +
           name + " to be sent to " + destination;
         addNL(message);
-        window.location.reload();
+        window.location.replace("usersettings.html");
       });
       
       function logout() {
@@ -532,7 +532,7 @@
           var stringy = JSON.stringify(update);
           setCookie("currUser", stringy, 30);
           addNL(newMessage);
-          window.location.reload();
+          window.location.replace("usersettings.html");
         }
         
       }

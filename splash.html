@@ -393,8 +393,8 @@
               currDate = currDate.substring(4, 15);
              
               var provider = document.forms['regForm']['mydropdown'].value;
-              var newMethod = new Method("email", email, "none", "not verified", "email1");
-              var newMethod2 = new Method("cell", phone, provider, "not verified", "cell1");
+              var newMethod = new Method("email", email, "none", "verified", "email1");
+              var newMethod2 = new Method("cell", phone, provider, "verified", "cell1");
               //alert(newMethod);
               var stringy1 = JSON.stringify(newMethod);
               var stringy2 = JSON.stringify(newMethod2);
