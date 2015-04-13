@@ -367,7 +367,7 @@
           '<option value="by phone">By phone</option><option value="autopay">Autopay</option></select></td><td>'+
         '<input type="text" placeholder="URL/Phone# to pay bill" id="url" value ="'+loginPage+'" /></td></tr>'));
         var posCom;
-        var find = ",";
+        find = ",";
         if(category.charAt(0) != ",") {
           posCom = category.indexOf(find);
           document.getElementById("method1").checked = true;
@@ -504,6 +504,7 @@
           return;
         }
         updateJson();
+        window.location.reload();
         }
       }
       
@@ -524,7 +525,7 @@
             addNL("You deleted your "+name+ "!");
             tempCookie2 = tempCookie + tempCookie2;
             setCookie("allBills", tempCookie2, 30);
-            window.location.replace("billaccounts.html");
+            return;
           }
         }
         name = obj.bills[(numBills-1)].name;
@@ -536,7 +537,7 @@
         tempCookie = allBills.substring(0, allBills.indexOf(total))+"]}";
         addNL("You deleted your "+name+ "!");
         setCookie("allBills", tempCookie, 30);
-        window.location.replace("billaccounts.html");
+        return;
       }
       
       function Log(info, date, time) {
@@ -858,7 +859,6 @@
         else reminder2 = getDateTime(year, month, day, hour, minute, reminder2days, reminder2hours);
         var paymentType = document.getElementById("paymentType").value;
         var newBill = new Bill(name, category, paymentType, loginPage, dueDate, repeat, amountLo, amountHi, user_name, reminder1, reminder2);
-        
         var stringy = JSON.stringify(newBill);
         allBills = newJson;
         
@@ -870,7 +870,9 @@
           allBills = tempBills + "," + stringy + "]}";
         }
         var numEdited = 0;
-        oldJson = JSON.parse(oldJson);
+        //alert("entered2");
+        //oldJson = JSON.parse(oldJson);
+        //alert("entered3");
         var mes = "You editited your " + oldJson.name + " to have a new:";
         if(oldJson.name != name) {
           mes= mes+"name("+name+")";
