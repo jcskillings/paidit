@@ -38,9 +38,9 @@
     </a>
   </div>
     
-  <div class="container navigation" style = "width:100%; margin:2% 0% 0% 0%">
-    <div class="left">
-      <h2><b>Welcome to Settings!</b></h2>
+  <div class="container navigation" style = "width:94%; margin:2% 3% 0% 3%">
+    <div class="large-3 columns">
+      <h3 style="font-size:250%;font-weight:bold;font-family:ariel;">Welcome to Settings!</h3>
       <table class="large-20 columns" id="userTable" name="userTable">
         <tr>
           <th>Username:</th>
@@ -64,33 +64,37 @@
         </tr>
       </table>
     </div>
-    <div class="right">
-      <ul class="button-group radius even-1 ">
-        <button onClick="logout()" id="logout">Logout</button>
-      </ul>
-      <div class="small-12 large-12 columns">
-        <h1><a href="#" data-reveal-id="verModal" class="button radius">Enter Verification Code</a>
-        Notification Methods<a href="#" class='button radius' id='addNotif'>Add Notification Method</a></h1>
-        <table id="userTable2" name="userTable2">
-          <thead  id="billTableHeader">
-            <tr>
-              <th width="20%">Name</th>
-              <th width="20%">Phone#/Email</th>
-              <th width="10%">Type</th>
-              <th width="10%">Carrier</th>
-              <th width="10%"></th>
-              <th width="30%"></th>
-            </tr>
-          </thead>
-          <tbody id ="tbody"></tbody>
-        </table>
-        <a href="#" class="button radius" id="saveEdit">Save</a>
-        <a href="#" class="button radius" id="cancelEdit">Cancel</a>        
-        <a href="#" class="button radius" id="saveBtn">Save</a>
-        <a href="#" class="button radius" id="cancelBtn">Cancel</a>
+    <div class="large-8 columns">
+      <div class="left">
+        <a href="#" data-reveal-id="verModal" class="button round">Enter Verification Code</a>
+        <br/>
+        <font size="30">Notification Methods</font>
       </div>
-    </div>
-    <div class="clear"></div>
+      <div class="right">
+        <a href="#" class='button radius right' id="logout">Logout</a>
+        <br/>
+        <a href="#" class='button radius' id="addNotif">Add Notification Method </a>
+      </div>
+      <div class="clear"></div>
+      
+      <table id="userTable2" name="userTable2">
+        <thead  id="billTableHeader">
+          <tr>
+            <th width="12%">Name</th>
+            <th width="20%">Phone#/Email</th>
+            <th width="8%">Type</th>
+            <th width="10%">Carrier</th>
+            <th width="6%"></th>
+            <th width="44%"></th>
+          </tr>
+        </thead>
+        <tbody id ="tbody"></tbody>
+      </table>
+      <a href="#" class="button radius" id="saveEdit">Save</a>
+      <a href="#" class="button radius" id="cancelEdit">Cancel</a>        
+      <a href="#" class="button radius" id="saveBtn">Save</a>
+      <a href="#" class="button radius" id="cancelBtn">Cancel</a>
+      </div>
   </div>
     <hr />
     
@@ -165,11 +169,13 @@
         cell3.innerHTML = notifs.methods[index-1].type;
         cell4.innerHTML = notifs.methods[index-1].carrier;
         cell5.innerHTML = notifs.methods[index-1].verified;
-        cell6.innerHTML = '<button onClick="editRow(this)" id="edit"+index>Edit</button> <button onClick="deleteRow(this)">Delete</button>';
+        cell6.innerHTML = '<button style="width:55px;" onClick="editRow(this)" id="edit"+index>Edit</button>'+
+          ' <button style="width:75px;" onClick="deleteRow(this)">Delete</button>'+
+          ' <button style="width:142px;">Send code</button>';
       }
       
       function youCannot(){
-        alert("You cannot edit/delete a notification method while currently editing one");
+        alert("You cannot utilize this function while currently editing/adding a notification method");
       }
       
       function editRow(o) {
@@ -253,7 +259,9 @@
         $('#cancelEdit').css('visibility','visible');
         var myTable = document.getElementById("userTable2");
         for(var i = 1; i < numNotifs+1; i++){
-          myTable.rows[i].cells[5].innerHTML = '<button onClick="youCannot()">Edit</button><button onClick="youCannot()">Delete</button>';
+          myTable.rows[i].cells[5].innerHTML =  '<button style="width:55px;" onClick="youCannot()" id="edit"+index>Edit</button>'+
+          ' <button style="width:75px;" onClick="youCannot()">Delete</button>'+
+          ' <button style="width:142px;" onClick="youCannot()">Send code</button>';
         }
       }
       
@@ -343,11 +351,11 @@
         //testGet2();
         
         $('#userTable2').find('tbody').append($('<tr id="createNotif">')
-        .append($('<td><input type="text" placeholder="Notification name" id="name" required /></td>'))
-        .append($('<td><input type="text" placeholder="destination address" id="destination"  /></td>'))
-        .append($('<td><select style="width:100px;" id="typeDrop">'+
+        .append($('<td><input type="text" placeholder="Name" id="name" style="width:70px;"/></td>'))
+        .append($('<td><input type="text" placeholder="destination address" id="destination" style="width:160px;" /></td>'))
+        .append($('<td><select style="width:73px;" id="typeDrop">'+
           '<option value="email" id="email">Email</option><option id="phone" value="phone">Phone#</option></select></td>'))
-        .append($('<td><select style="width:100px;" id="carrierDrop"><option value="none" id="none">Select</option>'+
+        .append($('<td><select style="width:83px;" id="carrierDrop"><option value="none" id="none">Select</option>'+
           '<option value="email" id="emailDrop">Email</option>'+
           '<option value="at&t" id="at&t">at&t</option><option id="sprint" value="sprint">Sprint</option>'+
           '<option value="t-mobile" id="t-mobile">T-Mobile</option><option id="verizon" value="verizon">Verizon</option>'+
@@ -355,6 +363,12 @@
           '<option value="alltel" id="alltel">Alltel</option></select></td>'))
         .append($('<td>verified</td>'))
         );
+        var myTable = document.getElementById("userTable2");
+        for(var i = 1; i < numNotifs+1; i++){
+          myTable.rows[i].cells[5].innerHTML = '<button style="width:55px;" onClick="youCannot()" id="edit"+index>Edit</button>'+
+          ' <button style="width:75px;" onClick="youCannot()">Delete</button>'+
+          ' <button style="width:142px;" onClick="youCannot()">Send code</button>';
+        }
         $('#saveBtn').css('visibility','visible');
         $('#cancelBtn').css('visibility','visible');
       });
@@ -437,11 +451,11 @@
         window.location.replace("usersettings.html");
       });
       
-      function logout() {
+      $('#logout').click(function(){
         setCookie("currUser", "", 30);
         window.location.replace("splash.html");
         return;
-      }
+      });
       
       function isActive(checkName) {
         var obj = JSON.parse(getCookie("allBills"));
@@ -527,6 +541,7 @@
         var currDate = Date();
         var currTime = currDate.substring(16, 24);
         currDate = currDate.substring(4, 15);
+        alert(currDate);
         var newLog = new Log(message, currDate, currTime);
         var stringy = JSON.stringify(newLog);
         var NL = JSON.parse(getCookie("NL"));

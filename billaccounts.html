@@ -54,29 +54,29 @@
           <thead  id="billTableHeader">
             <tr>
               <th width="10%">Bill</th>
-              <th width="14%">Amount</th>
-              <th width="14%">Due Date</th>
-              <th width="14%">Due Time</th>
-              <th width="13%">Notifications</th>
-              <th width="20%">Repeat</th>
+              <th width="12%">Amount</th>
+              <th width="17%" style="text-align:center;">Due Date</th>
+              <th width="16%" style="text-align:center;">Due Time</th>
+              <th width="14%">Notifications</th>
+              <th width="16%">Repeat</th>
               <th width = "15%"></th>
             </tr>
           </thead>
           <tbody >
             <tr>
-              <td><b>Example Bill</b></td>
-              <td><b>$55.00 - $65.00</b></td>
-              <td><b>05/19/2099</b></td>
+              <td style="font-size:110%;"><b>Example Bill</b></td>
+              <td style="font-size:110%;"><b>$55.00 - $65.00</b></td>
+              <td style="font-size:110%;text-align:center"><b>05/19/2099</b></td>
               <!--<td ><img src="img/icon/emailIcon40px.png"/>
               <img src="img/icon/smsIcon40px.png"/>
               </td> -->
               
-              <td><b>12:55 p.m.</b></td>
+              <td style="font-size:110%;text-align:center"><b>12:55 p.m.</b></td>
               
-              <td><b>Email SMS</b></td>
-              <td><b>Monthly</b></td>
+              <td style="font-size:110%;"><b>MyEmail,Cell</b></td>
+              <td style="font-size:110%;"><b>Monthly</b></td>
             
-              <td><button>Edit</button> <button>Delete</button></td>
+              <td><button style="width:50px;">Edit</button> <button style="width:85px;">Delete</button></td>
               <!-- <td class="editBox"><img src="img/icon/editIcon40px.png" /></td> -->
               </tr>
               
@@ -183,12 +183,20 @@
         }
         
         cell1.innerHTML = obj.bills[index].name;
+        cell1.style.fontSize="110%";
         cell2.innerHTML = "$" +obj.bills[index].amountLo+"-$"+obj.bills[index].amountHi;
+        cell2.style.fontSize="110%";
         cell3.innerHTML = date;
+        cell3.style.fontSize="110%";
+        cell3.style.textAlign = "center";
         cell4.innerHTML = time;
+        cell4.style.fontSize="110%";
+        cell4.style.textAlign = "center";
         cell5.innerHTML = category;
-        cell6.innerHTML = obj.bills[index].repeat + " with "+ numReminders +" reminder(s)";
-        cell7.innerHTML = '<button onClick="editRow(this)" id="edit"+index>Edit</button> <button onClick="deleteRow(this)">Delete</button>';
+        cell5.style.fontSize="110%";
+        cell6.innerHTML = obj.bills[index].repeat + ":"+ numReminders +" reminder(s)";
+        cell6.style.fontSize="110%";
+        cell7.innerHTML = '<button style="width:50px;" onClick="editRow(this)" id="edit"+index>Edit</button> <button style="width:85px;" onClick="deleteRow(this)">Delete</button>';
       }
       
       function editRow(o) {
@@ -273,14 +281,14 @@
         $('#billTable').find('tbody').append($('<tr id="editBill">')
         .append($('<td><input type="text" placeholder="bill name" id="billname" value="'+name+'" required /></td>'))
         .append($('<td><div class="left"><div class="left"><label>$</label></div><div class="left">'+
-        '<input type="text" placeholder="amount(low)" id="amountLo" value="'+amountLo+'" style="width:100px;" /></div><div class="clear"></div></div>-'+
-        '<div class="right"><input type="text" placeholder="amount(high)" id="amountHi" value="'+amountHi+'"style="width:105px;" /></div><div class="clear"></td>'))
-        .append($('<td><select id="month" style="width:70px;"><option value="01">Jan</option>'+
+        '<input type="text" placeholder="low" id="amountLo" value="'+amountLo+'" style="width:60px;" /></div><div class="clear"></div></div>-'+
+        '<div class="right"><input type="text" placeholder="high" id="amountHi" value="'+amountHi+'"style="width:60px;" /></div><div class="clear"></td>'))
+        .append($('<td><select id="month" style="width:64px;"><option value="01">Jan</option>'+
           '<option value="02">Feb</option><option value="03">Mar</option><option value="04">Apr</option>'+
           '<option value="05">May</option><option value="06">Jun</option><option value="07">Jul</option>'+
           '<option value="08">Aug</option><option value="09">Sep</option><option value="10">Oct</option>'+
           '<option value="11">Nov</option><option value="12">Dec</option></select>'+
-          '<select id="day" style="width:60px;"><option value="01">01</option>'+
+          '<select id="day" style="width:56px;"><option value="01">01</option>'+
           '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
           '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
           '<option value="08">08</option><option value="09">09</option><option value="10">10</option>'+
@@ -291,36 +299,38 @@
           '<option value="23">23</option><option value="24">24</option><option value="25">25</option>'+
           '<option value="26">26</option><option value="27">27</option><option value="28">28</option>'+
           '<option value="29">29</option><option value="30">30</option><option value="31">31</option></select>'+
-          '<select id="year" style="width:75px;"><option value="2015">2015</option>'+
+          '<select id="year" style="width:74px;"><option value="2015">2015</option>'+
           '<option value="2016">2016</option><option value="2017">2017</option></select></td>'))
-        .append($('<td><select id="hour" style="width:60px;"><option value="01">01</option>'+
+        .append($('<td><select id="hour" style="width:58px;"><option value="01">01</option>'+
           '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
           '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
           '<option value="08">08</option><option value="09">09</option><option value="10">10</option>'+
           '<option value="11">11</option><option value="12">12</option></select>'+
-          '<select id="minute" style="width:60px;"><option value="00">00</option>'+
+          '<select id="minute" style="width:59px;"><option value="00">00</option>'+
           '<option value="05">05</option><option value="10">10</option><option value="15">15</option>'+
           '<option value="20">20</option><option value="25">25</option><option value="30">30</option>'+
           '<option value="35">35</option><option value="40">40</option><option value="45">45</option>'+
           '<option value="50">50</option><option value="55">55</option></select>'+
-          '<select id="ampm" style="width:65px;"><option value="am">am</option>'+
+          '<select id="ampm" style="width:63px;"><option value="am">am</option>'+
           '<option value="pm">pm</option></select></td>'))
         .append($('<td><div class = "left"><input id="method1" type="checkbox"/><label id="label1">'+methods[0]+'</label></div>'+
         '<div class = "right"><input id="method2" type="checkbox"/><label id="label2">'+methods[1]+'</label></div><div class="clear"></div>'+
         '<div class = "left"><input id="method3" type="checkbox"/><label id="label3">'+methods[2]+'</label></div>'+
         '<div class = "right"><input id="method4" type="checkbox"/><label id="label4">'+methods[3]+'</label></div><div class = "clear"></div></td>'))
-        .append($('<td><input type="radio" id="never" name="rep" checked><label for="never">Never</label>'+
-        '<input type="radio" id="weekly" name="rep"><label for="weekly">Weekly</label><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></td>'))
+       .append($('<td><div class="left"><input type="radio" id="never" name="rep" checked><label for="never">Never</label></div>'+
+        '<div class="right"><input type="radio" id="weekly" name="rep"><label for="weekly">Weekly</label></div><div class ="clear"></div>'+
+        '<div class="left"><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></div>'+
+        '<div class="right"><input type="radio" id="biweekly" name="rep"><label for="biweekly">Biweekly</label></div><div class ="clear"></div></td>'))
         .append($('<td></td></tr>'))
         );
-        $('#billTable tr:last').after($('<tr id="extraRow"><td></td><td><b>Reminders:</b></td>'+
-        '<td><div class = "left"><label>Days before + </label><select id="reminder1days" style="width:80px;">'+
+        $('#billTable tr:last').after($('<tr id="extraRow"><td></td><td><b>Reminders:<br/>Sends reminder before bill due date</b></td>'+
+        '<td><div class = "left"><label>(#1) Days +</label><select id="reminder1days" style="width:80px;">'+
         '<option value="00">00</option><option value="01">01</option>'+
         '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
         '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
         '<option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option>'+
         '<option value="12">12</option><option value="13">13</option><option value="14">14</option></select></div>'+
-        '<div class = "left"><label>Hours before due</label><select id="reminder1hours" style="width:80px;">'+
+        '<div class = "left"><label>Hours before</label><select id="reminder1hours" style="width:80px;">'+
         '<option value="00">00</option><option value="01">01</option>'+
         '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
         '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
@@ -330,13 +340,13 @@
         '<option value="17">17</option><option value="18">18</option><option value="19">19</option>'+
         '<option value="20">20</option><option value="21">21</option><option value="22">22</option>'+
         '<option value="23">23</option></select></div><div class = "clear"></div>'+
-        '</td><td><div class = "left"><label>Days before + </label><select id="reminder2days" style="width:80px;">'+
+        '</td><td><div class = "left"><label>(#2) Days +</label><select id="reminder2days" style="width:80px;">'+
         '<option value="00">00</option><option value="01">01</option>'+
         '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
         '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
         '<option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option>'+
         '<option value="12">12</option><option value="13">13</option><option value="14">14</option></select></div>'+
-        '<div class = "left"><label>Hours before due</label><select id="reminder2hours" style="width:80px;">'+
+        '<div class = "left"><label>Hours before</label><select id="reminder2hours" style="width:80px;">'+
         '<option value="00">00</option><option value="01">01</option>'+
         '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
         '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
@@ -349,7 +359,7 @@
         '<td><label>Payment Process</label><select id="paymentType" style="width:100px;"><option value="">Select</option>'+
           '<option value="in person">In person</option><option value="online">Online</option>'+
           '<option value="by phone">By phone</option><option value="autopay">Autopay</option></select></td><td>'+
-        '<input type="text" placeholder="www.wheretopaythisbill.com or 1-555-Pay-Bill" id="url" value ="'+loginPage+'" /></td></tr>'));
+        '<input type="text" placeholder="URL/Phone# to pay bill" id="url" value ="'+loginPage+'" /></td></tr>'));
         var posCom;
         var find = ",";
         if(category.charAt(0) != ",") {
@@ -469,7 +479,7 @@
         $('#cancelEdit').css('visibility','visible');
         var myTable = document.getElementById("billTable");
         for(i = 2; i < numBills+2; i++){
-          myTable.rows[i].cells[6].innerHTML = '<button onClick="youCant()">Edit</button><button onClick="youCant()">Delete</button>';
+          myTable.rows[i].cells[6].innerHTML = '<button style="width:50px;" onClick="youCant()">Edit</button><button style="width:85px;" onClick="youCant()">Delete</button>';
         }
       }
       
@@ -591,15 +601,15 @@
         }
         $('#billTable').find('tbody').append($('<tr id="createBill">')
         .append($('<td><input type="text" placeholder="bill name" id="billname" required /></td>'))
-        .append($('<td><div class="left"><div class="left"><label>$</label></div><div class="left">'+
-        '<input type="text" placeholder="amount(low)" id="amountLo" style="width:100px;" /></div><div class="clear"></div></div>-'+
-        '<div class="right"><input type="text" placeholder="amount(high)" id="amountHi" style="width:105px;" /></div><div class="clear"></td>'))
-        .append($('<td><select id="month" style="width:70px;"><option value="01">Jan</option>'+
+        .append($('<td><div class="left"><div class="left"></div><div class="left">'+
+        '<input type="text" placeholder="low" id="amountLo" style="width:60px;" /></div><div class="clear"></div></div>-'+
+        '<div class="right"><input type="text" placeholder="high" id="amountHi" style="width:60px;" /></div><div class="clear"></td>'))
+        .append($('<td><select id="month" style="width:64px;"><option value="01">Jan</option>'+
           '<option value="02">Feb</option><option value="03">Mar</option><option value="04">Apr</option>'+
           '<option value="05">May</option><option value="06">Jun</option><option value="07">Jul</option>'+
           '<option value="08">Aug</option><option value="09">Sep</option><option value="10">Oct</option>'+
           '<option value="11">Nov</option><option value="12">Dec</option></select>'+
-          '<select id="day" style="width:60px;"><option value="01">01</option>'+
+          '<select id="day" style="width:56px;"><option value="01">01</option>'+
           '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
           '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
           '<option value="08">08</option><option value="09">09</option><option value="10">10</option>'+
@@ -610,36 +620,38 @@
           '<option value="23">23</option><option value="24">24</option><option value="25">25</option>'+
           '<option value="26">26</option><option value="27">27</option><option value="28">28</option>'+
           '<option value="29">29</option><option value="30">30</option><option value="31">31</option></select>'+
-          '<select id="year" style="width:75px;"><option value="2015">2015</option>'+
+          '<select id="year" style="width:74px;"><option value="2015">2015</option>'+
           '<option value="2016">2016</option><option value="2017">2017</option></select></td>'))
-        .append($('<td><select id="hour" style="width:60px;"><option value="01">01</option>'+
+        .append($('<td><select id="hour" style="width:58px;"><option value="01">01</option>'+
           '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
           '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
           '<option value="08">08</option><option value="09">09</option><option value="10">10</option>'+
           '<option value="11">11</option><option value="12">12</option></select>'+
-          '<select id="minute" style="width:60px;"><option value="00">00</option>'+
+          '<select id="minute" style="width:59px;"><option value="00">00</option>'+
           '<option value="05">05</option><option value="10">10</option><option value="15">15</option>'+
           '<option value="20">20</option><option value="25">25</option><option value="30">30</option>'+
           '<option value="35">35</option><option value="40">40</option><option value="45">45</option>'+
           '<option value="50">50</option><option value="55">55</option></select>'+
-          '<select id="ampm" style="width:65px;"><option value="am">am</option>'+
+          '<select id="ampm" style="width:63px;"><option value="am">am</option>'+
           '<option value="pm">pm</option></select></td>'))
         .append($('<td><div class = "left"><input id="method1" type="checkbox"/><label id="label1">'+methods[0]+'</label></div>'+
         '<div class = "right"><input id="method2" type="checkbox"/><label id="label2">'+methods[1]+'</label></div><div class="clear"></div>'+
         '<div class = "left"><input id="method3" type="checkbox"/><label id="label3">'+methods[2]+'</label></div>'+
         '<div class = "right"><input id="method4" type="checkbox"/><label id="label4">'+methods[3]+'</label></div><div class = "clear"></div></td>'))
-        .append($('<td><input type="radio" id="never" name="rep" checked><label for="never">Never</label>'+
-        '<input type="radio" id="weekly" name="rep"><label for="weekly">Weekly</label><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></td>'))
+        .append($('<td><div class="left"><input type="radio" id="never" name="rep" checked><label for="never">Never</label></div>'+
+        '<div class="right"><input type="radio" id="weekly" name="rep"><label for="weekly">Weekly</label></div><div class ="clear"></div>'+
+        '<div class="left"><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></div>'+
+        '<div class="right"><input type="radio" id="biweekly" name="rep"><label for="biweekly">Biweekly</label></div><div class ="clear"></div></td>'))
         .append($('<td></td></tr>'))
         );
-        $('#billTable tr:last').after($('<tr id="extraRow"><td></td><td><b>Reminders:</b></td>'+
-        '<td><div class = "left"><label>Days before + </label><select id="reminder1days" style="width:80px;">'+
+        $('#billTable tr:last').after($('<tr id="extraRow"><td></td><td><b>Reminders:<br/>Sends reminder before bill due date</b></td>'+
+        '<td><div class = "left"><label>(#1) Days +</label><select id="reminder1days" style="width:80px;">'+
         '<option value="00">00</option><option value="01">01</option>'+
         '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
         '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
         '<option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option>'+
         '<option value="12">12</option><option value="13">13</option><option value="14">14</option></select></div>'+
-        '<div class = "left"><label>Hours before due</label><select id="reminder1hours" style="width:80px;">'+
+        '<div class = "left"><label>Hours before</label><select id="reminder1hours" style="width:80px;">'+
         '<option value="00">00</option><option value="01">01</option>'+
         '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
         '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
@@ -649,13 +661,13 @@
         '<option value="17">17</option><option value="18">18</option><option value="19">19</option>'+
         '<option value="20">20</option><option value="21">21</option><option value="22">22</option>'+
         '<option value="23">23</option></select></div><div class = "clear"></div>'+
-        '</td><td><div class = "left"><label>Days before + </label><select id="reminder2days" style="width:80px;">'+
+        '</td><td><div class = "left"><label>(#2) Days +</label><select id="reminder2days" style="width:80px;">'+
         '<option value="00">00</option><option value="01">01</option>'+
         '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
         '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
         '<option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option>'+
         '<option value="12">12</option><option value="13">13</option><option value="14">14</option></select></div>'+
-        '<div class = "left"><label>Hours before due</label><select id="reminder2hours" style="width:80px;">'+
+        '<div class = "left"><label>Hours before</label><select id="reminder2hours" style="width:80px;">'+
         '<option value="00">00</option><option value="01">01</option>'+
         '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
         '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
@@ -668,7 +680,7 @@
         '<td><label>Payment Process</label><select id="paymentType" style="width:100px;"><option value="">Select</option>'+
           '<option value="in person">In person</option><option value="online">Online</option>'+
           '<option value="by phone">By phone</option><option value="autopay">Autopay</option></select></td><td>'+
-        '<input type="text" placeholder="www.wheretopaythisbill.com or 1-555-Pay-Bill" id="url"  /></td></tr>'));
+        '<input type="text" placeholder="URL/Phone# to pay bill" id="url"  /></td></tr>'));
         var numHidden = 0;
         if(methods[3] == "") {
           $('#method4').css('visibility','hidden');
@@ -780,6 +792,7 @@
         if(document.getElementById("never").checked == true) repeat = "Never";
         else if(document.getElementById("weekly").checked == true) repeat = "Weekly";
         else if(document.getElementById("monthly").checked == true) repeat = "Monthly";
+        else if(document.getElementById("biweekly").checked == true) repeat = "Biweekly";
         
         var amountLo = document.getElementById("amountLo").value;
         var amountHi = document.getElementById("amountHi").value;
@@ -826,9 +839,25 @@
         window.location.replace("billaccounts.html");
       });
       
+      function doesNameExist(unparsed, findName) {
+        var thisObj = JSON.parse(unparsed);
+        var thisLength = thisObj.bills.length;
+        for (var o = 0; o < thisLength; o++){
+          var tempName = thisObj.bills[o].name;
+          if(findName == tempName) {
+            return true;
+          }
+        }
+        return false;
+      }
+      
       $('#saveBtn').click( function() {
         $('#saveBtn').css('visibility','hidden');
         var name = document.getElementById("billname").value;
+        if(doesNameExist(getCookie("allBills"), name) == true) {
+          alert("You may not have multiple bills with the same name");
+          return;
+        }
         
         var currDate = Date();
         var currTZ = currDate.substring(30, 33);
@@ -842,9 +871,6 @@
         var ampm = document.getElementById("ampm").value;
         var hour = document.getElementById("hour").value;
         var minute = document.getElementById("minute").value;
-        
-        //hour = parseInt(hour);
-        //minute = parseInt(minute);
         var time;
         if(ampm == "am" && hour != "12") {
           time = hour + ":" + minute + ":00";
@@ -881,6 +907,7 @@
         if(document.getElementById("never").checked == true) repeat = "Never";
         else if(document.getElementById("weekly").checked == true) repeat = "Weekly";
         else if(document.getElementById("monthly").checked == true) repeat = "Monthly";
+        else if(document.getElementById("biweekly").checked == true) repeat = "Biweekly";
         
         var amountLo = document.getElementById("amountLo").value;
         var amountHi = document.getElementById("amountHi").value;
