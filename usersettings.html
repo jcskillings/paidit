@@ -541,7 +541,6 @@
         var currDate = Date();
         var currTime = currDate.substring(16, 24);
         currDate = currDate.substring(4, 15);
-        alert(currDate);
         var newLog = new Log(message, currDate, currTime);
         var stringy = JSON.stringify(newLog);
         var NL = JSON.parse(getCookie("NL"));
