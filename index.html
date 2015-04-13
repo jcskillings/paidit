@@ -44,12 +44,13 @@
           <table class="small-12 large-12 columns" id="billTable" name = "billTable">
             <thead  id="billTableHeader">
               <tr>
-                <th width="13%">Bill</th>
-                <th width="15%">Amount</th>
-                <th width="14%" style="text-align:center;">Due Date</th>
-                <th width="13%" style="text-align:center;">Due Time</th>
+                <th width="11%">Bill</th>
+                <th width="13%">Amount</th>
+                <th width="12%" style="text-align:center;">Due Date</th>
+                <th width="11%" style="text-align:center;">Due Time</th>
                 <th width="14%">Notifications</th>
                 <th width="21%">Repeat</th>
+                <th width="8%" style="text-align:center;">Link</th>
                 <th width = "10%"></th>
               </tr>
             </thead>
@@ -112,7 +113,7 @@
       var obj;
       var allBills;
       var numBills;
-      
+      var atBill;
       function getBills() {
         if (getCookie("allBills") == null || getCookie("allBills") =="" || getCookie("allBills") == '{"bills":[]}'){
           setCookie("allBills",'{"bills":[]}',30);
@@ -141,8 +142,8 @@
           else if (month == "Nov") month = 11;
           else if (month == "Dec") month = 12;
           var numInserted = 0;
-          for  (var i=0; i < numBills; i++){
-            date = obj.bills[i].dueDate;
+          for  (atBill=0; atBill < numBills; atBill++){
+            date = obj.bills[atBill].dueDate;
             var billYear = date.substr(0, 4);
             billYear = parseInt(billYear);
             var billMonth = date.substr(5, 2);
@@ -176,8 +177,9 @@
         var cell5 = row.insertCell(4);
         var cell6 = row.insertCell(5);
         var cell7 = row.insertCell(6);
+        var cell8 = row.insertCell(7);
         //alert("entered");
-        var dueD = obj.bills[index].dueDate;
+        var dueD = obj.bills[atBill].dueDate;
         var year = dueD.substr(0, 4);
         var month = dueD.substr(5, 2);
         var day = dueD.substr(8, 2);
@@ -199,10 +201,10 @@
           if (hour == 12) time= hour+":"+minute +" p.m.";
         }
         var numReminders;
-        if(obj.bills[index].reminder1 == "" && obj.bills[index].reminder2 =="") numReminders=0;
-        else if (obj.bills[index].reminder1 == "" || obj.bills[index].reminder2 =="")numReminders=1;
+        if(obj.bills[atBill].reminder1 == "" && obj.bills[atBill].reminder2 =="") numReminders=0;
+        else if (obj.bills[atBill].reminder1 == "" || obj.bills[atBill].reminder2 =="")numReminders=1;
         else numReminders = 2;
-        var category = obj.bills[index].category;
+        var category = obj.bills[atBill].category;
         var catLength = category.length;
         if(catLength == 3) category = "None selected";
         else {
@@ -223,9 +225,19 @@
           category = temp1 + temp2;
         }
         
-        cell1.innerHTML = obj.bills[index].name;
+        var check1 = "http";
+        var check2 = "www";
+        var check3 = ".";
+        var display = "";
+        var loginPage = obj.bills[atBill].loginPage;
+        if(loginPage.indexOf(check1)!=-1 ||loginPage.indexOf(check2)!=-1 ||loginPage.indexOf(check3)!=-1){
+          display = "<a style='color:#3ADF00;' href="+loginPage+" onclick='window.open(this.href); return false;' onkeypress='window.open(this.href); return false;'>Pay Bill</a>";
+        }
+        
+        
+        cell1.innerHTML = obj.bills[atBill].name;
         cell1.style.fontSize="110%";
-        cell2.innerHTML = "$" +obj.bills[index].amountLo+"-$"+obj.bills[index].amountHi;
+        cell2.innerHTML = "$" +obj.bills[atBill].amountLo+"-$"+obj.bills[atBill].amountHi;
         cell2.style.fontSize="110%";
         cell3.innerHTML = date;
         cell3.style.fontSize="110%";
@@ -235,9 +247,13 @@
         cell4.style.textAlign = "center";
         cell5.innerHTML = category;
         cell5.style.fontSize="110%";
-        cell6.innerHTML = obj.bills[index].repeat + ":"+ numReminders +" reminder(s)";
+        cell6.innerHTML = obj.bills[atBill].repeat + ":"+ numReminders +" reminder(s)";
         cell6.style.fontSize="110%";
-        cell7.innerHTML = '<button style="width:50px;" onClick="paidIt(this)" id="paidit">PaidIt?</button>';
+        cell7.innerHTML = display ;
+        cell7.style.textAlign = "center";
+        cell8.innerHTML = "<a href='#'><img src='img/paiditkyleblack.png' height='51' width='76' border=0/></a>?";
+        cell8.style.fontSize = "25px";
+        cell8.style.fontWeight= 900;
       }
       
       

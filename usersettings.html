@@ -85,7 +85,8 @@
             <th width="8%">Type</th>
             <th width="10%">Carrier</th>
             <th width="6%"></th>
-            <th width="44%"></th>
+            <th width="22%"></th>
+            <th width="22%"></th>
           </tr>
         </thead>
         <tbody id ="tbody"></tbody>
@@ -163,15 +164,18 @@
         var cell4 = row.insertCell(3);
         var cell5 = row.insertCell(4);
         var cell6 = row.insertCell(5);
+        var cell7 = row.insertCell(6);
        
         cell1.innerHTML = notifs.methods[index-1].name;
         cell2.innerHTML = notifs.methods[index-1].destination;
         cell3.innerHTML = notifs.methods[index-1].type;
         cell4.innerHTML = notifs.methods[index-1].carrier;
         cell5.innerHTML = notifs.methods[index-1].verified;
-        cell6.innerHTML = '<button style="width:55px;" onClick="editRow(this)" id="edit"+index>Edit</button>'+
-          ' <button style="width:75px;" onClick="deleteRow(this)">Delete</button>'+
-          ' <button style="width:142px;">Send code</button>';
+        cell6.innerHTML = '<button style="width:55px;padding: 16px 0px 16px 0px;margin:auto" onClick="editRow(this)" id="edit">Edit</button>'+" "+
+          '<button style="width:75px;padding: 16px 0px 16px 0px;margin:auto" onClick="deleteRow(this)">Delete</button>';
+        cell6.style.textAlign = "center";
+        cell7.innerHTML =  '<button class="button round" style="width:142px;padding: 16px 0px 16px 0px;margin:auto;">Send code</button>';
+        cell7.style.textAlign = "center";
       }
       
       function youCannot(){
@@ -259,9 +263,11 @@
         $('#cancelEdit').css('visibility','visible');
         var myTable = document.getElementById("userTable2");
         for(var i = 1; i < numNotifs+1; i++){
-          myTable.rows[i].cells[5].innerHTML =  '<button style="width:55px;" onClick="youCannot()" id="edit"+index>Edit</button>'+
-          ' <button style="width:75px;" onClick="youCannot()">Delete</button>'+
-          ' <button style="width:142px;" onClick="youCannot()">Send code</button>';
+          myTable.rows[i].cells[5].innerHTML = '<button style="width:55px;padding: 16px 0px 16px 0px;margin:auto" onClick="editRow(this)" id="edit">Edit</button>'+" "+
+          '<button style="width:75px;padding: 16px 0px 16px 0px;margin:auto" onClick="deleteRow(this)">Delete</button>';
+          myTable.rows[i].cells[5].style.textAlign = "center";
+          myTable.rows[i].cells[6].innerHTML =  '<button class="button round" style="width:142px;padding: 16px 0px 16px 0px;margin:auto;">Send code</button>';
+          myTable.rows[i].cells[6].style.textAlign = "center";
         }
       }
       
@@ -365,9 +371,11 @@
         );
         var myTable = document.getElementById("userTable2");
         for(var i = 1; i < numNotifs+1; i++){
-          myTable.rows[i].cells[5].innerHTML = '<button style="width:55px;" onClick="youCannot()" id="edit"+index>Edit</button>'+
-          ' <button style="width:75px;" onClick="youCannot()">Delete</button>'+
-          ' <button style="width:142px;" onClick="youCannot()">Send code</button>';
+          myTable.rows[i].cells[5].innerHTML = '<button style="width:55px;padding: 16px 0px 16px 0px;margin:auto" onClick="editRow(this)" id="edit">Edit</button>'+" "+
+          '<button style="width:75px;padding: 16px 0px 16px 0px;margin:auto" onClick="deleteRow(this)">Delete</button>';
+          myTable.rows[i].cells[5].style.textAlign = "center";
+          myTable.rows[i].cells[6].innerHTML =  '<button class="button round" style="width:142px;padding: 16px 0px 16px 0px;margin:auto;">Send code</button>';
+          myTable.rows[i].cells[6].style.textAlign = "center";
         }
         $('#saveBtn').css('visibility','visible');
         $('#cancelBtn').css('visibility','visible');
@@ -382,6 +390,7 @@
           $('#saveBtn').css('visibility','hidden');
           $('#cancelBtn').css('visibility','hidden');
           $('#addNotif').css('visibility','visible');
+          window.location.reload();
       });
       
       $('#cancelEdit').click( function() {
@@ -570,6 +579,10 @@
         var firstName1 = document.getElementById("firstname").value;
         var lastName1 = document.getElementById("lastname").value;
         var password1 = document.getElementById("password").value;
+        if (password1.length < 6){
+          alert("Your password must be at least of length 6");
+          return;
+        }
         var newMessage = "";
         var numChanged = 0;
         

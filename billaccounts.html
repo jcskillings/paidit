@@ -54,12 +54,12 @@
           <thead  id="billTableHeader">
             <tr>
               <th width="10%">Bill</th>
-              <th width="12%">Amount</th>
-              <th width="17%" style="text-align:center;">Due Date</th>
-              <th width="16%" style="text-align:center;">Due Time</th>
+              <th width="13%">Amount</th>
+              <th width="16%" style="text-align:center;">Due Date</th>
+              <th width="14%" style="text-align:center;">Due Time</th>
               <th width="14%">Notifications</th>
               <th width="16%">Repeat</th>
-              <th width = "15%"></th>
+              <th width = "17%"></th>
             </tr>
           </thead>
           <tbody >
@@ -76,7 +76,7 @@
               <td style="font-size:110%;"><b>MyEmail,Cell</b></td>
               <td style="font-size:110%;"><b>Monthly</b></td>
             
-              <td><button style="width:50px;">Edit</button> <button style="width:85px;">Delete</button></td>
+              <td><button style="width:60px;padding: 20px 0px 20px 0px;" id="edit">Edit</button> <button style="width:85px;padding: 20px 0px 20px 0px;">Delete</button></td>
               <!-- <td class="editBox"><img src="img/icon/editIcon40px.png" /></td> -->
               </tr>
               
@@ -196,7 +196,8 @@
         cell5.style.fontSize="110%";
         cell6.innerHTML = obj.bills[index].repeat + ":"+ numReminders +" reminder(s)";
         cell6.style.fontSize="110%";
-        cell7.innerHTML = '<button style="width:50px;" onClick="editRow(this)" id="edit"+index>Edit</button> <button style="width:85px;" onClick="deleteRow(this)">Delete</button>';
+        cell7.innerHTML = '<button style="width:60px;padding: 20px 0px 20px 0px;" onClick="editRow(this)" id="edit">Edit</button>'+" "+
+          '<button style="width:85px;padding: 20px 0px 20px 0px;" onClick="deleteRow(this)">Delete</button>';
       }
       
       function editRow(o) {
@@ -484,13 +485,14 @@
         $('#saveEdit').css('visibility','visible');
         $('#cancelEdit').css('visibility','visible');
         var myTable = document.getElementById("billTable");
-        for(i = 2; i < numBills+2; i++){
-          myTable.rows[i].cells[6].innerHTML = '<button style="width:50px;" onClick="youCant()">Edit</button><button style="width:85px;" onClick="youCant()">Delete</button>';
+        for(i = 2; i < numBills+1; i++){
+          myTable.rows[i].cells[6].innerHTML = '<button style="width:60px;padding: 20px 0px 20px 0px;" onClick="youCant()">'+
+          'Edit</button> <button style="width:85px;padding: 20px 0px 20px 0px;" onClick="youCant()">Delete</button>';
         }
       }
       
       function youCant(){
-        alert("You cannot edit or delete another bill while one is currently being edited");
+        alert("You cannot edit/delete another bill while one is currently being added or edited");
       }
       
       function deleteRow(o){
@@ -742,12 +744,17 @@
           alert("Until you have at least ONE verified email or phone notification"+
           " method, you will be unable to select notification methods for any bill."+
           " This also means that you will also be unable to receive any notifications!"+
-          " They will appear area noted 'PLEASE VERIFY YOUR NOTIFICATION METHODS ASAP!' one you verify them! Thanks!");
+          " They will appear area noted 'PLEASE VERIFY YOUR NOTIFICATION METHODS ASAP!' once you verify them! Thanks!");
           $('#label1').css('visibility','visible');
           document.getElementById("label1").innerHTML = "PLEASE VERIFY YOUR <br/>NOTIFICATION METHODS ASAP!".bold();
         }
         $('#saveBtn').css('visibility','visible');
         $('#cancelBtn').css('visibility','visible');
+        var myTable = document.getElementById("billTable");
+        for(i = 2; i < numBills+2; i++){
+          myTable.rows[i].cells[6].innerHTML = '<button style="width:60px;padding: 20px 0px 20px 0px;" onClick="youCant()">Edit</button>'+" "+
+          '<button style="width:85px;padding: 20px 0px 20px 0px;" onClick="youCant()">Delete</button>';
+        }
       });
       
       
@@ -761,6 +768,7 @@
           $('#saveBtn').css('visibility','hidden');
           $('#cancelBtn').css('visibility','hidden');
           $('#addBill').css('visibility','visible');
+          window.location.reload();
       });
       
       $('#cancelEdit').click( function() {
@@ -783,6 +791,11 @@
         var month = document.getElementById("month").value;
         var day = document.getElementById("day").value;
         
+        var valid = checkValidDate(year, month, day);
+        if(valid == false) {
+          alert("You have entered an invalid day for the selected month");
+          return;
+        }
         var date = year +"-"+ month+"-"+day;
           
         var ampm = document.getElementById("ampm").value;
@@ -873,7 +886,7 @@
         //alert("entered2");
         //oldJson = JSON.parse(oldJson);
         //alert("entered3");
-        var mes = "You editited your " + oldJson.name + " to have a new:";
+        var mes = "You edited your " + oldJson.name + " to have a new:";
         if(oldJson.name != name) {
           mes= mes+"name("+name+")";
           numEdited++;
@@ -941,6 +954,27 @@
         window.location.replace("billaccounts.html");
       });
       
+      function checkValidDate(year, month, day) {
+        var daysInCurrent;
+        month = parseInt(month);
+        year = parseInt(year);
+        day = parseInt(day);
+        var isLeap =new Date(year, 1, 29).getMonth() == 1;
+        if (month == 1 || month == 3 || month==5||month==7||month==8||month==10||month==12){
+          daysInCurrent = 31;
+        }
+        else if(month==4||month==6||month==9||month==11){
+          daysInCurrent = 30;
+        }
+        else{
+          if(isLeap) daysInCurrent = 29;
+          else daysInCurrent = 28;
+        }
+        if(day<=daysInCurrent) return true;
+        else return false;
+        
+      }
+      
       function doesNameExist(unparsed, findName) {
         var thisObj = JSON.parse(unparsed);
         var thisLength = thisObj.bills.length;
@@ -967,6 +1001,12 @@
         var year = document.getElementById("year").value;
         var month = document.getElementById("month").value;
         var day = document.getElementById("day").value;
+        
+        var valid = checkValidDate(year, month, day);
+        if(valid == false) {
+          alert("You have entered an invalid day for the selected month");
+          return;
+        }
         
         var date = year +"-"+ month+"-"+day;
           
