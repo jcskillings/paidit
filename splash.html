@@ -58,7 +58,7 @@
             <a><img src="img/logoSm.png" /></a>
           </div>
         </div>
-      <form id="regForm" data-abide name='regForm' onsubmit="return validateForm()" method="post">
+      <form id="regForm" data-abide name='regForm' onsubmit="return validateForm()"  onclick="this.disabled = true" method="post">
         
         <div class="row">
           <div class="large-6 large-centered columns">
@@ -376,6 +376,7 @@
               
               allUsers = getCookie("allUsers");
               var temp = allUsers.substring(0, allUsers.length - 2);
+              numUsers = JSON.parse(allUsers).users.length;
               if(numUsers == 0) allUsers = temp + stringy + "]}";
               else allUsers = temp + "," + stringy + "]}";
               
