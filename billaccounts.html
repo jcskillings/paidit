@@ -194,7 +194,11 @@
         cell4.style.textAlign = "center";
         cell5.innerHTML = category;
         cell5.style.fontSize="110%";
-        cell6.innerHTML = obj.bills[index].repeat + ":"+ numReminders +" reminder(s)";
+        var repeat = obj.bills[index].repeat;
+        if(repeat != "Monthly" && repeat != "Weekly" && repeat != "Never" && repeat !="Biweekly"){
+          repeat = repeat + " Months";
+        }
+        cell6.innerHTML = repeat + ":"+ numReminders +" reminder(s)";
         cell6.style.fontSize="110%";
         cell7.innerHTML = '<button style="width:60px;padding: 20px 0px 20px 0px;" onClick="editRow(this)" id="edit">Edit</button>'+" "+
           '<button style="width:85px;padding: 20px 0px 20px 0px;" onClick="deleteRow(this)">Delete</button>';
@@ -328,7 +332,8 @@
         '<div class="right"><input type="radio" id="weekly" name="rep"><label for="weekly">Weekly</label></div><div class ="clear"></div>'+
         '<div class="left"><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></div>'+
         '<div class="right"><input type="radio" id="biweekly" name="rep"><label for="biweekly">Biweekly</label></div><div class ="clear"></div></td>'))
-        .append($('<td></td></tr>'))
+        .append($('<td><div class="left"><input type="radio" style="margin:auto;" id="custom" name="rep" ></div>'+
+        '<div class="left"><input style="width:110px;margin:auto;" type="text" placeholder="# months(1-12)" id="customInput"/></div><div class="clear"></div></td></tr>'))
         );
         $('#billTable tr:last').after($('<tr id="extraRow"><td></td><td><b>Reminders:<br/>Sends reminder before bill due date</b></td>'+
         '<td><div class = "left"><label>(#1) Days +</label><select id="reminder1days" style="width:80px;">'+
@@ -481,7 +486,11 @@
         
         if(repeat == "Never") document.getElementById("never").checked = true;
         else if(repeat == "Weekly") document.getElementById("weekly").checked = true;
-        else document.getElementById("monthly").checked = true;
+        else if(repeat == "Monthly") document.getElementById("monthly").checked = true;
+        else {
+          document.getElementById("customInput").value = repeat;
+          document.getElementById("custom").checked = true;
+        }
         $('#saveEdit').css('visibility','visible');
         $('#cancelEdit').css('visibility','visible');
         var myTable = document.getElementById("billTable");
@@ -680,7 +689,8 @@
         '<div class="right"><input type="radio" id="weekly" name="rep"><label for="weekly">Weekly</label></div><div class ="clear"></div>'+
         '<div class="left"><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></div>'+
         '<div class="right"><input type="radio" id="biweekly" name="rep"><label for="biweekly">Biweekly</label></div><div class ="clear"></div></td>'))
-        .append($('<td></td></tr>'))
+        .append($('<td><div class="left"><input type="radio" style="margin:auto;" id="custom" name="rep" ></div>'+
+        '<div class="left"><input style="width:110px;margin:auto;" type="text" placeholder="# months(1-12)" id="customInput"/></div><div class="clear"></div></td></tr>'))
         );
         $('#billTable tr:last').after($('<tr id="extraRow"><td></td><td><b>Reminders:<br/>Sends reminder before bill due date</b></td>'+
         '<td><div class = "left"><label>(#1) Days +</label><select id="reminder1days" style="width:80px;">'+
@@ -842,6 +852,11 @@
         else if(document.getElementById("weekly").checked == true) repeat = "Weekly";
         else if(document.getElementById("monthly").checked == true) repeat = "Monthly";
         else if(document.getElementById("biweekly").checked == true) repeat = "Biweekly";
+        else {
+          var r = document.getElementById("custom").value;
+          if (r=="1"||r=='2'||r=='3'||r=='4'||r=='5'||r=='6'||r=='7'||r=='8'||r=='9'||r=='10'||r=='11'||r=='12') repeat = r;
+          else repeat = "Never";
+        }
         
         var amountLo = document.getElementById("amountLo").value;
         var amountHi = document.getElementById("amountHi").value;
@@ -1050,7 +1065,11 @@
         else if(document.getElementById("weekly").checked == true) repeat = "Weekly";
         else if(document.getElementById("monthly").checked == true) repeat = "Monthly";
         else if(document.getElementById("biweekly").checked == true) repeat = "Biweekly";
-        
+        else {
+          var r = document.getElementById("customInput").value;
+          if (r=='1'||r=='2'||r=='3'||r=='4'||r=='5'||r=='6'||r=='7'||r=='8'||r=='9'||r=='10'||r=='11'||r=='12') repeat = r;
+          else repeat = "Never";
+        }
         var amountLo = document.getElementById("amountLo").value;
         var amountHi = document.getElementById("amountHi").value;
         
