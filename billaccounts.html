@@ -111,6 +111,9 @@
       
       // GET BILLS - Runs on pageload gets all bills stored in cookies ======
       function getBills() {
+        if(getCookie("currUser") == "" || getCookie("currUser") == null || getCookie("currUser") =='{"bills":[]}') {
+          window.location.replace("splash.html");
+        }
         if (getCookie("allBills") == null || getCookie("allBills") =="" || getCookie("allBills") == '{"bills":[]}'){
           setCookie("allBills",'{"bills":[]}',30);
           allBills = '{"bills":[]}';
@@ -351,7 +354,7 @@
             var tempCookie = allBills.substring(0, allBills.indexOf(find));
             var find2 = '{"name":"' +row;
             var find3 = ',{"name":"' +row;
-            oldJson = allBills.substring(allBills.indexOf(find)+1, allBills.indexOf(find3));
+            oldJson = allBills.substring(allBills.indexOf(find), allBills.indexOf(find3));
             newJson = allBills.substring(allBills.indexOf(find2), allBills.length);
             newJson = tempCookie + newJson;
             break;
@@ -430,8 +433,9 @@
         '<div class="right"><input type="radio" id="weekly" name="rep"><label for="weekly">Weekly</label></div><div class ="clear"></div>'+
         '<div class="left"><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></div>'+
         '<div class="right"><input type="radio" id="biweekly" name="rep"><label for="biweekly">Biweekly</label></div><div class ="clear"></div></td>'))
-        .append($('<td><div class="left"><input type="radio" style="margin:auto;" id="custom" name="rep" ></div>'+
-        '<div class="left"><input style="width:120px;margin:auto;" type="text" placeholder="# months(1-12)" id="customInput"/></div><div class="clear"></div></td></tr>'))
+        .append($('<td><div class="left"><div class="left"><input type="radio" style="margin:auto;" id="custom" name="rep" ></div>'+
+        '<div class="left"><input style="width:60px;margin:auto;" type="text" placeholder="(1-12)" id="customInput"/>'+
+        '</div><div class="clear"></div></div><div class="left"><label>months</label></div><div class="clear"></div></td></tr>'))
         );
         $('#billTable tr:last').after($('<tr id="extraRow"><td></td><td><b>Reminders:<br/>Sends reminder before bill due date</b></td>'+
         '<td><div class = "left"><label>(#1) Days +</label><select id="reminder1days" style="width:80px;">'+
@@ -608,8 +612,8 @@
         p.parentNode.removeChild(p);
         updateBillsNoPaid();
         if(numBills == 1) {
-          setCookie("allBills",updateWithPaid('{"bills":[]}'),30);
           numBills = 0;
+          setCookie("allBills",updateWithPaid('{"bills":[]}'),30);
           return;
         }
         updateJson();
@@ -655,6 +659,20 @@
       function addNL(message){
         var currDate = Date();
         var currTime = currDate.substring(16, 24);
+        var currHours = parseInt(currTime.substr(0, 2));
+        var ampm;
+        if (currHours >=1 && currHours <= 12){
+          ampm = " a.m.";
+        }
+        else if (currHours >= 13){
+          currHours = currHours -12;
+          ampm = " p.m.";
+        }
+        else {
+          currHours = 1;
+          ampm = " a.m.";
+        }
+        currTime = currHours + currTime.substr(2, 3) + ampm;
         currDate = currDate.substring(4, 15);
         var newLog = new Log(message, currDate, currTime);
         var stringy = JSON.stringify(newLog);
@@ -694,12 +712,6 @@
         
       }
         
-      
-      // appends individual bill to billTable
-      function loadBill(bill){
-        
-      }
-      
       // Gets a cookie by name
       function getCookie(cname) {
         var name = cname + "=";
@@ -784,8 +796,9 @@
         '<div class="right"><input type="radio" id="weekly" name="rep"><label for="weekly">Weekly</label></div><div class ="clear"></div>'+
         '<div class="left"><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></div>'+
         '<div class="right"><input type="radio" id="biweekly" name="rep"><label for="biweekly">Biweekly</label></div><div class ="clear"></div></td>'))
-        .append($('<td><div class="left"><input type="radio" style="margin:auto;" id="custom" name="rep" ></div>'+
-        '<div class="left"><input style="width:120px;margin:auto;" type="text" placeholder="# months(1-12)" id="customInput"/></div><div class="clear"></div></td></tr>'))
+        .append($('<td><div class="left"><div class="left"><input type="radio" style="margin:auto;" id="custom" name="rep" ></div>'+
+        '<div class="left"><input style="width:60px;margin:auto;" type="text" placeholder="(1-12)" id="customInput"/>'+
+        '</div><div class="clear"></div></div><div class="left"><label>months</label></div><div class="clear"></div></td></tr>'))
         );
         $('#billTable tr:last').after($('<tr id="extraRow"><td></td><td><b>Reminders:<br/>Sends reminder before bill due date</b></td>'+
         '<td><div class = "left"><label>(#1) Days +</label><select id="reminder1days" style="width:80px;">'+
@@ -917,12 +930,14 @@
           if(ampm == "am") time = "00:" + minute + ":00";
           else time = "12:" + minute + ":00";
         }
-        
+        alert("entered1");
+        alert(oldJson);
         oldJson = JSON.parse(oldJson);
+        alert(oldJson);
         var currTZ = oldJson.dueDate;
         currTZ = currTZ.substr(currTZ.length - 3, 3);
         var dueDate = date + " "+ time +" +"+currTZ;
-        
+        alert("entered2");
         
         var method1 = document.getElementById("method1").checked;
         var method2 = document.getElementById("method2").checked;
@@ -948,11 +963,11 @@
         else if(document.getElementById("monthly").checked == true) repeat = "Monthly";
         else if(document.getElementById("biweekly").checked == true) repeat = "Biweekly";
         else {
-          var r = document.getElementById("custom").value;
-          if (r=="1"||r=='2'||r=='3'||r=='4'||r=='5'||r=='6'||r=='7'||r=='8'||r=='9'||r=='10'||r=='11'||r=='12') repeat = r;
+          var r = parseInt(document.getElementById("customInput").value);
+          if (r==1||r==2||r==3||r==4||r==5||r==6||r==7||r==8||r==9||r==10||r==11||r==12) repeat = r;
           else repeat = "Never";
         }
-        
+        alert("entered3");
         var amountLo = document.getElementById("amountLo").value;
         var amountHi = document.getElementById("amountHi").value;
         
@@ -962,12 +977,9 @@
         if(amountHi == null || amountHi == "") {
           amountHi = amountLo;
         }
-        alert(getCookie("currUser"));
-        alert(oldJson);
-        
+
         var currUser = JSON.parse(getCookie("currUser"));
         var user_name = currUser.userName;
-        alert(user_name);
         var reminder1days = document.getElementById("reminder1days").value;
         var reminder1hours = document.getElementById("reminder1hours").value;
         var reminder2days = document.getElementById("reminder2days").value;
@@ -986,7 +998,7 @@
         var newBill = new Bill(name, category, paymentType, loginPage, dueDate, repeat, amountLo, amountHi, user_name, reminder1, reminder2);
         var stringy = JSON.stringify(newBill);
         //allBills = newJson;
-        
+        alert("entered4");
         var tempBills = newJson.substring(0, newJson.length - 2);
         if (numBills == 1){
           tempBills = '{"bills":[' + stringy + "]}";
@@ -1162,8 +1174,8 @@
         else if(document.getElementById("monthly").checked == true) repeat = "Monthly";
         else if(document.getElementById("biweekly").checked == true) repeat = "Biweekly";
         else {
-          var r = document.getElementById("customInput").value;
-          if (r=='1'||r=='2'||r=='3'||r=='4'||r=='5'||r=='6'||r=='7'||r=='8'||r=='9'||r=='10'||r=='11'||r=='12') repeat = r;
+          var r = parseInt(document.getElementById("customInput").value);
+          if (r==1||r==2||r==3||r==4||r==5||r==6||r==7||r==8||r==9||r==10||r==11||r==12) repeat = r;
           else repeat = "Never";
         }
         var amountLo = document.getElementById("amountLo").value;
@@ -1196,7 +1208,7 @@
         var paymentType = document.getElementById("paymentType").value;
         var newBill = new Bill(name, category, paymentType, loginPage, dueDate, repeat, amountLo, amountHi, user_name, reminder1, reminder2);
         
-        var stringy = JSON.stringify(newBill);;
+        var stringy = JSON.stringify(newBill);
         var tempBills = allBills.substring(0, allBills.length - 2);
         if (numBills == 0){
           tempBills = '{"bills":[' + stringy + "]}";
@@ -1228,11 +1240,12 @@
         var ending ="";
         if(category == "None selected") {
           sent = "";
-          ending = " You will recieve no notifications for this bill!(You have none selected)"
+          ending = " You will recieve no notifications for this bill!(You have none selected)";
         }
-        else sent = " to be sent to your " + category
+        else sent = " to be sent to your " + category;
         dueDate = dueDate.substring(0, dueDate.length - 8);
         addNL("You added a new "+name+sent+" due on " + dueDate+"!" + ending);
+        numBills++;
         setCookie("allBills",updateWithPaid(tempBills),30);
         $('#addBill').css('visibility','visible');
         window.location.replace("billaccounts.html");

@@ -44,12 +44,12 @@
           <table class="small-12 large-12 columns" id="billTable" name = "billTable">
             <thead  id="billTableHeader">
               <tr>
-                <th width="11%">Bill</th>
-                <th width="13%">Amount</th>
+                <th width="15%">Bill</th>
+                <th width="11%">Amount</th>
                 <th width="12%" style="text-align:center;">Due Date</th>
                 <th width="11%" style="text-align:center;">Due Time</th>
                 <th width="14%">Notifications</th>
-                <th width="21%">Repeat</th>
+                <th width="19%">Repeat</th>
                 <th width="8%" style="text-align:center;">Link</th>
                 <th width = "10%"></th>
               </tr>
@@ -117,6 +117,9 @@
       var numInserted;
       var atBills = [];
       function getBills() {
+        if(getCookie("currUser") == "" || getCookie("currUser") == null || getCookie("currUser") =='{"bills":[]}') {
+          window.location.replace("splash.html");
+        }
         if (getCookie("allBills") == null || getCookie("allBills") =="" || getCookie("allBills") == '{"bills":[]}'){
           setCookie("allBills",'{"bills":[]}',30);
           allBills = '{"bills":[]}';
@@ -131,6 +134,8 @@
           var day = date.substr(4, 2);
           var year = date.substr(7, 4);
           month = changeMonthToNumber(month);
+          day = parseInt(day);
+          year = parseInt(year);
           
           numInserted = 0;
           for  (atBill=0; atBill < numBills; atBill++){
@@ -157,8 +162,8 @@
               var endDate = obj.bills[atBill].repeat.substr(5,6);
               var endMonth = changeMonthToNumber(endDate.substr(0, 3));
               var endDay = parseInt(endDate.substr(4, 2));
-              if(day > endDay) continue;
-              if(month > endMonth) continue;
+              if(day != endDay) continue;
+              if(month != endMonth) continue;
               putMonthsBill(numInserted);
               numInserted++;
             }
@@ -259,7 +264,13 @@
         
         var repeat;
         if(obj.bills[atBill].reminder1 == null || obj.bills[atBill].reminder2 == null) repeat = obj.bills[atBill].repeat;
-        else repeat = obj.bills[atBill].repeat + ":"+ numReminders +" reminder(s)";
+        else {
+          if (obj.bills[atBill].repeat == "Monthly"||obj.bills[atBill].repeat=="Weekly"||
+                obj.bills[atBill].repeat=="Biweekly" || obj.bills[atBill].repeat=="Never")
+            repeat = obj.bills[atBill].repeat + ":"+ numReminders +" reminder(s)";
+          else repeat = obj.bills[atBill].repeat + " months:"+ numReminders +" reminder(s)";
+        }
+        
         
         var lastCell;
         if(tempBill == true) {
@@ -303,6 +314,20 @@
       function addNL(message){
         var currDate = Date();
         var currTime = currDate.substring(16, 24);
+        var currHours = parseInt(currTime.substr(0, 2));
+        var ampm;
+        if (currHours >=1 && currHours <= 12){
+          ampm = " a.m.";
+        }
+        else if (currHours >= 13){
+          currHours = currHours -12;
+          ampm = " p.m.";
+        }
+        else {
+          currHours = 1;
+          ampm = " a.m.";
+        }
+        currTime = currHours + currTime.substr(2, 3) + ampm;
         currDate = currDate.substring(4, 15);
         var newLog = new Log(message, currDate, currTime);
         var stringy = JSON.stringify(newLog);
@@ -386,30 +411,39 @@
           newJson = allBills.substring(0, allBills.indexOf(find))+"]}";
         }
         
+        var DDyear = dueDate.substr(0, 4);
+        var DDmonth = dueDate.substr(5, 2);
+        var DDday = dueDate.substr(8, 2);
+        var DDhour = dueDate.substr(11, 2);
+        var DDminute = dueDate.substr(14, 2);
+        
         var newDueDate = updateDueDate(repeat, dueDate);
         var currDueDate;
         if (newDueDate.indexOf(",") != -1) 
           currDueDate=newDueDate.substring(newDueDate.indexOf(",")+1, newDueDate.length);
         else currDueDate = newDueDate;
 
-        var year = parseInt(currDueDate.substr(0, 4));
-        var month = parseInt(currDueDate.substr(5, 2));
-        var day = parseInt(currDueDate.substr(8, 2));
-        var hour = parseInt(currDueDate.substr(11, 2));
-        var minute = parseInt(currDueDate.substr(14, 2));
-        var TZ = parseInt(currDueDate.substr(20, 4));
+        var year = currDueDate.substr(0, 4);
+        var month = currDueDate.substr(5, 2);
+        var day = currDueDate.substr(8, 2);
+        var hour = currDueDate.substr(11, 2);
+        var minute = currDueDate.substr(14, 2);
+        var TZ = currDueDate.substr(21, 3);
         
         if(reminder1 !=  "") {
-          var reminder1Array = reverse(year, month, day, hour, reminder1);
+          var reminder1Array = reverse(DDyear, DDmonth, DDday, DDhour, reminder1);
           reminder1 = getDateTime(year, month, day, hour, minute, TZ, reminder1Array[0], reminder1Array[1]);
         }
         if (reminder2 != ""){
-          var reminder2Array = reverse(year, month, day, hour, reminder2);
+          var reminder2Array = reverse(DDyear, DDmonth, DDday, DDhour, reminder2);
           reminder2 = getDateTime(year, month, day, hour, minute, TZ, reminder2Array[0], reminder2Array[1]);
         }        
         
+        
+        
         var updatedBill = new Bill(name, category, paymentType, loginPage, newDueDate, repeat, amountLo, amountHi, user_name, reminder1, reminder2);
         var stringy = JSON.stringify(updatedBill);
+        
         numBills = JSON.parse(getCookie("allBills")).bills.length;
         allBills = newJson;
         var tempBills = allBills.substring(0, allBills.length - 2);
@@ -419,10 +453,27 @@
         else {
           allBills = tempBills + "," + stringy + "]}";
         }
- 
+        if(repeat == "Never"){  //delete paidbill with repeat of never
+          allBills = newJson;
+        }
+         
         var paidDate = Date();
         var currTime = paidDate.substring(16, 21);
         paidDate = paidDate.substring(4, 10);
+        var currHours = parseInt(currTime.substr(0, 2));
+        var ampm;
+        if (currHours >=1 && currHours <= 12){
+          ampm = " a.m.";
+        }
+        else if (currHours >= 13){
+          currHours = currHours -12;
+          ampm = " p.m.";
+        }
+        else {
+          currHours = 1;
+          ampm = " a.m.";
+        }
+        currTime = currHours + currTime.substr(2, 3) + ampm;
         paidDate = "PAID:" + paidDate +" at " + currTime;
         name = "*PAID* " + name;
         dueDate = ","+dueDate;
@@ -784,6 +835,21 @@
             }
           }
         return "";
+      }
+      
+      function changeMonthToNumber(name) {
+        if (name == "Jan") return 1;
+        else if (name == "Feb") return 2;
+        else if (name == "Mar") return 3;
+        else if (name == "Apr") return 4;
+        else if (name == "May") return 5;
+        else if (name == "Jun") return 6;
+        else if (name == "Jul") return 7;
+        else if (name == "Aug") return 8;
+        else if (name == "Sep") return 9;
+        else if (name == "Oct") return 10;
+        else if (name == "Nov") return 11;
+        else if (name == "Dec") return 12;
       }
       
       function validateForm() {   

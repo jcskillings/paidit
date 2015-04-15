@@ -139,6 +139,9 @@
       var numNotifs;
       
       function getUserInfo(){
+        if(getCookie("currUser") == "" || getCookie("currUser") == null || getCookie("currUser") =='{"bills":[]}') {
+          window.location.replace("splash.html");
+        }
         var currUser = JSON.parse(getCookie("currUser"));
         firstName = currUser.firstName;
         userName = currUser.userName;
@@ -549,6 +552,20 @@
       function addNL(message){
         var currDate = Date();
         var currTime = currDate.substring(16, 24);
+        var currHours = parseInt(currTime.substr(0, 2));
+        var ampm;
+        if (currHours >=1 && currHours <= 12){
+          ampm = " a.m.";
+        }
+        else if (currHours >= 13){
+          currHours = currHours -12;
+          ampm = " p.m.";
+        }
+        else {
+          currHours = 1;
+          ampm = " a.m.";
+        }
+        currTime = currHours + currTime.substr(2, 3) + ampm;
         currDate = currDate.substring(4, 15);
         var newLog = new Log(message, currDate, currTime);
         var stringy = JSON.stringify(newLog);

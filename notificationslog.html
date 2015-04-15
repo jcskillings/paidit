@@ -91,6 +91,9 @@
       var info;
       
       function loadNotifications() {
+        if(getCookie("currUser") == "" || getCookie("currUser") == null || getCookie("currUser") =='{"bills":[]}') {
+          window.location.replace("splash.html");
+        }
         if (getCookie("NL") == null || getCookie("NL") =="" || getCookie("NL") == '{"logs":[]}'){
           setCookie("NL",'{"logs":[]}',30);
           NL = '{"logs":[]}';

@@ -405,28 +405,15 @@
               else NM = temp1 + "," + stringy1 + "," + stringy2 + "]}";
               setCookie("NM", NM, 30);
               
-              var newLog = new Log("You joined Paidit!", currDate, currTime);
-              stringy = JSON.stringify(newLog);
+              addNL("You joined Paidit!");
               if(email != "") {
-                temp = new Log("You added an unverified Email address!(Please enter the verification code sent to that address at the homepage or in settings!)", currDate, currTime);
-                stringy = stringy + "," + JSON.stringify(temp);
+                addNL("You added an unverified Email address!(Please enter the verification code sent to that address at the homepage or in settings!)");
               }
               if(phone != "") {
-                var temp2;
-                if(provider == "") temp2 = new Log("You added an unverified phone#!(Please select the cellphone carrier in settings so we can send you verification code!)", currDate, currTime);
-                else temp2 = new Log("You added an unverified phone#!(Please enter the verification code sent to your phone on the homepage or settings to use it)", currDate, currTime);
-                stringy = stringy + "," + JSON.stringify(temp2);
+                if(provider == "") addNL("You added an unverified phone#!(Please select the cellphone carrier in settings so we can send you verification code!)");
+                else addNL("You added an unverified phone#!(Please enter the verification code sent to your phone on the homepage or settings to use it)");
               }
    
-              NL = (getCookie("NL"));
-              temp = NL.substring(0, NL.length - 2);
-              if (numLogs == 0) {
-                NL = temp + stringy + "]}";
-              }
-              else{
-                NL = temp + "," + stringy + "]}";
-              }
-              setCookie("NL",NL,30);
               redir();
               
             }
@@ -434,7 +421,38 @@
         }
       }
       
-      
+      function addNL(message){
+        var currDate = Date();
+        var currTime = currDate.substring(16, 24);
+        var currHours = parseInt(currTime.substr(0, 2));
+        var ampm;
+        if (currHours >=1 && currHours <= 12){
+          ampm = " a.m.";
+        }
+        else if (currHours >= 13){
+          currHours = currHours -12;
+          ampm = " p.m.";
+        }
+        else {
+          currHours = 1;
+          ampm = " a.m.";
+        }
+        currTime = currHours + currTime.substr(2, 3) + ampm;
+        currDate = currDate.substring(4, 15);
+        var newLog = new Log(message, currDate, currTime);
+        var stringy = JSON.stringify(newLog);
+        var NL = JSON.parse(getCookie("NL"));
+        var numLogs = NL.logs.length;
+        NL=getCookie("NL");
+        var temp = NL.substring(0, NL.length - 2);
+        if (numLogs == 0) {
+          NL = temp + stringy + "]}";
+        }
+        else{
+          NL = temp + "," + stringy + "]}";
+        }
+        setCookie("NL",NL,30);
+      }
       
       function oldValidateForm() {   
       var user = document.forms["regForm"]["regUsername"].value;
