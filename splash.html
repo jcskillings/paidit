@@ -30,24 +30,31 @@
     
     <div id="middle" >
       <div class="row">
-        <div class="large-10  large-centered columns">
-           <h1 data-tooltip aria-haspopup="true" class="has-tip" title="Our goal is to help remind you to pay your bills before they become overdue">
-             Features of  <img src="img/paiditkyle.png" height="102" width="152"><h6 align = "right">(*verification is required for each phone/email)</h6></h1>
-           <p>- Create Bills to receive notification reminders</p>
-           <p>- Receieve your Bill notifications via email* and/or text*</p>
-           <p>- View your Bill information on useful charts and graphs</p>
-           <p>- You can attach multiple emails*/phone numbers* so you and anyone else who needs to know about a bill due date can be notified</p>
-           <p>- A log is kept so you can know what has been sent/created/deleted</p>
-           <p>- Calendar to easily view upcoming and late bills</p>
-           <p>- Include reminders so notifications can be sent before a bill is due</p>
+        <div class="large-12  large-centered columns">
+           <h1 style = "border-bottom: dotted 1px white;text-align:center;font-weight:bold;">Welcome to <img src="img/paiditkyle.png" height="102" width="152"></h1>
+           <p style="font-family:verdana; border-bottom: dotted 1px white;">&emsp;The Center for Financial Security at the University of Wisconsin-Madison is an applied, multidisciplinary research center that seeks to develop
+           financial strategies, solutions, and innovations that will enable consumers to become more financially secure. Paidit is a tool that supports 
+           this mission by helping people to keep track of their bills in one spot with regular reminders to pay them on time. Prompt bill paying not only 
+           leads to better credit history and credit score, but is an essential step towards a stable, financially secure home.</p>
+           <br/>
 
         </div>
       </div>
     </div>
     
-    <div class="row fullWidth" id="bottomRow">
-      <div class="large-12 xlarge-12 columns">
-        <p>More information</p>
+    <div id="bottomRow" >
+      <div class="row">
+        <div class="large-12  large-centered columns" style="font-family:verdana;">
+           <h1 style = "border-bottom: dotted 1px black;font-weight:bold;">Features:</h1><h6 align = "right">(*verification is required for each phone/email)</h6>
+           <ul style="list-style-type:circle">
+            <li>Create Bills to receive notification reminders</li>
+            <li>Receieve your Bill notifications via email* and/or text*</li>
+            <li>View your Bill information on useful charts and graphs</li>
+            <li>You can attach multiple emails*/phone numbers* so you and anyone else who needs to know about a bill due date can be notified</li>
+            <li>A log is kept so you can know what has been sent/created/deleted</li>
+            <li>Include reminders so notifications can be sent before a bill is due</li>
+          </ul>
+        </div>
       </div>
     </div>
     
@@ -389,7 +396,7 @@
               //alert(currDate);
               var currTime = currDate.substring(16, 24);
               //alert(currTime);
-              var currTZ = currDate.substring(30, 33);
+              var currTZ = currDate.substring(29, 33);
               //alert(currTZ);
               currDate = currDate.substring(4, 15);
              

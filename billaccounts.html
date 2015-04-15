@@ -930,15 +930,12 @@
           if(ampm == "am") time = "00:" + minute + ":00";
           else time = "12:" + minute + ":00";
         }
-        alert("entered1");
-        alert(oldJson);
+
         oldJson = JSON.parse(oldJson);
-        alert(oldJson);
         var currTZ = oldJson.dueDate;
-        currTZ = currTZ.substr(currTZ.length - 3, 3);
+        currTZ = currTZ.substr(currTZ.length - 4, 4);
         var dueDate = date + " "+ time +" +"+currTZ;
-        alert("entered2");
-        
+
         var method1 = document.getElementById("method1").checked;
         var method2 = document.getElementById("method2").checked;
         var method3 = document.getElementById("method3").checked;
@@ -967,7 +964,7 @@
           if (r==1||r==2||r==3||r==4||r==5||r==6||r==7||r==8||r==9||r==10||r==11||r==12) repeat = r;
           else repeat = "Never";
         }
-        alert("entered3");
+
         var amountLo = document.getElementById("amountLo").value;
         var amountHi = document.getElementById("amountHi").value;
         
@@ -998,7 +995,7 @@
         var newBill = new Bill(name, category, paymentType, loginPage, dueDate, repeat, amountLo, amountHi, user_name, reminder1, reminder2);
         var stringy = JSON.stringify(newBill);
         //allBills = newJson;
-        alert("entered4");
+  
         var tempBills = newJson.substring(0, newJson.length - 2);
         if (numBills == 1){
           tempBills = '{"bills":[' + stringy + "]}";
@@ -1119,7 +1116,7 @@
         }
         
         var currDate = Date();
-        var currTZ = currDate.substring(30, 33);
+        var currTZ = currDate.substring(29, 33);
         
         var year = document.getElementById("year").value;
         var month = document.getElementById("month").value;
@@ -1243,8 +1240,28 @@
           ending = " You will recieve no notifications for this bill!(You have none selected)";
         }
         else sent = " to be sent to your " + category;
-        dueDate = dueDate.substring(0, dueDate.length - 8);
-        addNL("You added a new "+name+sent+" due on " + dueDate+"!" + ending);
+        dueDate = dueDate.substring(0, dueDate.length - 9);
+        var tyear = dueDate.substr(0, 4);
+        var tdate = dueDate.substr(5, 5);
+        tdate = tdate + "-" + tyear;
+        var ttime = dueDate.substr(dueDate.length - 5, 5);
+        
+        var currHours = parseInt(ttime.substr(0, 2));
+        var tampm;
+        if (currHours >=1 && currHours <= 12){
+          tampm = " a.m.";
+        }
+        else if (currHours >= 13){
+          currHours = currHours -12;
+          tampm = " p.m.";
+        }
+        else {
+          currHours = 1;
+          tampm = " a.m.";
+        }
+        ttime = currHours + ttime.substr(2, 3) + tampm;
+        
+        addNL("You added a new "+name+sent+" due on " + tdate + " at " + ttime+"!" + ending);
         numBills++;
         setCookie("allBills",updateWithPaid(tempBills),30);
         $('#addBill').css('visibility','visible');

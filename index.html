@@ -36,8 +36,8 @@
       </a>
     </div>
 
-    <div class="container navigation" style = "width:90%; margin:0% -5% 0% 5%"> 
-      <div class="large-10 columns" align = "center">
+    <div class="container navigation" style = "width:95%; margin:0% 0% 0% 5%"> 
+      <div class="large-9 columns" align = "center">
         <h1 style="font-size:300%" id = "welcome"><b>Welcome to <img src="img/paiditkyleblack.png" height="102" width="152">!</b></h1>
         <div class="panel">
           <p><b>Here is a list of all your upcoming bills:<br/>(Paid bills will remain here until the end of the day)</b></p>
@@ -59,16 +59,19 @@
           </table>
         </div> <!-- panel -->
       </div> 
-      <div align = "right" class="large-2 columns">
+      <div align = "right" class="large-3 columns">
          <ul class="button-group radius even-1 ">
         <h5><button onClick="logout()" id="logout">Logout</button></h5></ul>
         <h3><u> Useful Links </u></h3>
         <ul style="list-style-type:none">
-          <li><a href="http://cfs.wisc.edu/">Center of Financial Security</a></li>
-          <li><a href="http://bus.wisc.edu/knowledge-expertise/academic-departments/finance">Finance,Investment,&Banking</a></li>
-          <li><a href="http://continuingstudies.wisc.edu/advising/finance.htm">Financial Services</a></li>
-          <li><a href="http://www.bussvc.wisc.edu/acct/acct.html">Accounting Services</a></li>
-          <li><a href="http://www.asm.wisc.edu/finance-committee.html">Finance Committee@UW-Madison</a></li>
+          <li><a href="http://cfs.wisc.edu/" onclick='window.open(this.href); return false;'
+                                          onkeypress='window.open(this.href); return false;'>Center for Financial Security</a></li>
+          <li><a href="http://fyi.uwex.edu/creditreport" onclick='window.open(this.href); return false;'
+                                          onkeypress='window.open(this.href); return false;'>Check Your Free Credit Report</a></li>
+          <li><a href="http://www.consumerfinance.gov" onclick='window.open(this.href); return false;'
+                                          onkeypress='window.open(this.href); return false;'>Consumer Financial Protection Bureau</a></li>
+          <li><a href="http://www.mymoney.gov/Pages/default.aspx" onclick='window.open(this.href); return false;'
+                                          onkeypress='window.open(this.href); return false;'>MyMoney.Gov</a></li>
         </ul>
         <p><img src="img/calendarmock.png" height="202" width="202"></p>
         <p><img src="img/piechart.png" height="202" width="202"></p>
@@ -428,7 +431,7 @@
         var day = currDueDate.substr(8, 2);
         var hour = currDueDate.substr(11, 2);
         var minute = currDueDate.substr(14, 2);
-        var TZ = currDueDate.substr(21, 3);
+        var TZ = currDueDate.substr(20, 4);
         
         if(reminder1 !=  "") {
           var reminder1Array = reverse(DDyear, DDmonth, DDday, DDhour, reminder1);

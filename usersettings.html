@@ -475,6 +475,9 @@
         var test = ",";
         for  (var k=0; k < numBills; k++){
           var category = obj.bills[k].category;
+          var reminder1 = obj.bills[k].reminder1;
+          var reminder2 = obj.bills[k].reminder2;
+          if(reminder1 == null || reminder2 == null) continue;
           while(category.length != 0) {
             if(category.charAt(0) != ","){
               var test2 = category.substring(0, category.indexOf(test));
