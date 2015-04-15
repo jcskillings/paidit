@@ -105,9 +105,9 @@
       }
  
       var i;
-      var allBills;
-      var numBills;
-      var obj;
+      var allBills; //{"bills":[]} allBills that are NOT Paid are in array
+      var numBills; //number of bills that are NOT Paid
+      var obj; //JSON object of all bills that are NOT Paid
       
       // GET BILLS - Runs on pageload gets all bills stored in cookies ======
       function getBills() {
@@ -115,10 +115,11 @@
           setCookie("allBills",'{"bills":[]}',30);
           allBills = '{"bills":[]}';
           numBills = 0;
+          numPaid = 0;
+          paidJson = "";
         }
         else {
-          obj = JSON.parse(getCookie("allBills"));
-          numBills = obj.bills.length;
+          updateBillsNoPaid(); 
           for  (i=0; i < numBills; i++){
             putBill(i);
           }
@@ -144,7 +145,6 @@
         var hour = dueD.substr(11,2);
         var minute= dueD.substr(14, 2);
         hour = parseInt(hour);
-        //minute = parseInt(minute);
         var time;
         if (hour >0 && hour < 12) {
           time= hour+":"+minute +" a.m.";
@@ -175,13 +175,11 @@
           }
         }
         var find = ",,";
-        //alert(category.indexOf(find));
         while(category.indexOf(find) != -1){
           var temp1 = category.substring(0, category.indexOf(find));
           var temp2 = category.substring(category.indexOf(find)+1, category.length);
           category = temp1 + temp2;
         }
-        
         cell1.innerHTML = obj.bills[index].name;
         cell1.style.fontSize="110%";
         cell2.innerHTML = "$" +obj.bills[index].amountLo+"-$"+obj.bills[index].amountHi;
@@ -204,15 +202,75 @@
           '<button style="width:85px;padding: 20px 0px 20px 0px;" onClick="deleteRow(this)">Delete</button>';
       }
       
+      var numPaid; //number of Paid bills
+      var paidJson; // dictionaries for all Paid bills
+      function updateBillsNoPaid() { //sets obj/numBills/allBills
+        obj = JSON.parse(getCookie("allBills"));
+        allBills = getCookie("allBills");
+        numBills = obj.bills.length;
+        numPaid = 0;
+        var temp = numBills;
+        for  (var k=0; k < temp; k++){
+          if(obj.bills[k].dueDate.charAt(0) == ",") {
+            numBills--;
+            numPaid++;
+          }
+          else {
+            if (numPaid > 0) {
+              paidJson = allBills.substring(nth_occurrence(allBills, "{", 2), nth_occurrence(allBills, "}", numPaid)+1);
+            }
+            else paidJson = "";
+            if (numPaid > 0 && numBills > 0) {
+              var firstPart = '{"bills":[';
+              var secondPart = allBills.substring(nth_occurrence(allBills, "{", (2+numPaid)), allBills.length);
+              allBills = firstPart + secondPart;
+              obj = JSON.parse(allBills);
+              return;
+            }
+            else if(numPaid > 0 && numBills == 0) {
+              allBills = '{"bills":[]}';
+              obj = JSON.parse(allBills);
+              return;
+            }
+          }
+        }
+      }
+      
+      function updateWithPaid(message) {
+        if (numPaid == 0) return message;
+        else {
+          var lastPart = message.substring(10, message.length);
+          if (numBills > 0) return ('{"bills":['+paidJson+","+lastPart);
+          else return ('{"bills":['+paidJson+']}');
+        }
+      }
+      
+      function nth_occurrence (string, char, nth) {
+        var first_index = string.indexOf(char);
+        var length_up_to_first_index = first_index + 1;
+        if (nth == 1) {
+          return first_index;
+        } 
+        else {
+          var string_after_first_occurrence = string.slice(length_up_to_first_index);
+          var next_occurrence = nth_occurrence(string_after_first_occurrence, char, nth - 1);
+          if (next_occurrence === -1) {
+            return -1;
+          } 
+          else {
+            return length_up_to_first_index + next_occurrence;  
+          }
+        }
+      }
+      
       function editRow(o) {
         var p=o.parentNode.parentNode;
         p.parentNode.removeChild(p);
-        obj = JSON.parse(getCookie("allBills"));
-        numBills = obj.bills.length;
+        updateBillsNoPaid();
         putInEditField();
       }
       
-      var newJson
+      var newJson;
       var oldJson;
       
       function putInEditField() {
@@ -231,9 +289,6 @@
         var reminder2 = null;
         newJson = null;
         var find;
-        allBills = getCookie("allBills");
-        var temp = JSON.parse(allBills);
-        numBills = temp.bills.length;
         for(j = 2; j < numBills+1; j++){
           name = obj.bills[j-2].name;
           var row = table.rows[j].cells[0].firstChild.data;
@@ -252,9 +307,9 @@
       
             find = '{"name":"' +name;
             var tempCookie = allBills.substring(0, allBills.indexOf(find));
-            var find2 = '{"name":"' +row
-            var find3 = ',{"name":"' +row
-            oldJson = allBills.substring(allBills.indexOf(find), allBills.indexOf(find3));
+            var find2 = '{"name":"' +row;
+            var find3 = ',{"name":"' +row;
+            oldJson = allBills.substring(allBills.indexOf(find)+1, allBills.indexOf(find3));
             newJson = allBills.substring(allBills.indexOf(find2), allBills.length);
             newJson = tempCookie + newJson;
             break;
@@ -274,8 +329,9 @@
           reminder2 = obj.bills[(numBills-1)].reminder2;
           if(numBills == 1) find = '{"name":"' +name;
           else find = ',{"name":"' +name;
-          oldJson = allBills.substring(allBills.indexOf(find),  allBills.indexOf("]}"));
           newJson = allBills.substring(0, allBills.indexOf(find))+"]}";
+          if(numBills != 1) find = find.substring(1, find.length);
+          oldJson = allBills.substring(allBills.indexOf(find),  allBills.indexOf("]}"));
         }
         var NM = JSON.parse(getCookie("NM"));
         var numMethods = NM.methods.length;
@@ -294,12 +350,12 @@
         .append($('<td><div class="left"><div class="left"><label>$</label></div><div class="left">'+
         '<input type="text" placeholder="low" id="amountLo" value="'+amountLo+'" style="width:60px;" /></div><div class="clear"></div></div>-'+
         '<div class="right"><input type="text" placeholder="high" id="amountHi" value="'+amountHi+'"style="width:60px;" /></div><div class="clear"></td>'))
-        .append($('<td><select id="month" style="width:64px;"><option value="01">Jan</option>'+
+        .append($('<td><select id="month" style="width:69px;"><option value="01">Jan</option>'+
           '<option value="02">Feb</option><option value="03">Mar</option><option value="04">Apr</option>'+
           '<option value="05">May</option><option value="06">Jun</option><option value="07">Jul</option>'+
           '<option value="08">Aug</option><option value="09">Sep</option><option value="10">Oct</option>'+
           '<option value="11">Nov</option><option value="12">Dec</option></select>'+
-          '<select id="day" style="width:56px;"><option value="01">01</option>'+
+          '<select id="day" style="width:58px;"><option value="01">01</option>'+
           '<option value="02">02</option><option value="03">03</option><option value="04">04</option>'+
           '<option value="05">05</option><option value="06">06</option><option value="07">07</option>'+
           '<option value="08">08</option><option value="09">09</option><option value="10">10</option>'+
@@ -333,7 +389,7 @@
         '<div class="left"><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></div>'+
         '<div class="right"><input type="radio" id="biweekly" name="rep"><label for="biweekly">Biweekly</label></div><div class ="clear"></div></td>'))
         .append($('<td><div class="left"><input type="radio" style="margin:auto;" id="custom" name="rep" ></div>'+
-        '<div class="left"><input style="width:110px;margin:auto;" type="text" placeholder="# months(1-12)" id="customInput"/></div><div class="clear"></div></td></tr>'))
+        '<div class="left"><input style="width:120px;margin:auto;" type="text" placeholder="# months(1-12)" id="customInput"/></div><div class="clear"></div></td></tr>'))
         );
         $('#billTable tr:last').after($('<tr id="extraRow"><td></td><td><b>Reminders:<br/>Sends reminder before bill due date</b></td>'+
         '<td><div class = "left"><label>(#1) Days +</label><select id="reminder1days" style="width:80px;">'+
@@ -508,46 +564,43 @@
         if (confirm("Are you sure?  Deleting this bill cannot be undone!") == true){
         var p=o.parentNode.parentNode;
         p.parentNode.removeChild(p);
-        obj = JSON.parse(getCookie("allBills"));
-        numBills = obj.bills.length;
+        updateBillsNoPaid();
         if(numBills == 1) {
-          setCookie("allBills",'{"bills":[]}',30);
+          setCookie("allBills",updateWithPaid('{"bills":[]}'),30);
+          numBills = 0;
           return;
         }
         updateJson();
-        window.location.reload();
+        return;
+        //window.location.reload();
         }
       }
       
       function updateJson(){
         var j;
         var table = document.getElementById("billTable");
-        obj = JSON.parse(getCookie("allBills"));
-        numBills = obj.bills.length;
+        //updateBillsNoPaid();
         var total;
         for(j = 2; j < numBills+1; j++){
           var name = obj.bills[j-2].name;
           total = '{"name":"'+name;
           var row = '{"name":"'+table.rows[j].cells[0].firstChild.data;
           if (total != row) {
-            allBills = getCookie("allBills");
             var tempCookie = allBills.substring(0, allBills.indexOf(total));
             var tempCookie2 = allBills.substring(allBills.indexOf(row), allBills.length);
             addNL("You deleted your "+name+ "!");
             tempCookie2 = tempCookie + tempCookie2;
-            setCookie("allBills", tempCookie2, 30);
+            setCookie("allBills", updateWithPaid(tempCookie2), 30);
+            numBills--;
             return;
           }
         }
         name = obj.bills[(numBills-1)].name;
-        allBills = getCookie("allBills");
-        var temp = JSON.parse(allBills);
-        numBills = temp.bills.length;
-        if(numBills == 0 || numBills == 1) total = '{"name":"'+name;
-        else total = ',{"name":"'+name;
+        total = ',{"name":"'+name;
         tempCookie = allBills.substring(0, allBills.indexOf(total))+"]}";
         addNL("You deleted your "+name+ "!");
-        setCookie("allBills", tempCookie, 30);
+        setCookie("allBills", updateWithPaid(tempCookie), 30);
+        numBills--;
         return;
       }
       
@@ -690,7 +743,7 @@
         '<div class="left"><input type="radio" id="monthly" name="rep"><label for="monthly">Monthly</label></div>'+
         '<div class="right"><input type="radio" id="biweekly" name="rep"><label for="biweekly">Biweekly</label></div><div class ="clear"></div></td>'))
         .append($('<td><div class="left"><input type="radio" style="margin:auto;" id="custom" name="rep" ></div>'+
-        '<div class="left"><input style="width:110px;margin:auto;" type="text" placeholder="# months(1-12)" id="customInput"/></div><div class="clear"></div></td></tr>'))
+        '<div class="left"><input style="width:120px;margin:auto;" type="text" placeholder="# months(1-12)" id="customInput"/></div><div class="clear"></div></td></tr>'))
         );
         $('#billTable tr:last').after($('<tr id="extraRow"><td></td><td><b>Reminders:<br/>Sends reminder before bill due date</b></td>'+
         '<td><div class = "left"><label>(#1) Days +</label><select id="reminder1days" style="width:80px;">'+
@@ -792,11 +845,9 @@
       
       $('#saveEdit').click( function() {
         $('#saveEdit').css('visibility','hidden');
+        updateBillsNoPaid();
         var name = document.getElementById("billname").value;
-        
-        var currDate = Date();
-        var currTZ = currDate.substring(30, 33);
-        
+  
         var year = document.getElementById("year").value;
         var month = document.getElementById("month").value;
         var day = document.getElementById("day").value;
@@ -812,8 +863,6 @@
         var hour = document.getElementById("hour").value;
         var minute = document.getElementById("minute").value;
         
-        //hour = parseInt(hour);
-        //minute = parseInt(minute);
         var time;
         if(ampm == "am" && hour != "12") {
           time = hour + ":" + minute + ":00";
@@ -827,7 +876,11 @@
           else time = "12:" + minute + ":00";
         }
         
+        oldJson = JSON.parse(oldJson);
+        var currTZ = oldJson.dueDate;
+        currTZ = currTZ.substr(currTZ.length - 3, 3);
         var dueDate = date + " "+ time +" +"+currTZ;
+        
         
         var method1 = document.getElementById("method1").checked;
         var method2 = document.getElementById("method2").checked;
@@ -867,10 +920,12 @@
         if(amountHi == null || amountHi == "") {
           amountHi = amountLo;
         }
+        alert(getCookie("currUser"));
+        alert(oldJson);
         
         var currUser = JSON.parse(getCookie("currUser"));
         var user_name = currUser.userName;
-        
+        alert(user_name);
         var reminder1days = document.getElementById("reminder1days").value;
         var reminder1hours = document.getElementById("reminder1hours").value;
         var reminder2days = document.getElementById("reminder2days").value;
@@ -880,27 +935,25 @@
         if(reminder1days == "00" && reminder1hours == "00") {
           reminder1 = "";
         }
-        else reminder1 = getDateTime(year, month, day, hour, minute, reminder1days, reminder1hours);
+        else reminder1 = getDateTime(year, month, day, hour, minute, currTZ, reminder1days, reminder1hours);
         if(reminder2days == "00" && reminder2hours == "00") {
           reminder2 = "";
         }
-        else reminder2 = getDateTime(year, month, day, hour, minute, reminder2days, reminder2hours);
+        else reminder2 = getDateTime(year, month, day, hour, minute, currTZ, reminder2days, reminder2hours);
         var paymentType = document.getElementById("paymentType").value;
         var newBill = new Bill(name, category, paymentType, loginPage, dueDate, repeat, amountLo, amountHi, user_name, reminder1, reminder2);
         var stringy = JSON.stringify(newBill);
-        allBills = newJson;
+        //allBills = newJson;
         
-        var tempBills = allBills.substring(0, allBills.length - 2);
+        var tempBills = newJson.substring(0, newJson.length - 2);
         if (numBills == 1){
-          allBills = tempBills + stringy + "]}";
+          tempBills = '{"bills":[' + stringy + "]}";
         }
         else {
-          allBills = tempBills + "," + stringy + "]}";
+          tempBills = tempBills + "," + stringy + "]}";
         }
         var numEdited = 0;
-        //alert("entered2");
-        //oldJson = JSON.parse(oldJson);
-        //alert("entered3");
+        
         var mes = "You edited your " + oldJson.name + " to have a new:";
         if(oldJson.name != name) {
           mes= mes+"name("+name+")";
@@ -964,9 +1017,9 @@
         }
         mes= mes+"!";
         addNL(mes);
-        setCookie("allBills",allBills,30);
+        setCookie("allBills",updateWithPaid(tempBills),30);
         $('#addBill').css('visibility','visible');
-        window.location.replace("billaccounts.html");
+        window.location.reload();
       });
       
       function checkValidDate(year, month, day) {
@@ -1005,7 +1058,8 @@
       $('#saveBtn').click( function() {
         $('#saveBtn').css('visibility','hidden');
         var name = document.getElementById("billname").value;
-        if(doesNameExist(getCookie("allBills"), name) == true) {
+        updateBillsNoPaid();
+        if(doesNameExist(allBills, name) == true) {
           alert("You may not have multiple bills with the same name");
           return;
         }
@@ -1092,22 +1146,21 @@
         if(reminder1days == "00" && reminder1hours == "00") {
           reminder1 = "";
         }
-        else reminder1 = getDateTime(year, month, day, hour, minute, reminder1days, reminder1hours);
+        else reminder1 = getDateTime(year, month, day, hour, minute, currTZ, reminder1days, reminder1hours);
         if(reminder2days == "00" && reminder2hours == "00") {
           reminder2 = "";
         }
-        else reminder2 = getDateTime(year, month, day, hour, minute, reminder2days, reminder2hours);
+        else reminder2 = getDateTime(year, month, day, hour, minute, currTZ, reminder2days, reminder2hours);
         var paymentType = document.getElementById("paymentType").value;
         var newBill = new Bill(name, category, paymentType, loginPage, dueDate, repeat, amountLo, amountHi, user_name, reminder1, reminder2);
         
-        var stringy = JSON.stringify(newBill);
-        allBills = getCookie("allBills");
+        var stringy = JSON.stringify(newBill);;
         var tempBills = allBills.substring(0, allBills.length - 2);
         if (numBills == 0){
-          allBills = tempBills + stringy + "]}";
+          tempBills = '{"bills":[' + stringy + "]}";
         }
         else {
-          allBills = tempBills + "," + stringy + "]}";
+          tempBills = tempBills + "," + stringy + "]}";
         }
         
         var catLength = category.length;
@@ -1122,8 +1175,8 @@
             catLength = category.length;
           }
         }
+        
         var find = ",,";
-        //alert(category.indexOf(find));
         while(category.indexOf(find) != -1){
           var temp1 = category.substring(0, category.indexOf(find));
           var temp2 = category.substring(category.indexOf(find)+1, category.length);
@@ -1133,12 +1186,12 @@
         var ending ="";
         if(category == "None selected") {
           sent = "";
-          ending = " You will recieve no notifications!(You have none selected)"
+          ending = " You will recieve no notifications for this bill!(You have none selected)"
         }
         else sent = " to be sent to your " + category
         dueDate = dueDate.substring(0, dueDate.length - 8);
         addNL("You added a new "+name+sent+" due on " + dueDate+"!" + ending);
-        setCookie("allBills",allBills,30);
+        setCookie("allBills",updateWithPaid(tempBills),30);
         $('#addBill').css('visibility','visible');
         window.location.replace("billaccounts.html");
       });
@@ -1197,7 +1250,7 @@
         return [finalRD, finalRH];
       }
       
-      function getDateTime(year, month, day, hour, minute, reminderDays, reminderHours) {
+      function getDateTime(year, month, day, hour, minute, TZ, reminderDays, reminderHours) {
         var finalYear;
         var finalMonth;
         var finalDay;
@@ -1255,12 +1308,9 @@
           finalYear = year - 1;
         }
         
-        var currDate = Date();
-        var currTZ = currDate.substring(30, 33);
-        
         var date = finalYear+"-"+finalMonth+"-"+finalDay;
         var time = finalHour +":"+minute+":00";
-        var toReturn = date + " " + time + " +" + currTZ;
+        var toReturn = date + " " + time + " +" + TZ;
         return toReturn;
       }
       
