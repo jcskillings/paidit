@@ -246,7 +246,6 @@
           }
         }
         var find = ",,";
-        //alert(category.indexOf(find));
         while(category.indexOf(find) != -1){
           var temp1 = category.substring(0, category.indexOf(find));
           var temp2 = category.substring(category.indexOf(find)+1, category.length);
@@ -425,14 +424,12 @@
         if (newDueDate.indexOf(",") != -1) 
           currDueDate=newDueDate.substring(newDueDate.indexOf(",")+1, newDueDate.length);
         else currDueDate = newDueDate;
-
         var year = currDueDate.substr(0, 4);
         var month = currDueDate.substr(5, 2);
         var day = currDueDate.substr(8, 2);
         var hour = currDueDate.substr(11, 2);
         var minute = currDueDate.substr(14, 2);
-        var TZ = currDueDate.substr(20, 4);
-        
+        var TZ = currDueDate.substr(21, 4);
         if(reminder1 !=  "") {
           var reminder1Array = reverse(DDyear, DDmonth, DDday, DDhour, reminder1);
           reminder1 = getDateTime(year, month, day, hour, minute, TZ, reminder1Array[0], reminder1Array[1]);
@@ -776,8 +773,8 @@
         }
         if(finalMonth < 10) finalMonth = "0"+finalMonth;
         if(finalDay < 10) finalDay = "0"+finalDay;
-        var finalDueDate=finalYear+"-"+finalMonth+"-"+finalDay+" "+hour+":"+minute+":00 "+
-          changeDate.substr(20, 4);
+        var finalDueDate=finalYear+"-"+finalMonth+"-"+finalDay+" "+hour+":"+minute+":00 +"+
+          changeDate.substr(21, 4);
         if(changeDate.indexOf(",") == -1){
           return finalDueDate;
         }

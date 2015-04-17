@@ -123,7 +123,7 @@
         }
         else {
           deleteOldPaid();
-          updateBillsNoPaid(); 
+          updateBillsNoPaidOrOverdue(); 
           for  (i=0; i < numBills; i++){
             putBill(i);
           }
@@ -206,7 +206,7 @@
           '<button style="width:85px;padding: 20px 0px 20px 0px;" onClick="deleteRow(this)">Delete</button>';
       }
       
-      function deleteOldPaid(){
+     function deleteOldPaid(){
         obj = JSON.parse(getCookie("allBills"));
         allBills = getCookie("allBills");
         numBills = obj.bills.length;
@@ -249,30 +249,35 @@
       
       var numPaid; //number of Paid bills
       var paidJson; // dictionaries for all Paid bills
-      function updateBillsNoPaid() { //sets obj/numBills/allBills
+      function updateBillsNoPaidOrOverdue() { //sets obj/numBills/allBills
         obj = JSON.parse(getCookie("allBills"));
         allBills = getCookie("allBills");
         numBills = obj.bills.length;
         numPaid = 0;
         var temp = numBills;
+        var numOverdue = 0;
         for  (var k=0; k < temp; k++){
-          if(obj.bills[k].dueDate.charAt(0) == ",") {
+          if(obj.bills[k].reminder1 == null) {
             numBills--;
             numPaid++;
           }
+          else if (obj.bills[k].reminder2 == null) {
+            numBills--;
+            numOverdue++;
+          }
           else {
-            if (numPaid > 0) {
+            if (numPaid + numOverdue > 0) {
               paidJson = allBills.substring(nth_occurrence(allBills, "{", 2), nth_occurrence(allBills, "}", numPaid)+1);
             }
             else paidJson = "";
-            if (numPaid > 0 && numBills > 0) {
+            if (numPaid + numOverdue> 0 && numBills > 0) {
               var firstPart = '{"bills":[';
               var secondPart = allBills.substring(nth_occurrence(allBills, "{", (2+numPaid)), allBills.length);
               allBills = firstPart + secondPart;
               obj = JSON.parse(allBills);
               return;
             }
-            else if(numPaid > 0 && numBills == 0) {
+            else if(numPaid + numOverdue> 0 && numBills == 0) {
               allBills = '{"bills":[]}';
               obj = JSON.parse(allBills);
               return;
@@ -311,7 +316,7 @@
       function editRow(o) {
         var p=o.parentNode.parentNode;
         p.parentNode.removeChild(p);
-        updateBillsNoPaid();
+        updateBillsNoPaidOrOverdue();
         putInEditField();
       }
       
@@ -610,7 +615,7 @@
         if (confirm("Are you sure?  Deleting this bill cannot be undone!") == true){
         var p=o.parentNode.parentNode;
         p.parentNode.removeChild(p);
-        updateBillsNoPaid();
+        updateBillsNoPaidOrOverdue();
         if(numBills == 1) {
           numBills = 0;
           setCookie("allBills",updateWithPaid('{"bills":[]}'),30);
@@ -900,7 +905,7 @@
       
       $('#saveEdit').click( function() {
         $('#saveEdit').css('visibility','hidden');
-        updateBillsNoPaid();
+        updateBillsNoPaidOrOverdue();
         var name = document.getElementById("billname").value;
   
         var year = document.getElementById("year").value;
@@ -934,8 +939,8 @@
         oldJson = JSON.parse(oldJson);
         var currTZ = oldJson.dueDate;
         currTZ = currTZ.substr(currTZ.length - 4, 4);
+        
         var dueDate = date + " "+ time +" +"+currTZ;
-
         var method1 = document.getElementById("method1").checked;
         var method2 = document.getElementById("method2").checked;
         var method3 = document.getElementById("method3").checked;
@@ -1109,7 +1114,7 @@
       $('#saveBtn').click( function() {
         $('#saveBtn').css('visibility','hidden');
         var name = document.getElementById("billname").value;
-        updateBillsNoPaid();
+        updateBillsNoPaidOrOverdue();
         if(doesNameExist(allBills, name) == true) {
           alert("You may not have multiple bills with the same name");
           return;
@@ -1117,7 +1122,6 @@
         
         var currDate = Date();
         var currTZ = currDate.substring(29, 33);
-        
         var year = document.getElementById("year").value;
         var month = document.getElementById("month").value;
         var day = document.getElementById("day").value;
@@ -1146,8 +1150,7 @@
           else time = "12:" + minute + ":00";
         }
         
-        var dueDate = date + " "+ time +" +"+currTZ;
-        
+        var dueDate = date + " "+ time +" +"+currTZ;;
         var method1 = document.getElementById("method1").checked;
         var method2 = document.getElementById("method2").checked;
         var method3 = document.getElementById("method3").checked;
