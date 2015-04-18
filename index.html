@@ -85,6 +85,35 @@
     
     <hr />
     
+    <div div id="overdueModal" class="reveal-modal tiny" data-reveal aria-labelledby="overdueModal" aria-hidden="true" role="dialog">
+      <div class="row">
+          <div class="large-6 large-centered columns">
+            <a><img src="img/logoSm.png" /></a>
+          </div>
+        </div>
+      <form id="overdueForm" data-abide name='overdueForm' onsubmit="return validateOverdue()" method="post">
+        <div class="row">
+          <div class="large-6 large-centered columns">
+            <label style="text-align:center;">Please select the reason this bill became overdue</label>
+            <select id="mydropdown" name="mydropdown" style="width:200px;">
+              <option value="of an unknown reason">Select</option>
+              <option value="it was actually paid on time">It was actually paid on time</option>
+              <option value="there was unavailable funds">Unavailable funds</option>
+              <option value="it was paid late without penalty">It was paid late without penalty</option>
+              <option value="no notification was received for this bill">No notification was received</option>
+              <option value="it was not an actual bill">This was not an actual bill</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="large-6 large-centered columns">
+            <input href="#" type="submit" class="radius button" value="Remove overdue bill"/>
+          </div>
+        </div>
+        <a class="close-reveal-modal" aria-label="Close">&#215;</a>
+      </form>
+    </div> 
+    
     <!--  verification modal-->
     <div div id="verModal" class="reveal-modal tiny" data-reveal aria-labelledby="Verification" aria-hidden="true" role="dialog">
       <div class="row">
@@ -154,11 +183,7 @@
             billMonth = parseInt(billMonth);
             var billDay = date.substr(8, 2);
             billDay = parseInt(billDay);
-            if(reminder2 == null){
-              //alert("BY < Y " + billYear + "<" + year);
-              //alert("BM < M "+ billMonth +"<" +month);
-              //alert("also " +billMonth+ "=="+month+","+billDay+"<"+day);
-              //oBills[numOverdue] = numInserted;
+            if(reminder2 == null){;
               numOverdue++;
               putMonthsBill(numInserted, "overdue", billYear, billMonth, billDay);
               numInserted++;  
@@ -252,18 +277,10 @@
         currDay = parseInt(currDay);
         currYear = parseInt(currYear);
         
-        //var overdue = false;
         var year = dueD.substr(0, 4);
         var month = dueD.substr(5, 2);
         var day = dueD.substr(8, 2);
-        //var billYear = parseInt(year);
-        //var billMonth = parseInt(month);
-        //var billDay = parseInt(day);
-        //if (billYear < currYear || billMonth < currMonth || 
-        //  (billMonth == currMonth && billDay < currDay)) {
-        //  overdue = true;
-        //}
-        
+
         var date = month +"/"+day+"/"+year;
         var hour = dueD.substr(11,2);
         var minute= dueD.substr(14, 2);
@@ -311,14 +328,15 @@
         var display = "";
         var loginPage = obj.bills[atBill].loginPage;
         if(loginPage.indexOf(check1)!=-1 ||loginPage.indexOf(check2)!=-1 ||loginPage.indexOf(check3)!=-1){
-          if (type=="paid")display = "<a style='color:white;' href="+loginPage+
+          if (type=="paid"||type=="overdue")display = "<a style='color:black;' href="+loginPage+
             " onclick='window.open(this.href); return false;' onkeypress='window.open(this.href); return false;'>Paid At</a>";
           else if(type=="upcoming")display = "<a style='color:#3ADF00;' href="+loginPage+" onclick='window.open(this.href); return false;'"+
             "onkeypress='window.open(this.href); return false;'>Pay Bill</a>";
         }
         
         var repeat;
-        if(obj.bills[atBill].reminder1 == null || obj.bills[atBill].reminder2 == null) repeat = obj.bills[atBill].repeat;
+        if(obj.bills[atBill].reminder1 == null) repeat = obj.bills[atBill].repeat;
+        else if (obj.bills[atBill].reminder2 == null) repeat = "OVERDUE";
         else {
           if (obj.bills[atBill].repeat == "Monthly"||obj.bills[atBill].repeat=="Weekly"||
                 obj.bills[atBill].repeat=="Biweekly" || obj.bills[atBill].repeat=="Never")
@@ -360,6 +378,7 @@
           cell5.style.backgroundColor = "#FE2E2E";
           cell6.style.backgroundColor = "#FE2E2E";
           cell7.style.backgroundColor = "#FE2E2E";
+          cell8.innerHTML = "<a href='#' onclick='setOverdue(this)' data-reveal-id='overdueModal'><img src='img/paiditkyleblackQ.png' height='90' width='135' border=0/></a>";
         }
         else if(type == "paid"){
           cell1.style.backgroundColor = "#00FF40";
@@ -370,6 +389,40 @@
           cell6.style.backgroundColor = "#00FF40";
           cell7.style.backgroundColor = "#00FF40";
         }
+      }
+      
+      var thisOverdue;
+      function setOverdue(v){
+        thisOverdue = v;
+      }
+      
+      var overdueMsg;
+      function overdue(row){
+        var removeOverdue = null;
+        var p=row.parentNode.parentNode;
+        p.parentNode.removeChild(p);
+        var table = document.getElementById("billTable");
+        obj = JSON.parse(getCookie("allBills"));
+        numBills = obj.bills.length;
+        newJson = null;
+        allBills = getCookie("allBills");
+        for(var j = 1; j < numInserted; j++){
+          name = obj.bills[j-1].name;
+          var below = table.rows[j].cells[0].firstChild.data;
+          if (name != below) {
+            removeOverdue = j-1;
+          }
+        }
+        if(removeOverdue == null) {
+          removeOverdue = numBills-1;
+        }
+        var name = obj.bills[removeOverdue].name;
+        obj.bills.splice(removeOverdue, 1);
+        allBills = JSON.stringify(obj);
+        numBills = obj.bills.length;
+        setCookie("allBills", allBills, 30);
+        addNL("You removed overdue " + name + " because " +overdueMsg);
+        window.location.reload();
       }
       
       var newJson;
@@ -907,6 +960,10 @@
         return "";
       }
       
+      function validateOverdue(){
+        overdueMsg = document.forms["overdueForm"]["mydropdown"].value;
+        overdue(thisOverdue);
+      }
       
       function validateForm() {   
       var code = document.forms["verForm"]["verCode"].value;
