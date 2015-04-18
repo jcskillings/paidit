@@ -119,6 +119,8 @@
       var atBill;
       var numInserted;
       var atBills = [];
+      var numOverdue;
+      //var oBills = [];
       function getBills() {
         if(getCookie("currUser") == "" || getCookie("currUser") == null || getCookie("currUser") =='{"bills":[]}') {
           window.location.replace("splash.html");
@@ -127,6 +129,7 @@
           setCookie("allBills",'{"bills":[]}',30);
           allBills = '{"bills":[]}';
           numBills = 0;
+          numOverdue = 0;
         }
         else {
           obj = JSON.parse(getCookie("allBills"));
@@ -139,40 +142,73 @@
           month = changeMonthToNumber(month);
           day = parseInt(day);
           year = parseInt(year);
-          
+          numOverdue = 0;
           numInserted = 0;
           for  (atBill=0; atBill < numBills; atBill++){
+            var reminder2 = obj.bills[atBill].reminder2;
             date = obj.bills[atBill].dueDate;
+            if(date.charAt(0)==",") continue;
             var billYear = date.substr(0, 4);
             billYear = parseInt(billYear);
             var billMonth = date.substr(5, 2);
             billMonth = parseInt(billMonth);
             var billDay = date.substr(8, 2);
             billDay = parseInt(billDay);
-            if(year==billYear && month==billMonth && day<=billDay){
-              putMonthsBill(numInserted);
-              numInserted++;
+            if(reminder2 == null){
+              //alert("BY < Y " + billYear + "<" + year);
+              //alert("BM < M "+ billMonth +"<" +month);
+              //alert("also " +billMonth+ "=="+month+","+billDay+"<"+day);
+              //oBills[numOverdue] = numInserted;
+              numOverdue++;
+              putMonthsBill(numInserted, "overdue", billYear, billMonth, billDay);
+              numInserted++;  
             }
-            else if(year==billYear && month+1==billMonth && billDay<=day){
-              putMonthsBill(numInserted);
-              numInserted++;
-            }
-            else if(year+1==billYear && month==12 && billMonth == 1 && billDay<=day){
-              putMonthsBill(numInserted);
-              numInserted++;
-            }
-            else if(date.charAt(0)==",") {
+          }
+          for(atBill=0; atBill< numBills; atBill++){
+            var reminder1 = obj.bills[atBill].reminder1;
+            date = obj.bills[atBill].dueDate;
+            billYear = date.substr(0, 4);
+            billYear = parseInt(billYear);
+            billMonth = date.substr(5, 2);
+            billMonth = parseInt(billMonth);
+            billDay = date.substr(8, 2);
+            billDay = parseInt(billDay);
+            if(reminder1 == null) {
               var endDate = obj.bills[atBill].repeat.substr(5,6);
               var endMonth = changeMonthToNumber(endDate.substr(0, 3));
               var endDay = parseInt(endDate.substr(4, 2));
               if(day != endDay) continue;
               if(month != endMonth) continue;
-              putMonthsBill(numInserted);
+              putMonthsBill(numInserted, "paid",billYear, billMonth, billDay);
               numInserted++;
             }
           }
+          for(atBill=0; atBill < numBills; atBill++){
+            date = obj.bills[atBill].dueDate;
+            if(date.charAt(0)==",") continue;
+            billYear = date.substr(0, 4);
+            billYear = parseInt(billYear);
+            billMonth = date.substr(5, 2);
+            billMonth = parseInt(billMonth);
+            billDay = date.substr(8, 2);
+            billDay = parseInt(billDay);
+            if(year==billYear && month==billMonth && day<=billDay){
+              putMonthsBill(numInserted, "upcoming", billYear, billMonth, billDay);
+              numInserted++;
+            }
+            else if(year==billYear && month+1==billMonth && billDay<=day){
+              putMonthsBill(numInserted, "upcoming", billYear, billMonth, billDay);
+              numInserted++;
+            }
+            else if(year+1==billYear && month==12 && billMonth == 1 && billDay<=day){
+              putMonthsBill(numInserted, "upcoming", billYear, billMonth, billDay);
+              numInserted++;
+            }
+          }
+          
         }
       }
+      
       
       function changeMonthToNumber(name) {
         if (name == "Jan") return 1;
@@ -189,8 +225,7 @@
         else if (name == "Dec") return 12;
       }
       
-      var myStuff = [];
-      function putMonthsBill(index) {
+      function putMonthsBill(index, type, billYear, billMonth, billDay) {
         var table = document.getElementById("billTable");
         var row = table.insertRow(index+1);
         var cell1 = row.insertCell(0);
@@ -203,14 +238,32 @@
         var cell8 = row.insertCell(7);
         atBills[index] = atBill;
         var dueD = obj.bills[atBill].dueDate;
-        var tempBill = false;
+        //var tempBill = false;
         if(dueD.charAt(0)==",") {
-          tempBill = true;
+        //  tempBill = true;
           dueD = dueD.substring(1, dueD.length);
         }
+        var currDate = Date();
+        currDate = currDate.substring(4, 15);
+        var currMonth = currDate.substr(0, 3);
+        var currDay = currDate.substr(4, 2);
+        var currYear = currDate.substr(7, 4);
+        currMonth = changeMonthToNumber(currMonth);
+        currDay = parseInt(currDay);
+        currYear = parseInt(currYear);
+        
+        //var overdue = false;
         var year = dueD.substr(0, 4);
         var month = dueD.substr(5, 2);
         var day = dueD.substr(8, 2);
+        //var billYear = parseInt(year);
+        //var billMonth = parseInt(month);
+        //var billDay = parseInt(day);
+        //if (billYear < currYear || billMonth < currMonth || 
+        //  (billMonth == currMonth && billDay < currDay)) {
+        //  overdue = true;
+        //}
+        
         var date = month +"/"+day+"/"+year;
         var hour = dueD.substr(11,2);
         var minute= dueD.substr(14, 2);
@@ -258,9 +311,9 @@
         var display = "";
         var loginPage = obj.bills[atBill].loginPage;
         if(loginPage.indexOf(check1)!=-1 ||loginPage.indexOf(check2)!=-1 ||loginPage.indexOf(check3)!=-1){
-          if (tempBill == true)display = "<a style='color:#3ADF00;' href="+loginPage+
+          if (type=="paid")display = "<a style='color:white;' href="+loginPage+
             " onclick='window.open(this.href); return false;' onkeypress='window.open(this.href); return false;'>Paid At</a>";
-          else display = "<a style='color:#3ADF00;' href="+loginPage+" onclick='window.open(this.href); return false;'"+
+          else if(type=="upcoming")display = "<a style='color:#3ADF00;' href="+loginPage+" onclick='window.open(this.href); return false;'"+
             "onkeypress='window.open(this.href); return false;'>Pay Bill</a>";
         }
         
@@ -275,12 +328,12 @@
         
         
         var lastCell;
-        if(tempBill == true) {
-          lastCell = "<a href='#'><img src='img/paiditkyleblackE.png' height='90' width='135' border=0/></a>"
+        if(type=="paid") {
+          lastCell = "<a href='#'><img src='img/paiditkyleblackE.png' height='90' width='135' border=0/></a>";
         }
         else lastCell = "<a href='#' onclick='paidit(this)'><img src='img/paiditkyleblackQ.png' height='90' width='135' border=0/></a>";
         
-        cell1.innerHTML = obj.bills[atBill].name;
+        cell1.innerHTML =  obj.bills[atBill].name;
         cell1.style.fontSize="110%";
         cell2.innerHTML = "$" +obj.bills[atBill].amountLo+"-$"+obj.bills[atBill].amountHi;
         cell2.style.fontSize="110%";
@@ -299,10 +352,26 @@
         cell8.innerHTML = lastCell;
         cell8.style.fontSize = "25px";
         cell8.style.fontWeight= 900;
+        if(type == "overdue"){
+          cell1.style.backgroundColor = "#FE2E2E";
+          cell2.style.backgroundColor = "#FE2E2E";
+          cell3.style.backgroundColor = "#FE2E2E";
+          cell4.style.backgroundColor = "#FE2E2E";
+          cell5.style.backgroundColor = "#FE2E2E";
+          cell6.style.backgroundColor = "#FE2E2E";
+          cell7.style.backgroundColor = "#FE2E2E";
+        }
+        else if(type == "paid"){
+          cell1.style.backgroundColor = "#00FF40";
+          cell2.style.backgroundColor = "#00FF40";
+          cell3.style.backgroundColor = "#00FF40";
+          cell4.style.backgroundColor = "#00FF40";
+          cell5.style.backgroundColor = "#00FF40";
+          cell6.style.backgroundColor = "#00FF40";
+          cell7.style.backgroundColor = "#00FF40";
+        }
       }
       
-      var obj;
-      var numBills;
       var newJson;
       var oldJson;
       function paidit(row){
@@ -385,10 +454,10 @@
             reminder1 = obj.bills[atBills[j-1]].reminder1;
             reminder2 = obj.bills[atBills[j-1]].reminder2;
       
-            find = '{"name":"' +name;
+            find = '{"name":"' +name+'"';
             var tempCookie = allBills.substring(0, allBills.indexOf(find));
-            var find2 = '{"name":"' +row
-            var find3 = ',{"name":"' +row
+            var find2 = '{"name":"' +row + '"';
+            var find3 = ',{"name":"' +row +'"';
             oldJson = allBills.substring(allBills.indexOf(find), allBills.indexOf(find3));
             newJson = allBills.substring(allBills.indexOf(find2), allBills.length);
             newJson = tempCookie + newJson;
@@ -407,9 +476,10 @@
           user_name = obj.bills[(atBills[numInserted-1])].user_name;
           reminder1 = obj.bills[(atBills[numInserted-1])].reminder1;
           reminder2 = obj.bills[(atBills[numInserted-1])].reminder2;
-          if(numBills == 1) find = '{"name":"' +name;
-          else find = ',{"name":"' +name;
-          oldJson = allBills.substring(allBills.indexOf(find),  allBills.indexOf("]}"));
+          if(numBills == 1) find = '{"name":"' +name+'"';
+          else find = ',{"name":"' +name+'"';
+          //
+          oldJson = allBills.substring(allBills.indexOf(find),  allBills.indexOf("]}"));//+"]}"?
           newJson = allBills.substring(0, allBills.indexOf(find))+"]}";
         }
         
@@ -475,12 +545,12 @@
         }
         currTime = currHours + currTime.substr(2, 3) + ampm;
         paidDate = "PAID:" + paidDate +" at " + currTime;
-        name = "*PAID* " + name;
+        name = "PAID:"+name;
         dueDate = ","+dueDate;
         var message = "Nice! You Paid your "+ name+"! Any remaining notifications will be canceled.  If there was a repeat selected "+
           "this bill will set to reoccur.";
         addNL(message);
-        var tempBill = new Bill(name, category, null, loginPage, dueDate, paidDate, amountLo, amountHi, user_name, null, null);
+        var tempBill = new Bill(name, category, paymentType, loginPage, dueDate, paidDate, amountLo, amountHi, user_name, null, "");
         tempBill = JSON.stringify(tempBill);
         allBills = '{"bills":['+tempBill+","+allBills.substring(10, allBills.length);
         setCookie("allBills",allBills,30);
@@ -837,20 +907,6 @@
         return "";
       }
       
-      function changeMonthToNumber(name) {
-        if (name == "Jan") return 1;
-        else if (name == "Feb") return 2;
-        else if (name == "Mar") return 3;
-        else if (name == "Apr") return 4;
-        else if (name == "May") return 5;
-        else if (name == "Jun") return 6;
-        else if (name == "Jul") return 7;
-        else if (name == "Aug") return 8;
-        else if (name == "Sep") return 9;
-        else if (name == "Oct") return 10;
-        else if (name == "Nov") return 11;
-        else if (name == "Dec") return 12;
-      }
       
       function validateForm() {   
       var code = document.forms["verForm"]["verCode"].value;
@@ -867,7 +923,6 @@
       }
       
       var index;
-      var obj;
       var name;
       var id;
       function changeWelcome(){

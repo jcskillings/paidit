@@ -122,8 +122,10 @@
           paidJson = "";
         }
         else {
+          deleteOldOverdue();
           deleteOldPaid();
-          updateBillsNoPaidOrOverdue(); 
+          updateBillsNoOverdue();
+          updateBillsNoPaid(); 
           for  (i=0; i < numBills; i++){
             putBill(i);
           }
@@ -206,6 +208,48 @@
           '<button style="width:85px;padding: 20px 0px 20px 0px;" onClick="deleteRow(this)">Delete</button>';
       }
       
+    function deleteOldOverdue(){
+      obj = JSON.parse(getCookie("allBills"));
+      allBills = getCookie("allBills");
+      numBills = obj.bills.length;
+      var date = Date();
+      date = date.substring(4, 15);
+      var month = date.substr(0, 3);
+      var day = date.substr(4, 2);
+      var year = date.substr(7, 4);
+      month = changeMonthToNumber(month);
+      day = parseInt(day);
+      year = parseInt(year);
+      for(var k =0; k < numBills; k++){
+        if(obj.bills[k].reminder2 == null){
+          var dYear = parseInt(obj.bills[k].dueDate.substr(0, 4));
+          var dMonth = parseInt(obj.bills[k].dueDate.substr(5, 2));
+          var dDay= parseInt(obj.bills[k].dueDate.substr(8, 2));
+          if(dYear == year && dMonth==month-1 && dDay < day){
+            obj.bills.splice(k, 1);
+            allBills = JSON.stringify(obj);
+            numBills = obj.bills.length;
+            k--;
+            setCookie("allBills", allBills, 30);
+          }
+          else if (dYear==year && dMonth < month-1){
+            obj.bills.splice(k, 1);
+            allBills = JSON.stringify(obj);
+            numBills = obj.bills.length;
+            k--;
+            setCookie("allBills", allBills, 30);
+          }
+          else if((dYear < year && dDay < day) || (dYear<year && dMonth < 12)){
+            obj.bills.splice(k, 1);
+            allBills = JSON.stringify(obj);
+            numBills = obj.bills.length;
+            k--;
+            setCookie("allBills", allBills, 30);
+          }
+        }
+      }
+    }
+     
      function deleteOldPaid(){
         obj = JSON.parse(getCookie("allBills"));
         allBills = getCookie("allBills");
@@ -232,7 +276,6 @@
           }
         }
         if(numPaid == 0 || inArray == 0) return;
-
         numBills = numBills - numPaid;
         var range;
         if (inArray == 1) range = [deleteArray[0], deleteArray[0]];
@@ -249,49 +292,57 @@
       
       var numPaid; //number of Paid bills
       var paidJson; // dictionaries for all Paid bills
-      function updateBillsNoPaidOrOverdue() { //sets obj/numBills/allBills
+      function updateBillsNoPaid() { //sets obj/numBills/allBills
+        paidJson = "";
+        numPaid = 0;
+        for  (var k=0; k < numBills; k++){
+          if(obj.bills[k].reminder1 == null) {
+            numPaid++;
+            if (paidJson == "") paidJson = JSON.stringify(obj.bills[k]);
+            else paidJson = paidJson + "," + JSON.stringify(obj.bills[k]);
+            obj.bills.splice(k, 1);
+            allBills = JSON.stringify(obj);
+            numBills = obj.bills.length;
+            k--;
+          }
+        }
+      }
+      
+      var numOverdue;
+      var overdueJson;
+      function updateBillsNoOverdue() { //sets obj/numBills/allBills
         obj = JSON.parse(getCookie("allBills"));
         allBills = getCookie("allBills");
         numBills = obj.bills.length;
-        numPaid = 0;
-        var temp = numBills;
-        var numOverdue = 0;
-        for  (var k=0; k < temp; k++){
-          if(obj.bills[k].reminder1 == null) {
-            numBills--;
-            numPaid++;
-          }
-          else if (obj.bills[k].reminder2 == null) {
-            numBills--;
+        overdueJson = "";
+        numOverdue = 0;
+        for  (var k=0; k < numBills; k++){
+          if(obj.bills[k].reminder2 == null) {
             numOverdue++;
-          }
-          else {
-            if (numPaid + numOverdue > 0) {
-              paidJson = allBills.substring(nth_occurrence(allBills, "{", 2), nth_occurrence(allBills, "}", numPaid)+1);
-            }
-            else paidJson = "";
-            if (numPaid + numOverdue> 0 && numBills > 0) {
-              var firstPart = '{"bills":[';
-              var secondPart = allBills.substring(nth_occurrence(allBills, "{", (2+numPaid)), allBills.length);
-              allBills = firstPart + secondPart;
-              obj = JSON.parse(allBills);
-              return;
-            }
-            else if(numPaid + numOverdue> 0 && numBills == 0) {
-              allBills = '{"bills":[]}';
-              obj = JSON.parse(allBills);
-              return;
-            }
+            if (overdueJson == "") overdueJson = JSON.stringify(obj.bills[k]);
+            else overdueJson = overdueJson + "," + JSON.stringify(obj.bills[k]);
+            obj.bills.splice(k, 1);
+            allBills = JSON.stringify(obj);
+            numBills = obj.bills.length;
+            k--;
           }
         }
+        return;
       }
       
       function updateWithPaid(message) {
         if (numPaid == 0) return message;
         else {
           var lastPart = message.substring(10, message.length);
-          if (numBills > 0) return ('{"bills":['+paidJson+","+lastPart);
-          else return ('{"bills":['+paidJson+']}');
+          return ('{"bills":['+paidJson+","+lastPart);
+        }
+      }
+      
+      function updateWithOverdue(message) {
+        if (numOverdue == 0) return message;
+        else {
+          var lastPart = message.substring(10, message.length);
+          return ('{"bills":['+overdueJson+","+lastPart);
         }
       }
       
@@ -316,7 +367,8 @@
       function editRow(o) {
         var p=o.parentNode.parentNode;
         p.parentNode.removeChild(p);
-        updateBillsNoPaidOrOverdue();
+        updateBillsNoOverdue();
+        updateBillsNoPaid();
         putInEditField();
       }
       
@@ -615,10 +667,13 @@
         if (confirm("Are you sure?  Deleting this bill cannot be undone!") == true){
         var p=o.parentNode.parentNode;
         p.parentNode.removeChild(p);
-        updateBillsNoPaidOrOverdue();
+        updateBillsNoOverdue();
+        updateBillsNoPaid();
         if(numBills == 1) {
           numBills = 0;
-          setCookie("allBills",updateWithPaid('{"bills":[]}'),30);
+          var temp = updateWithPaid('{"bills":[]}');
+          temp = updateWithOverdue(temp);
+          setCookie("allBills",temp,30);
           return;
         }
         updateJson();
@@ -641,7 +696,7 @@
             var tempCookie2 = allBills.substring(allBills.indexOf(row), allBills.length);
             addNL("You deleted your "+name+ "!");
             tempCookie2 = tempCookie + tempCookie2;
-            setCookie("allBills", updateWithPaid(tempCookie2), 30);
+            setCookie("allBills", updateWithOverdue(updateWithPaid(tempCookie2)), 30);
             numBills--;
             return;
           }
@@ -650,7 +705,7 @@
         total = ',{"name":"'+name;
         tempCookie = allBills.substring(0, allBills.indexOf(total))+"]}";
         addNL("You deleted your "+name+ "!");
-        setCookie("allBills", updateWithPaid(tempCookie), 30);
+        setCookie("allBills", updateWithOverdue(updateWithPaid(tempCookie)), 30);
         numBills--;
         return;
       }
@@ -905,7 +960,8 @@
       
       $('#saveEdit').click( function() {
         $('#saveEdit').css('visibility','hidden');
-        updateBillsNoPaidOrOverdue();
+        updateBillsNoOverdue();
+        updateBillsNoPaid();
         var name = document.getElementById("billname").value;
   
         var year = document.getElementById("year").value;
@@ -1073,7 +1129,9 @@
         }
         mes= mes+"!";
         addNL(mes);
-        setCookie("allBills",updateWithPaid(tempBills),30);
+        tempBills = updateWithPaid(tempBills);
+        tempBills = updateWithOverdue(tempBills);
+        setCookie("allBills",tempBills,30);
         $('#addBill').css('visibility','visible');
         window.location.reload();
       });
@@ -1114,14 +1172,24 @@
       $('#saveBtn').click( function() {
         $('#saveBtn').css('visibility','hidden');
         var name = document.getElementById("billname").value;
-        updateBillsNoPaidOrOverdue();
+        updateBillsNoOverdue();
+        updateBillsNoPaid();
         if(doesNameExist(allBills, name) == true) {
           alert("You may not have multiple bills with the same name");
           return;
         }
-        
+ 
         var currDate = Date();
         var currTZ = currDate.substring(29, 33);
+       
+        currDate = currDate.substring(4, 15);
+        var currYear = currDate.substr(7, 4);
+        var currMonth = currDate.substr(0, 3);
+        var currDay = currDate.substr(4, 2);
+        currMonth = changeMonthToNumber(currMonth);
+        currDay = parseInt(currDay);
+        currYear = parseInt(currYear);
+        
         var year = document.getElementById("year").value;
         var month = document.getElementById("month").value;
         var day = document.getElementById("day").value;
@@ -1205,6 +1273,10 @@
           reminder2 = "";
         }
         else reminder2 = getDateTime(year, month, day, hour, minute, currTZ, reminder2days, reminder2hours);
+
+        if(currYear < parseInt(year) || currMonth > parseInt(month)|| (currMonth == parseInt(month) && currDay>parseInt(day))){
+          reminder2 = null;
+        }
         var paymentType = document.getElementById("paymentType").value;
         var newBill = new Bill(name, category, paymentType, loginPage, dueDate, repeat, amountLo, amountHi, user_name, reminder1, reminder2);
         
@@ -1266,7 +1338,9 @@
         
         addNL("You added a new "+name+sent+" due on " + tdate + " at " + ttime+"!" + ending);
         numBills++;
-        setCookie("allBills",updateWithPaid(tempBills),30);
+        tempBills = updateWithPaid(tempBills);
+        tempBills = updateWithOverdue(tempBills);
+        setCookie("allBills",tempBills,30);
         $('#addBill').css('visibility','visible');
         window.location.replace("billaccounts.html");
       });
