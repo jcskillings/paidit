@@ -126,6 +126,7 @@
           deleteOldPaid();
           updateBillsNoOverdue();
           updateBillsNoPaid(); 
+          //sortByDate();
           for  (i=0; i < numBills; i++){
             putBill(i);
           }
@@ -288,6 +289,58 @@
         allBills = start + end;
         setCookie("allBills", allBills, 30);
         return;
+      }
+      
+      function sortInNewBill() {
+        var oldObj = obj;
+        var oldAllBills = allBills;
+        if(numBills == 1||numBills == 0) return;
+        var lastDueDate = obj.bills[numBills-1].dueDate;
+        var lastYear = parseInt(lastDueDate.substr(0, 4));
+        var lastMonth = parseInt(lastDueDate.substr(5, 2));
+        var lastDay = parseInt(lastDueDate.substr(8, 2));
+        var lastHour = parseInt(lastDueDate.substr(11, 2));
+        var lastMinute = parseInt(lastDueDate.substr(14, 2));
+        for (var t = 0; t < numBills -1; t++){
+          var thisYear = parseInt(obj.bills[t].dueDate.substr(0, 4));
+          var thisMonth = parseInt(obj.bills[t].dueDate.substr(5, 2));
+          var thisDay = parseInt(obj.bills[t].dueDate.substr(8, 2));
+          var thisHour = parseInt(obj.bills[t].dueDate.substr(11, 2));
+          var thisMinute = parseInt(obj.bills[t].dueDate.substr(14, 2));
+          if(lastYear < thisYear) {
+            obj.bills.splice(t, 0, obj.bills.pop());
+            break;
+          }
+          else if (lastYear == thisYear){
+            if(lastMonth < thisMonth) {
+              var pop = obj.bills.pop();
+              obj.bills.splice(t, 0, pop);
+              allBills = JSON.stringify(obj);
+              break;
+            }
+            else if (lastMonth == thisMonth){
+              if(lastDay < thisDay){
+                obj.bills.splice(t, 0, obj.bills.pop());
+                allBills = JSON.stringify(obj);
+                break;
+              }
+              else if (lastDay == thisDay){
+                if(lastHour < thisHour){
+                  obj.bills.splice(t, 0, obj.bills.pop());
+                  allBills = JSON.stringify(obj);
+                  break;
+                }
+                else if (lastHour == thisHour){
+                  if (lastMinute <= thisMinute){
+                    obj.bills.splice(t, 0, obj.bills.pop());
+                    allBills = JSON.stringify(obj);
+                    break;
+                  } else continue;
+                } else continue;
+              } else continue;
+            } else continue;
+          } else continue;
+        }
       }
       
       var numPaid; //number of Paid bills
@@ -963,7 +1016,11 @@
         updateBillsNoOverdue();
         updateBillsNoPaid();
         var name = document.getElementById("billname").value;
-  
+        if(doesNameExist(allBills, name) == true) {
+          alert("You may not have multiple bills with the same name");
+          $('#saveEdit').css('visibility','visible');
+          return;
+        }
         var year = document.getElementById("year").value;
         var month = document.getElementById("month").value;
         var day = document.getElementById("day").value;
@@ -1129,9 +1186,12 @@
         }
         mes= mes+"!";
         addNL(mes);
-        tempBills = updateWithPaid(tempBills);
-        tempBills = updateWithOverdue(tempBills);
-        setCookie("allBills",tempBills,30);
+        allBills = tempBills;
+        obj = JSON.parse(allBills);
+        sortInNewBill();
+        allBills  = updateWithOverdue(updateWithPaid(allBills));
+        
+        setCookie("allBills",allBills,30);
         $('#addBill').css('visibility','visible');
         window.location.reload();
       });
@@ -1160,8 +1220,12 @@
       function doesNameExist(unparsed, findName) {
         var thisObj = JSON.parse(unparsed);
         var thisLength = thisObj.bills.length;
-        for (var o = 0; o < thisLength; o++){
-          var tempName = thisObj.bills[o].name;
+        var table = document.getElementById("billTable");
+        var row;
+        var tempName;
+        for (var o = 0; o < thisLength-1; o++){
+          row = table.rows[o+2];
+          tempName = row.cells[0].innerHTML;
           if(findName == tempName) {
             return true;
           }
@@ -1176,6 +1240,7 @@
         updateBillsNoPaid();
         if(doesNameExist(allBills, name) == true) {
           alert("You may not have multiple bills with the same name");
+          $('#saveBtn').css('visibility','visible');
           return;
         }
  
@@ -1337,10 +1402,12 @@
         ttime = currHours + ttime.substr(2, 3) + tampm;
         
         addNL("You added a new "+name+sent+" due on " + tdate + " at " + ttime+"!" + ending);
-        numBills++;
-        tempBills = updateWithPaid(tempBills);
-        tempBills = updateWithOverdue(tempBills);
-        setCookie("allBills",tempBills,30);
+        allBills = tempBills;
+        obj = JSON.parse(allBills);
+        numBills = obj.bills.length;
+        sortInNewBill();
+        allBills = updateWithOverdue(updateWithPaid(allBills));
+        setCookie("allBills",allBills,30);
         $('#addBill').css('visibility','visible');
         window.location.replace("billaccounts.html");
       });
