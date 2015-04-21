@@ -1321,6 +1321,57 @@
           amountHi = amountLo;
         }
         
+        var loHasP, hiHasP;
+        if(amountLo.indexOf(".")== -1 ) loHasP = false;
+        else loHasP = true;
+        if(amountHi.indexOf(".")== -1 ) hiHasP = false;
+        else hiHasP = true;
+        if(loHasP == true){
+          amountLo = amountLo.replace(".", "");
+          amountLo = parseInt(amountLo);  
+          loHasP = amountLo;       
+          if(isNaN(amountLo) == true){
+            alert("One of your amounts is not a number!");
+            return;
+          }
+          amountLo = amountLo.toString();
+          amountLo = amountLo.substring(0, amountLo.length-2) + "." + amountLo.substring(amountLo.length-2, amountLo.length);
+        }
+        else{
+          amountLo = parseInt(amountLo);
+          loHasP = amountLo;
+          if(isNaN(amountLo) == true){
+            alert("One of your amounts is not a number!");
+            return;
+          }
+          amountLo = amountLo + ".00";
+        }
+        if(hiHasP == true){
+          amountHi = amountHi.replace(".", "");
+          amountHi = parseInt(amountHi);
+          hiHasP = amountHi;
+          if(isNaN(amountHi) ==true){
+            alert("One of your amounts is not a number!");
+            return;
+          }
+          amountHi = amountHi.toString();
+          amountHi = amountHi.substring(0, amountHi.length-2) + "." + amountHi.substring(amountHi.length-2, amountHi.length);
+        }
+        else{
+          amountHi = parseInt(amountHi);
+          hiHasP = amountHi;
+          if(isNaN(amountHi) == true){
+            alert("One of your amounts is not a number!");
+            return;
+          }
+          amountHi = amountHi + ".00";
+        }           
+        if (loHasP > hiHasP){
+          loHasP = amountHi;
+          amountHi = amountLo;
+          amountLo = loHasP;
+        }
+        
         var currUser = JSON.parse(getCookie("currUser"));
         var user_name = currUser.userName;
         

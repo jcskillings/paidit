@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Paidit | Bill Analysis</title>
+    <title>Paidit | Settings</title>
     <link rel="stylesheet" href="css/usersettings.css" />
     <link rel="stylesheet" href="css/foundation.css" />
     <link rel="stylesheet" href="css/test.css" />
@@ -56,7 +56,12 @@
         </tr>
         <tr>
           <th>Password:</th>
-          <td><input id="password" type="text" placeholder="password" name="password" /></td>
+          <td><input id="password" type="password" placeholder="***********" name="password" /></td>
+        </tr>
+        <tr>
+        <tr>
+          <th>Confirm Password:</th>
+          <td><input id="password2" type="password" placeholder="***********" name="password2" /></td>
         </tr>
         <tr>
           <td></td>
@@ -103,7 +108,7 @@
     <div div id="verModal" class="reveal-modal tiny" data-reveal aria-labelledby="Verification" aria-hidden="true" role="dialog">
       <div class="row">
           <div class="large-6 large-centered columns">
-            <a><img src="img/logoSm.png" /></a>
+            <a><img src="img/logoSm.png" height="90%" width="90%"/></a>
           </div>
         </div>
       <form id="verForm" data-abide name='verForm' onsubmit="return validateForm()" method="post">
@@ -151,6 +156,7 @@
         document.getElementById("firstname").value = firstName;
         document.getElementById("lastname").value = lastName;
         document.getElementById("password").value = password;
+        document.getElementById("password2").value = password;
         notifs = JSON.parse(getCookie("NM"));
         numNotifs = notifs.methods.length;
         for  (var j=1; j < numNotifs+1; j++){
@@ -599,6 +605,11 @@
         var firstName1 = document.getElementById("firstname").value;
         var lastName1 = document.getElementById("lastname").value;
         var password1 = document.getElementById("password").value;
+        var password2 = document.getElementById("password2").value;
+        if (password1 != password2) {
+          alert("Your password must match the password confirmation!");
+          return;
+        }
         if (password1.length < 6){
           alert("Your password must be at least of length 6");
           return;
