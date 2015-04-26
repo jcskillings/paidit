@@ -67,7 +67,7 @@
             <a><img src="img/logoSm.png" /></a>
           </div>
         </div>
-      <form id="regForm" data-abide name='regForm' onsubmit="return validateForm()"  onclick="this.disabled = true" method="post">
+      <form id="regForm" data-abide name='regForm' onclick="this.disabled = true" >
         
         <div class="row">
           <div class="large-6 large-centered columns">
@@ -162,7 +162,7 @@
   
         <div class="row">
           <div class="large-3 large-centered columns">
-            <input href="#" type="submit" class="radius button" value="Sign up"/>
+            <input href="#" type="button" class="radius button" value="Sign up" id="regSubmit"/>
           </div>
         </div>
         <a class="close-reveal-modal" aria-label="Close">&#215;</a>
@@ -171,12 +171,12 @@
 
     <!-- Login modal-->
     <div div id="loginModal" class="reveal-modal tiny" data-reveal aria-labelledby="Register" aria-hidden="true" role="dialog">
-      <form id ="loginForm" data-abide name='loginForm' onsubmit="return validateLoginForm()" method = "post">
+      <form id ="loginForm" data-abide name='loginForm' >
         
         <div class="row">
           <div class="large-6  large-centered columns">
-            <label>Username
-              <input type="text" placeholder="username" id='loginUsername' name = 'loginUsername'/>
+            <label>Username or Email
+              <input type="text" placeholder="username or email" id='loginUsername' name = 'loginUsername'/>
             </label>   
           </div>
         </div>
@@ -197,7 +197,7 @@
          
         <div class="row">
           <div class="large-4 large-centered columns">
-            <input href="#" class="radius button" type = "submit" value = "Log In"/>
+            <input href="#" class="radius button" type = "button" value = "Log In" id="loginSubmit"/>
           </div>
         </div>
         <a type='reset' class='close-reveal-modal clearLoginForm' aria-label='Close' id='closeLogin'>&#215;</a>
@@ -250,6 +250,7 @@
       var NM;
        
       function newCheckCookie() {
+        /*
         if (getCookie("NL") == null || getCookie("NL") == "" || getCookie("NL") == '{"logs":[]}'){
           setCookie("NL",'{"logs":[]}',30);
           NL = '{"logs":[]}';
@@ -278,6 +279,14 @@
           obj = JSON.parse(getCookie("allUsers"));
           numUsers = obj.users.length;
           if (getCookie("currUser") != "" && getCookie("currUser") != null){
+            redir();
+          }
+        }*/
+        if (getCookie("currUser") != "" && getCookie("currUser") != null){
+          //alert("currUser detected!");
+          var userTemp = JSON.parse(getCookie("currUser"));
+          if(userTemp.username != "" && userTemp.username != null && userTemp.id != null){
+            //alert("successfully signed in as "+userTemp.username);
             redir();
           }
         }
@@ -343,6 +352,7 @@
       
       function validateForm() {   
         var userName = document.forms["regForm"]["regUsername"].value;
+        /*
         var i;
         for  (i=0; i < numUsers; i++){
           var named = obj.users[i].userName;
@@ -351,14 +361,15 @@
             return false;
           }
         }
+        */
         if (userName == null || userName == "") {
           alert("Name must be filled out");
           return false;
         } 
         else {
           var password = document.forms['regForm']['regPassword'].value;
-          if(password.length < 6) {
-            alert("Password must be at least 6 characters long");
+          if(password.length < 8) {
+            alert("Password must be at least 8 characters long");
             return false;
           }
           if (password == null || password == "") {
@@ -376,67 +387,153 @@
               return false;
             }
             else {
-              var checked = document.forms['regForm']['checkbox1'].checked;
+              
+              var dataCollect = document.forms['regForm']['disclaimer'].checked;//checked if data collect is ok
+              
+              
               var firstName = document.forms['regForm']['regFirstName'].value;
               var lastName = document.forms['regForm']['regLastName'].value;
               var email = document.forms['regForm']['regEmail'].value;
               var phone = document.forms['regForm']['regCell'].value;
-              var newUser = new User(userName, email, firstName, lastName, phone,  password);
+              var provider = document.forms['regForm']['mydropdown'].value;
               
-              var stringy = JSON.stringify(newUser);
+              var jsonRegister = '{"user": {"username":"'+userName+'","email":"' + email + '","first":"' + firstName+'", "last":"'+lastName+
+                '", "phone":"' + phone+'", "verifiedAcct":'+dataCollect+', "provider":"'+ provider+ '", "password":"' + password + '"}}';
+                alert("jsonRegister: " + jsonRegister);
+              addUser(jsonRegister);
+              //var newUser = new User(userName, email, firstName, lastName, phone,  password);
               
+              //var stringy = JSON.stringify(newUser);
+                            
               //$.post('https://pdit-backend-jcskillings.c9.io/user.json', stringy, function(response){
               //  alert("kyle rules");
               //},'json' );
               
-              allUsers = getCookie("allUsers");
-              var temp = allUsers.substring(0, allUsers.length - 2);
-              numUsers = JSON.parse(allUsers).users.length;
-              if(numUsers == 0) allUsers = temp + stringy + "]}";
-              else allUsers = temp + "," + stringy + "]}";
+              //allUsers = getCookie("allUsers");
+              //var temp = allUsers.substring(0, allUsers.length - 2);
+              //numUsers = JSON.parse(allUsers).users.length;
+              //if(numUsers == 0) allUsers = temp + stringy + "]}";
+              //else allUsers = temp + "," + stringy + "]}";
               
               //update allUsers and currUser
-              setCookie("allUsers",allUsers,30);
-              setCookie("currUser", stringy, 30);
+              //setCookie("allUsers",allUsers,30);
+              //setCookie("currUser", stringy, 30); 
               
               //update notificationLogs and notificationMethods
-              var currDate = Date();
+              //var currDate = Date();
               //alert(currDate);
-              var currTime = currDate.substring(16, 24);
+              //var currTime = currDate.substring(16, 24);
               //alert(currTime);
-              var currTZ = currDate.substring(29, 33);
+              //var currTZ = currDate.substring(29, 33);
               //alert(currTZ);
-              currDate = currDate.substring(4, 15);
+             // currDate = currDate.substring(4, 15);
              
-              var provider = document.forms['regForm']['mydropdown'].value;
-              var newMethod = new Method("email", email, "none", "verified", "email1");
-              var newMethod2 = new Method("cell", phone, provider, "verified", "cell1");
+              
+              //var newMethod = new Method("email", email, "none", "verified", "email1");
+              //var newMethod2 = new Method("cell", phone, provider, "verified", "cell1");
               //alert(newMethod);
-              var stringy1 = JSON.stringify(newMethod);
-              var stringy2 = JSON.stringify(newMethod2);
-              NM = getCookie("NM");
-              var temp1 = NM.substring(0, NM.length - 2);
-              if(numMethods == 0)  NM = temp1 + stringy1 + "," + stringy2 + "]}";
-              else NM = temp1 + "," + stringy1 + "," + stringy2 + "]}";
-              setCookie("NM", NM, 30);
+              //var newMethod1 = '{"notif_type": {"name": "email1", "destination":"'+email+'", "type": "email", "carrier": "email", "verified": "not verified"}}';
+              //var newMethod2 = '{"notif_type": {"name": "phone1", "destination":"'+phone+'", "type": "phone", "carrier": "'+carrier+'", "verified": "not verified"}}';
+              //alert("about to call addNM 2 times");
+             //addNM(newMethod1);
+              //addNM(newMethod2);
               
-              addNL("You joined Paidit!");
-              if(email != "") {
-                addNL("You added an unverified Email address!(Please enter the verification code sent to that address at the homepage or in settings!)");
-              }
-              if(phone != "") {
-                if(provider == "") addNL("You added an unverified phone#!(Please select the cellphone carrier in settings so we can send you verification code!)");
-                else addNL("You added an unverified phone#!(Please enter the verification code sent to your phone on the homepage or settings to use it)");
-              }
-   
-              redir();
-              
+              //var stringy1 = JSON.stringify(newMethod);
+              //var stringy2 = JSON.stringify(newMethod2);
+              //NM = getCookie("NM");
+              //var temp1 = NM.substring(0, NM.length - 2);
+              //if(numMethods == 0)  NM = temp1 + stringy1 + "," + stringy2 + "]}";
+              //else NM = temp1 + "," + stringy1 + "," + stringy2 + "]}";
+              //setCookie("NM", NM, 30);
             }
           }
         }
       }
       
-      function addNL(message){
+      function addNM1(jsonMethod){
+        alert("calling addNM with data = " + jsonMethod);
+        var postTry2 = $.ajax({
+        type: "POST",
+        dataType: 'json',
+        url: 'https://pdit-backend-jcskillings.c9.io/notif_types.json',
+        data: jsonMethod,
+        contentType: 'application/json',
+        complete: function(complete){
+        alert("json complete: " +complete);
+        },
+        success: function(data){
+          
+          addNL1("You added an unverified Email address!(Please enter the verification code sent to that address at the homepage or in settings!)");
+          //var userTemp = JSON.parse(getCookie("currUser"));
+          //var phone = userTemp.phone;
+          //var carrier = userTemp.provider;
+          //var userName = userTemp.username;
+          //var newMethod2 = '{"notif_type": {"name": "phone1", "destination":"'+phone+'", "notifMethod": "phone", "carrier": "'+carrier+'", "verified":false, "user_name":"'+userName+'"}}';
+          //addNM2(newMethod2);
+        },
+        error: function(error){
+          alert("error:" + JSON.stringify(error));
+        }
+        });
+      }
+      
+      function addNM2(jsonMethod){
+        alert("calling addNM with data = " + jsonMethod);
+        var postTry2 = $.ajax({
+        type: "POST",
+        dataType: 'json',
+        url: 'https://pdit-backend-jcskillings.c9.io/notif_types.json',
+        data: jsonMethod,
+        contentType: 'application/json',
+        complete: function(complete){
+        alert("json complete: " +complete);
+        },
+        success: function(data){
+          var userTemp = JSON.parse(getCookie("currUser"));
+          var provider = userTemp.provider;
+          if(provider == "none"){
+            addNL2("You added an unverified phone#!(Please select the cellphone carrier in settings so we can send you verification code!)");
+          }
+          else addNL2("You added an unverified phone#!(Please enter the verification code sent to your phone on the homepage or settings to use it)");
+          
+        },
+        error: function(error){
+          alert("error:" + JSON.stringify(error));
+        }
+        });
+      }
+      function addUser(jsonString) {
+        var postTry = $.ajax({
+                //beforeSend : function(jqXHR) {
+                //  jqXHR.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+                //},
+          type: "POST",
+          dataType: 'json',
+          url: 'https://pdit-backend-jcskillings.c9.io/users.json',
+          data: jsonString,
+          contentType: 'application/json',
+          complete: function(complete){
+          alert("json complete: " +complete);
+          },
+          success: function(data){
+            alert("KYLE!!");
+            
+          //alert("setting cookie:" + JSON.stringify(data));
+            var remember = document.forms['regForm']['checkbox1'].checked;//rememberMe for cookies
+            if(remember == true) setCookie("currUser",JSON.stringify(data),30);//change to auth token later?
+            else setCookie("currUser",JSON.stringify(data),(0.25));
+            
+            addNL("You joined Paidit!");
+            
+          },//redir();//instead call new method to set NL, and NM if one exists
+          error: function(error){
+            alert("error:" + JSON.stringify(error));
+          }
+        });
+      }
+      
+      function addNL2(message){
+        alert("NL2 reached");
         var currDate = Date();
         var currTime = currDate.substring(16, 24);
         var currHours = parseInt(currTime.substr(0, 2));
@@ -454,19 +551,157 @@
         }
         currTime = currHours + currTime.substr(2, 3) + ampm;
         currDate = currDate.substring(4, 15);
-        var newLog = new Log(message, currDate, currTime);
-        var stringy = JSON.stringify(newLog);
-        var NL = JSON.parse(getCookie("NL"));
-        var numLogs = NL.logs.length;
-        NL=getCookie("NL");
-        var temp = NL.substring(0, NL.length - 2);
-        if (numLogs == 0) {
-          NL = temp + stringy + "]}";
+        
+        var thisUser = JSON.parse(getCookie("currUser"));
+        var userName = thisUser.username;
+        var newLog = '{"log": {"info": "'+message+'", "date":"'+currDate+'", "time": "'+currTime+'","eventType":"signup", "user_name":"'+userName+'", "hide":false}}';
+        
+        var postTry2 = $.ajax({
+          type: "POST",
+          dataType: 'json',
+          url: 'https://pdit-backend-jcskillings.c9.io/logs.json',
+          data: newLog,
+          contentType: 'application/json',
+          complete: function(complete){
+          alert("json complete: " +complete);
+          },
+          success: function(data){
+            alert("added 2nd NL, now redir");
+            redir();
+          },
+          error: function(error){
+            alert("error:" + JSON.stringify(error));
+          }
+          });
+        //setCookie("NL",NL,30);
+      }
+      
+      function addNL1(message){
+        alert("NL1 reached");
+        var currDate = Date();
+        var currTime = currDate.substring(16, 24);
+        var currHours = parseInt(currTime.substr(0, 2));
+        var ampm;
+        if (currHours >=1 && currHours <= 12){
+          ampm = " a.m.";
         }
-        else{
-          NL = temp + "," + stringy + "]}";
+        else if (currHours >= 13){
+          currHours = currHours -12;
+          ampm = " p.m.";
         }
-        setCookie("NL",NL,30);
+        else {
+          currHours = 1;
+          ampm = " a.m.";
+        }
+        currTime = currHours + currTime.substr(2, 3) + ampm;
+        currDate = currDate.substring(4, 15);
+        
+        var thisUser = JSON.parse(getCookie("currUser"));
+        var userName = thisUser.username;
+        var newLog = '{"log": {"info": "'+message+'", "date":"'+currDate+'", "time": "'+currTime+'","eventType":"signup", "user_name":"'+userName+'", "hide":false}}';
+        
+        var postTry2 = $.ajax({
+          type: "POST",
+          dataType: 'json',
+          url: 'https://pdit-backend-jcskillings.c9.io/logs.json',
+          data: newLog,
+          contentType: 'application/json',
+          complete: function(complete){
+          alert("json complete: " +complete);
+          },
+          success: function(data){
+            alert("added 1st NL");
+            var userTemp = JSON.parse(getCookie("currUser"));
+            var phone = userTemp.phone;
+            var carrier = userTemp.provider;
+            if(phone != ""){
+              var userName = userTemp.username;
+              var newMethod2 = '{"notif_type": {"name": "phone1", "destination":"'+phone+'", "notifMethod": "phone", "carrier": "'+carrier+'", "verified":false, "user_name":"'+userName+'"}}';
+              //alert("calling adNM")
+              addNM2(newMethod2);
+            }
+            else{
+              alert("redir since 2nd NM doesnt exist");
+              redir();
+            }
+            
+            
+          },
+          error: function(error){
+            alert("error:" + JSON.stringify(error));
+          }
+          });
+        //setCookie("NL",NL,30);
+      }
+      
+      function addNL(message){
+        alert("NL reached");
+        var currDate = Date();
+        var currTime = currDate.substring(16, 24);
+        var currHours = parseInt(currTime.substr(0, 2));
+        var ampm;
+        if (currHours >=1 && currHours <= 12){
+          ampm = " a.m.";
+        }
+        else if (currHours >= 13){
+          currHours = currHours -12;
+          ampm = " p.m.";
+        }
+        else {
+          currHours = 1;
+          ampm = " a.m.";
+        }
+        currTime = currHours + currTime.substr(2, 3) + ampm;
+        currDate = currDate.substring(4, 15);
+        
+        var thisUser = JSON.parse(getCookie("currUser"));
+        var userName = thisUser.username;
+        var newLog = '{"log": {"info": "'+message+'", "date":"'+currDate+'", "time": "'+currTime+'","eventType":"signup", "user_name":"'+userName+'", "hide":false}}';
+        //var newLog = new Log(message, currDate, currTime);
+        //var stringy = JSON.stringify(newLog);
+        //var NL = JSON.parse(getCookie("NL"));
+        //var numLogs = NL.logs.length;
+        //NL=getCookie("NL");
+        //var temp = NL.substring(0, NL.length - 2);
+        //if (numLogs == 0) {
+          //NL = temp + stringy + "]}";
+        //}
+        //else{
+          //NL = temp + "," + stringy + "]}";
+        //}
+        var postTry2 = $.ajax({
+          type: "POST",
+          dataType: 'json',
+          url: 'https://pdit-backend-jcskillings.c9.io/logs.json',
+          data: newLog,
+          contentType: 'application/json',
+          complete: function(complete){
+          alert("json complete: " +complete);
+          },
+          success: function(data){
+            var email = thisUser.email;
+            var phone = thisUser.phone;
+            var carrier = thisUser.provider;
+            if(email != ""){
+              var newMethod1 = '{"notif_type": {"name": "email1", "destination":"'+email+'", "notifMethod": "email", "carrier": "email", "verified":false, "user_name":"'+userName+'"}}';
+              //alert("calling adNM")
+              addNM1(newMethod1);
+            }
+            else if(phone != ""){
+              var newMethod2 = '{"notif_type": {"name": "phone1", "destination":"'+phone+'", "notifMethod": "phone", "carrier": "'+carrier+'", "verified":false, "user_name":"'+userName+'"}}';
+              //alert("calling adNM")
+              addNM2(newMethod2);
+            }
+            else{
+              alert("added NL redirecting");
+              redir();
+            }
+          },
+          error: function(error){
+            alert("error:" + JSON.stringify(error));
+          }
+          });
+        //setCookie("NL",NL,30);
       }
       
       function oldValidateForm() {   
@@ -558,11 +793,109 @@
             //obj = JSON.stringify(obj);
             //setCookie("allUsers", obj, 30);
             
-            setCookie("currUser", obj.users[i], 30);
+            //setCookie("currUser", obj.users[i], 30);
+            // HTTP sign in then redirect
+            
+            signInHTTP();
+            
+            
             redir();
           }
         }
       }
+      
+      $('#loginSubmit').click(function (){
+         valLogin();
+      });
+      
+      $('#regSubmit').click(function (){
+         valRegister();
+      });
+      
+      function valRegister(){
+        validateForm();
+      }
+      
+      function valLogin(){
+        signInHTTP(); 
+      }
+      
+      function registerHTTP(){//how to check if username already exists?
+        
+        
+        
+      }
+    
+      
+      // return a user object parsed from json from the backend
+      function signInHTTP(){
+        var username = document.forms["loginForm"]["loginUsername"].value;
+        var remember = document.forms["loginForm"]["checkbox2"].checked;
+        var password =document.forms["loginForm"]["loginPassword"].value;
+        
+        if (username == null || username == "") {
+          alert("Name must be filled out");
+          return;
+        } 
+        else if (password == null || password == "") {
+          alert("Password must be filled out");
+          return;
+        }
+        else if (password.length < 8){
+          alert("Incorrect Password");
+          return;
+        }
+        
+        var jsonLogin = '{"user": {"login": "' + username + '", "password": "' + password + '" }}';
+        //alert(jsonLogin);
+        //send login request to backend
+         var postTry = $.ajax({
+        //beforeSend : function(jqXHR) {
+        //  jqXHR.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+        //},
+          type: "POST",
+          dataType: 'json',
+          url: 'https://pdit-backend-jcskillings.c9.io/users/sign_in.json',
+          data: jsonLogin,
+          contentType: 'application/json',
+          complete: function(complete){
+            alert("json complete: " +complete);
+          },
+          success: function(data){
+            alert("setting cookie:" + JSON.stringify(data));
+            if(remember == true) setCookie("currUser", JSON.stringify(data),30);
+            else setCookie("currUser", JSON.stringify(data),0.25);
+            //setCookie("currUser", JSON.stringify(data),30);
+            redir();
+          },
+          error: function(error){
+            alert("error:" + JSON.stringify(error));
+          }
+        }); 
+        if (postTry.readyState == 1) {
+          //redir()
+        }
+      } //end signInHTTP
+      
+      function ConvertFormToJSON(form){
+          var array = jQuery(form).serializeArray();
+          var json = {};
+          
+          jQuery.each(array, function() {
+              json[this.dbName] = this.value || '';
+              //alert('cur value: '+this.value());
+          });
+          
+          return json;
+      }
+      
+      
+      
+      
+      
+      
+      
+      
       
       function oldValidateLoginForm() {   
       var user = document.forms["loginForm"]["loginUsername"].value;

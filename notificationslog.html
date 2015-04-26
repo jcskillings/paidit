@@ -88,12 +88,14 @@
       var NL;
       var numLogs;
       var obj;
-      var info;
+      var returnLogs;
+      var username;
       
       function loadNotifications() {
         if(getCookie("currUser") == "" || getCookie("currUser") == null || getCookie("currUser") =='{"bills":[]}') {
           window.location.replace("splash.html");
         }
+        /*
         if (getCookie("NL") == null || getCookie("NL") =="" || getCookie("NL") == '{"logs":[]}'){
           setCookie("NL",'{"logs":[]}',30);
           NL = '{"logs":[]}';
@@ -106,9 +108,53 @@
             putLog(i);
           }
         }
+        */
+        else{
+          var user = JSON.parse(getCookie("currUser"));
+          user = {"user_name": user.username };
+          username = JSON.stringify(user.user_name);
+          //alert("username saved as "+username);
+          getLogsHTTP2(user).done(getLogsCallback);
+
+        }
       }
       
+      function getLogsHTTP2(user_name){
+        alert("usernmae in http2 is:" + JSON.stringify(user_name));
+        return $.ajax({
+          type: "GET",
+          dataType: 'json',
+          url: 'https://pdit-backend-jcskillings.c9.io/logs.json',
+          data: user_name,
+          contentType: 'application/json',
+          //success: callback
+          });
+      } // end getBillsHTTP2
+      
+      function getLogsCallback(data){
+        // anything in getBills() that relies on json from the backend must go in here
+        //alert("log callback");
+        returnLogs = JSON.stringify({"logs": data });
+        //alert((returnLogs));
+        obj = JSON.parse(returnLogs);
+        numLogs = obj.logs.length;
+
+        if (returnLogs == null || returnLogs =="" || returnLogs == '{"logs":[]}'){
+          //setCookie("allBills",'{"bills":[]}',30);
+          returnLogs= '{"logs":[]}';
+          obj = JSON.parse(returnLogs);
+          numLogs = 0;
+        }
+        else {
+          for  (var i=0; i < numLogs; i++){
+            putLog(i);
+          }
+        }
+      } // end getBillsCallback
+      
+      
       function putLog(index) {
+        //alert("entered put log");
         var table = document.getElementById("logTable");
         var row = table.insertRow(index+1);
         var cell1 = row.insertCell(0);
@@ -137,9 +183,85 @@
         if (confirm("Are you sure?  Deleting this bill cannot be undone!") == true){
         var p=o.parentNode.parentNode;
         p.parentNode.removeChild(p);
-        updateJson();
+        newUpdateJson();
         }
       }
+      
+      function newUpdateJson(){
+        var table = document.getElementById("logTable");
+        var id;
+        alert(returnLogs);
+        alert(JSON.stringify(obj));
+        for(var j = 1; j < numLogs; j++){
+          var info = obj.logs[j-1].info;
+          var date = obj.logs[j-1].date;
+          var time = obj.logs[j-1].time;
+          var total = '{"info":"' +info +'","date":"'+ date +'","time":"' + time + '"}';
+          
+          var row = '{"info":"' + table.rows[j].cells[0].firstChild.data +
+            '","date":"'+table.rows[j].cells[1].firstChild.data+'","time":"'+
+            table.rows[j].cells[2].firstChild.data+'"}';
+          if (total != row) {
+            //j is the log to remove
+            //alert("J is " + (j-1));
+            id = obj.logs[j-1].id;
+            obj.logs.splice(j-1, 1);
+            numLogs--;
+            deleteLog(id).done(updateLogs);
+            return;
+            //obj = JSON.parse(getCookie("NL"));
+            //numLogs = obj.logs.length;
+            //return;
+          }
+        }
+        /*
+        info = obj.logs[(numLogs-1)].info;
+        date = obj.logs[(numLogs-1)].date;
+        time = obj.logs[(numLogs-1)].time;
+        NL = getCookie("NL");
+        var temp = JSON.parse(NL);
+        numLogs = temp.length;
+        if(numLogs == 0 || numLogs == 1) total = '{"info":"' +info+'","date":"'+ date +'","time":"' + time + '"}';
+        else total = ',{"info":"' +info+'","date":"'+ date +'","time":"' + time + '"}';
+        tempCookie = NL.substring(0, NL.indexOf(total))+"]}";
+        setCookie("NL", tempCookie, 30);
+        obj = JSON.parse(getCookie("NL"));
+        numLogs = obj.logs.length;
+        */
+        //delete last log
+        var num = numLogs - 1;
+        //("num is " + num);
+        id = obj.logs[num].id;
+        //alert("ID IS "+id);
+        obj.logs.splice(num, 1);
+        numLogs--;
+        deleteLog(id).done(updateLogs);
+        return;
+      }
+      
+      function deleteLog(log_id){
+        alert("log id is:" + (log_id)); //logid is good, it all matches up sucka
+        return $.ajax({
+          type: "DELETE",
+          dataType: 'json',
+          url: 'https://pdit-backend-jcskillings.c9.io/logs/'+log_id+'.json', // yeah backend sees the right id, a routing problem with backend i think
+          //data: log_id,
+          contentType: 'application/json',//ok then i will start doing the graph stuff then for now :) // sounds good
+          //success: callback
+          complete: function(complete){
+            alert("json complete: " +complete);
+          },
+          success: function(data){
+            alert("yippee");
+          }
+          });
+      } // end getBillsHTTP2
+      
+      function updateLogs(data){
+       alert("yay!");
+      } // end getBillsCallback
+      
+
       
       function updateJson(){
         if(numLogs == 1) {
