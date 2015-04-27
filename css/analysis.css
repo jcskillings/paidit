@@ -12,3 +12,14 @@
 #analysistext {
     color:black;
 }
+.left{
+  float:left;
+}
+.right{
+  float:right;
+}
+
+
+.clear{
+  clear:both;
+}

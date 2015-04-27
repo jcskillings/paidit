@@ -8,11 +8,14 @@
     <link rel="stylesheet" href="css/foundation.css" />
     <link rel="stylesheet" href="css/test.css" />
     <link rel="shortcut icon" href="img/icon/checkMark.png"/>
-    <script src="../Chart.js"></script>
+    <script src="Chart.js/Chart.js"></script>
+    <script src="Chart.js/Chart.min.js"></script>
+    <script src="Chart.js/gulpfile.js"></script>
 
+    <script type="text/javascript" src="js/bills.js"></script>
     <script src="js/vendor/modernizr.js"></script>
   </head>
-  <body>
+  <body onload="getBills()">
     
       
       <div class="icon-bar five-up">
@@ -38,69 +41,604 @@
         </a>
       </div>
     
-    <div class="container navigation" style = "width:82%; margin:2% 3% 0% 15%">
-      
-      <div class="large-8 columns">
-          <h2><b>Welcome to Bill Analysis!</b></h2>
-          <div class="panel">
-          <p><img src="img/piechart.png"></p>
-      </div> <!-- panel -->
-
-    </div>
-    <div class="row">
-      
-      <div class="large-8 columns">
-          <div id="canvas-holder">
-			<canvas id="chart-area" width="300" height="300"/>
-		</div>
-
-    </div>
+    <div class="container navigation" style = "width:92%; margin:2% 3% 0% 5%">
+     
+     <div class="large-12 columns">
+       <h2 style="text-align:center;"><b>Welcome to Bill Analysis!</b></h2>
+           </br>
+        <div id="canvas2-holder" class ="left">
+			    <canvas id="graph-area" width="1500" height="500"/>
+		    </div>
+       <div class="left panel" id = "legend2" style="margin:0% 0% 0% -5%"></div>
+        </div>
+      </div>
+   
+    <hr/>
+    </br>
+     </div>
+      <div class="large-10 columns">
+          
+          <div id="canvas-holder" class ="left"  style = "margin:0% 0% 0% 15%">
+			    <canvas id="chart-area" width="500" height="500"/>
+		    </div>
+		   
+		     <div class="left panel" id = "legend" style="margin:0% 0% 0% 5%"></div>
+   
     
     <hr />
     
-    <script>
-		var pieData = [
-				{
-					value: 300,
-					color:"#F7464A",
-					highlight: "#FF5A5E",
-					label: "Red"
-				},
-				{
-					value: 50,
-					color: "#46BFBD",
-					highlight: "#5AD3D1",
-					label: "Green"
-				},
-				{
-					value: 100,
-					color: "#FDB45C",
-					highlight: "#FFC870",
-					label: "Yellow"
-				},
-				{
-					value: 40,
-					color: "#949FB1",
-					highlight: "#A8B3C5",
-					label: "Grey"
-				},
-				{
-					value: 120,
-					color: "#4D5360",
-					highlight: "#616774",
-					label: "Dark Grey"
-				}
-			];
-			window.onload = function(){
+    <script >
+			
+			var returnBills="";
+			function getBills() {
+        /*if(getCookie("currUser") == "" || getCookie("currUser") == null || getCookie("currUser") =='{"bills":[]}') {
+          window.location.replace("splash.html");
+        } */
+        if(getCookie("currUser") == "" || getCookie("currUser") == null ) {
+          window.location.replace("splash.html");
+        }
+        else {
+        var user = JSON.parse(getCookie("currUser"));
+        var username = {"user_name": user.username }; 
+        //alert(user.username + "  username json: " + JSON.stringify(username));
+        getBillsHTTP2(username).done(getBillsCallback);
+
+        }
+      }
+      // Heh, it works now - there was a duplicate function down below - probaly my fault acutally either way i got a full bills list in the alerts and stuff
+      function getBillsCallback(data){ 
+        //alert("data?: " + JSON.stringify(data));
+        returnBills = {"bills": data };
+        //alert(JSON.stringify(returnBills));
+        if (returnBills == null || returnBills =="" || returnBills == '{"bills":[]}'){
+
+          allBills = '{"bills":[]}';
+          numBills = 0;
+          numPaid = 0;
+          paidJson = "";
+        }
+        else {
+          startGraph(); 
+        }
+      } // end getBillsCallback
+      
+      function getBillsHTTP2(user_name){ 
+        //alert("usernmae in http2 is:" + JSON.stringify(user_name));//damn
+        return $.ajax({
+          type: "GET",
+          dataType: 'json',
+          //url: 'https://pdit-backend-jcskillings.c9.io/bills.json',
+          url: backendURL+'bills.json',
+          data: user_name,
+          contentType: 'application/json'
+          //success: callback
+          });
+      } // end getBillsHTTP2
+			
+			function startGraph(){
 				var ctx = document.getElementById("chart-area").getContext("2d");
-				window.myPie = new Chart(ctx).Pie(pieData);
-			};
+				var ctx2 = document.getElementById("graph-area").getContext("2d");
+				makeGraph();
+				makePieData();
+				makeGraph2();
+				makeGraphData();
+				window.myPie = new Chart(ctx).Pie(myPieData);
+				makelist();
+				//alert(JSON.stringify(myGraphData));
+				//alert(graphArray[0]);
+				var myGraph = new Chart(ctx2).Bar(myGraphData);
+				document.getElementById("graph-area").innerHTML = myGraph;
+				makelist2();
+				//legend(document.getElementById("chart-area"),myPieData);
+			}
+			
+			function makelist(){
+        // Establish the array which acts as a data source for the list
+        //var listData = billArray;
+        
+        // Make a container element for the list - which is a <div>
+        // You don't actually need this container to make it work
+        var listContainer = document.getElementById("legend");
+        // add it to the page
+        //document.getElementsByTagName("body")[0].appendChild(listContainer);
+        // Make the list itself which is a <ul>
+        var listElement = document.createElement("ul");
+        // add it to the page
+        listContainer.appendChild(listElement);
+        // Set up a loop that goes through the items in listItems one at a time
+        var numberOfListItems = billArray.length;
+        var totalLo = 0;
+        var totalHi = 0;
+        for( var i =  0 ; i < numberOfListItems ; ++i){
+          // create a <li> for each one.
+          var listItem = document.createElement("li");
+          // add the item text
+          var amt = (parseInt(billArray[i][1])+parseInt(billArray[i][2]))*100/2;
+          if(billArray[i][3] == "Weekly") amt = amt*4;
+			    else if (billArray[i][3] == "Biweekly") amt = amt*2;
+          amt = Math.round(amt/total);
+          listItem.innerHTML = billArray[i][0].toUpperCase()+": $"+billArray[i][1]+" - $"+billArray[i][2]+"("+amt+"%)";
+          var temp = parseInt(billArray[i][1]);
+          if(billArray[i][3] == "Weekly") temp = temp*4;
+			    else if (billArray[i][3] == "Biweekly") temp = temp*2;
+          totalLo += temp;
+          temp = parseInt(billArray[i][2]);
+          if(billArray[i][3] == "Weekly") temp = temp*4;
+			    else if (billArray[i][3] == "Biweekly") temp = temp*2;
+          totalHi += temp;
+         
+          listItem.style.color=myPieData[i].color;
+          listItem.style.fontSize="120%";
+          listItem.style.fontWeight=900;
+          // add listItem to the listElement
+          listElement.appendChild(listItem);
+        }
+        listItem = document.createElement("p");
+        listElement.appendChild(listItem);
+        listItem = document.createElement("p");
+        listItem.innerHTML = "TOTAL: $"+totalLo+" - $"+totalHi;
+        listItem.style.color= "black";
+        listItem.style.fontSize="130%";
+        listItem.style.fontWeight=900;
+        listItem.style.border = "thick dotted black";
+        listItem.style.textAlign="center";
+        // add listItem to the listElement
+        listElement.appendChild(listItem);
+        //document.getElementById("legend").innerHTML = listContainer;
+			}
+			
+			function makelist2(){
+        var listContainer = document.getElementById("legend2");
+        var listElement = document.createElement("ul");
+        listContainer.appendChild(listElement);
+        
+        var listItem = document.createElement("li");
+        listItem.innerHTML = "Low Amount";
+        listItem.style.color= "rgb(219, 184, 77)";
+        listItem.style.textAlign="center";
+        listElement.appendChild(listItem);
+        
+        listItem = document.createElement("li");
+        listItem.innerHTML = "High Amount";
+        listItem.style.color= "rgb(153, 0, 0)";
+        listItem.style.textAlign="center";
+        listElement.appendChild(listItem);
+  
+			}
+
+      function makeGraphData(){
+        var date = Date();
+        date = date.substring(4, 15);
+        var month = date.substr(0, 3);
+        var day = date.substr(4, 2);
+        var year = date.substr(7, 4);
+        var monthNum = changeMonthToNumber(month);
+        var numDaysMonth = parseInt(getNumDaysInMonth(monthNum, year));
+        var oNumDaysMonth = numDaysMonth;
+        day = parseInt(day);
+        year = parseInt(year);
+        var dateArray = [];
+        var add = 0;
+        for (var t=0; t < 31; t++){
+          if ((day+add) > numDaysMonth){
+            day = 1;
+            add = 0;
+            monthNum = monthNum+1;
+            if(monthNum == 13) monthNum = 1;
+            numDaysMonth = parseInt(getNumDaysInMonth(monthNum, year));
+          } 
+          dateArray[t]= monthNum+"/"+(day+add);
+          add++;
+        }
+        var dataArrayLo = [];
+        var dataArrayHi = [];
+        for(var g = 0; g < 31; g++){
+          dataArrayLo[g]=0;
+          dataArrayHi[g]=0;
+        }
+        var arrayLen = graphArray.length;
+        for(g = 0; g < arrayLen; g++){
+          dataArrayLo[graphArray[g][5]]+=graphArray[g][1];
+          dataArrayHi[graphArray[g][5]]+=graphArray[g][2];
+          //alert(graphArray[g][4]);
+          if(graphArray[g][4] == "Weekly"){
+            if((graphArray[g][5]+7)<= 31){
+              graphArray[graphArray.length] = [graphArray[g][0], graphArray[g][1],  graphArray[g][2], graphArray[g][3], graphArray[g][4], graphArray[g][5]+7];
+              arrayLen++;
+            }
+          }
+          else if (graphArray[g][4] == "Biweekly"){
+            if((graphArray[g][5]+14)<= 31){
+              graphArray[graphArray.length] = [graphArray[g][0], graphArray[g][1],  graphArray[g][2], graphArray[g][3], graphArray[g][4], graphArray[g][5]+14];
+              arrayLen++;
+            }
+          }
+          else if (graphArray[g][4] == "Monthly"){
+            if((graphArray[g][5]+oNumDaysMonth)<= 31){
+              graphArray[graphArray.length] = [graphArray[g][0], graphArray[g][1],  graphArray[g][2], graphArray[g][3], graphArray[g][4], graphArray[g][5]+oNumDaysMonth];
+              arrayLen++;
+            }
+          }
+        }
+        
+        myGraphData = {
+          labels: dateArray,
+          datasets: [
+              {
+                  label: "Low Amount",
+                  fillColor: "rgb(219, 184, 77)",
+                  strokeColor: "rgba(220,220,220,0.8)",
+                  highlightFill: "rgba(220,220,220,0.75)",
+                  highlightStroke: "rgba(220,220,220,1)",
+                  data: dataArrayLo
+              },
+              {
+                  label: "High Amount",
+                  fillColor: "rgb(153, 0, 0)",
+                  strokeColor: "rgba(151,187,205,0.8)",
+                  highlightFill: "rgba(151,187,205,0.75)",
+                  highlightStroke: "rgba(151,187,205,1)",
+                  data: dataArrayHi
+              }
+          ]
+        };
+      }
+      
+      function getNumDaysInMonth(month, year){
+        month = parseInt(month);
+        year = parseInt(year);
+        var isLeap =new Date(year, 1, 29).getMonth() == 1;
+        if (month == 1 || month == 3 || month==5||month==7||month==8||month==10||month==12){
+          return "31";
+        }
+        else if(month==4||month==6||month==9||month==11){
+          return "30";
+        }
+        else{
+          if(isLeap) return "29";
+          else return "28";
+        }
+      }
+      var total;
+			function makePieData(){
+			  total=0;
+			  for(var j = 0; j < numBills; j++){
+			    var temp = (parseInt(billArray[j][1]) + parseInt(billArray[j][2]))/2;
+			    if(billArray[j][3] == "Weekly") temp = temp*4;
+			    else if (billArray[j][3] == "Biweekly") temp = temp*2;
+			    total+=temp;
+			  }
+			  for(j = 0; j < numBills; j++){
+			    var avg = (parseInt(billArray[j][1]) + parseInt(billArray[j][2]))*100/2;
+			    if(billArray[j][3] == "Weekly") avg = avg*4;
+			    else if (billArray[j][3] == "Biweekly") avg = avg*2;
+			    avg = avg/total;
+			    avg = Math.round(avg);
+			     // avg = avg.toString();
+			      //avg = avg.substr(0, 2);
+			      //avg = parseInt(avg);
+			  
+			    
+			    
+			    myPieData[j] = {value: avg, color: getRandomColor(), highlight: "#616774", label: billArray[j][0]};
+			  }
+			  //alert(JSON.stringify(myPieData));
+			}
+			
+			
+			var myPieData = [];
+			var allBills; //{"bills":[]} allBills that are NOT Paid are in array
+      var numBills; //number of bills that are NOT Paid
+      var obj; //JSON object of all bills that are NOT Paid
+      var numPaid; //number of Paid bills
+      var paidJson; 
+      var numOverdue;
+      var overdueJson;
+      var billArray = [];
+      var graphArray = [];
+      var myGraphData = {};
+      var backendURL = "https://pdit-backend-jcskillings.c9.io/";
+      
+    function getRandomColor() {
+      var letters = '0123456789ABCDEF'.split('');
+      var color = '#';
+      for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+      
+    function makeGraph(){
+     // alert("mAkegraph");
+      //alert((returnBills));
+      deleteOldOverdue();
+      deleteOldPaid();
+      updateBillsNoOverdue();
+      updateBillsNoPaid();
+      //alert(numBills);
+      for (var i=0; i < numBills; i++){
+        putBill(i);
+      }
+      //alert(billArray);
+      return;
+    }
+    
+    var atBill;
+    var numInserted;
+    function makeGraph2(){
+     // alert("mAkegraph");
+      //alert((returnBills));
+      //alert(numBills);
+      var date = Date();
+      date = date.substring(4, 15);
+      var month = date.substr(0, 3);
+      var day = date.substr(4, 2);
+      var year = date.substr(7, 4);
+      month = changeMonthToNumber(month);
+      day = parseInt(day);
+      year = parseInt(year);
+      
+      numInserted = 0;
+      for  (atBill=0; atBill < numBills; atBill++){
+        date = obj.bills[atBill].dueDate;
+        var billYear = date.substr(0, 4);
+        billYear = parseInt(billYear);
+        var billMonth = date.substr(5, 2);
+        billMonth = parseInt(billMonth);
+        var billDay = date.substr(8, 2);
+        billDay = parseInt(billDay);
+        if(year==billYear && month==billMonth && day<=billDay){
+          putMonthsBill(numInserted, (billDay-day));
+          numInserted++;
+        }
+        else if(year==billYear && month+1==billMonth && billDay<=day){
+          var daysIn = getNumDaysInMonth(month);
+          putMonthsBill(numInserted, (daysIn-day+billDay));
+          numInserted++;
+        }
+        else if(year+1==billYear && month==12 && billMonth == 1 && billDay<=day){
+          putMonthsBill(numInserted, (31-day+billDay));
+          numInserted++;
+        }
+        /* //this will need to be added in at somepoint for the graph
+        else if(date.charAt(0)==",") {
+          var endDate = obj.bills[atBill].repeat.substr(5,6);
+          var endMonth = changeMonthToNumber(endDate.substr(0, 3));
+          var endDay = parseInt(endDate.substr(4, 2));
+          if(day != endDay) continue;
+          if(month != endMonth) continue;
+          putMonthsBill(numInserted);
+          numInserted++;
+        }*/
+      }
+      //alert(billArray);
+      return;
+    }
+    
+    function putMonthsBill(index, daysToGo){
+      
+      graphArray[index] = [obj.bills[atBill].name, obj.bills[atBill].amountLo,  obj.bills[atBill].amountHi, obj.bills[atBill].dueDate, obj.bills[atBill].repeat, daysToGo];
+    }
+    
+    function putBill(index){
+      billArray[index] = [obj.bills[index].name, obj.bills[index].amountLo,  obj.bills[index].amountHi, obj.bills[index].repeat];
+    }
+      
+    function updateBillsNoPaid() { //sets obj/numBills/allBills
+        //paidJson = "";
+        numPaid = 0;
+        for  (var k=0; k < numBills; k++){
+          if(obj.bills[k].reminder1 == null) {
+            numPaid++;
+            //if (paidJson == "") paidJson = JSON.stringify(obj.bills[k]);
+            //else paidJson = paidJson + "," + JSON.stringify(obj.bills[k]);
+            obj.bills.splice(k, 1);
+            returnBills = (obj);
+            allBills = JSON.stringify(returnBills);
+            numBills = obj.bills.length;
+            k--;
+          }
+        }
+      }
+      
+      function updateBillsNoOverdue() { //sets obj/numBills/allBills
+        obj = returnBills;
+        allBills = JSON.stringify(returnBills);
+        numBills = obj.bills.length;
+        //overdueJson = "";
+        numOverdue = 0;
+        var currDate = Date();
+        currDate = currDate.substring(4, 15);
+        var currMonth = currDate.substr(0, 3);
+        var currDay = currDate.substr(4, 2);
+        var currYear = currDate.substr(7, 4);
+        currMonth = changeMonthToNumber(currMonth);
+        currDay = parseInt(currDay);
+        currYear = parseInt(currYear);
+        for  (var k=0; k < numBills; k++){
+          var dDate = obj.bills[k].dueDate;
+          if(dDate.indexOf(",") != -1) dDate = dDate.substring(dDate.indexOf(",")+1, dDate.length);
+          var dYear = parseInt(dDate.substr(0, 4));
+          var dMonth = parseInt(dDate.substr(5,2));
+          var dDay = parseInt(dDate.substr(8, 2));
+          var show = isWithinMonth(currYear, currMonth, currDay, dYear, dMonth, dDay);
+          if(show == false) {
+            numOverdue++;
+            //if (overdueJson == "") overdueJson = JSON.stringify(obj.bills[k]);
+            //else overdueJson = overdueJson + "," + JSON.stringify(obj.bills[k]);
+            obj.bills.splice(k, 1);
+            allBills = JSON.stringify(obj);
+            returnBills = obj;
+            numBills = obj.bills.length;
+            k--;
+          }
+        }
+        return;
+      }
+      
+      function isWithinMonth(y, m, d, dy, dm, dd){
+        if (y==dy && m==dm && d<=dd){
+          return true;
+        }
+        else if(y==dy && m+1==dm && dd<=d){
+          return true;
+        }
+        else if(y+1==dy && m==12 && dm == 1 && dd<=d){
+          return true;
+        }
+        return false;
+      }
+    
+    function deleteOldOverdue(){
+      obj = (returnBills);
+      allBills = JSON.stringify(returnBills);
+      numBills = obj.bills.length;
+      var date = Date();
+
+      date = date.substring(4, 15);
+      var month = date.substr(0, 3);
+      var day = date.substr(4, 2);
+      var year = date.substr(7, 4);
+      month = changeMonthToNumber(month);
+      day = parseInt(day);
+      year = parseInt(year);
+      for(var k =0; k < numBills; k++){
+        if(obj.bills[k].reminder2 == null){
+          var dYear = parseInt(obj.bills[k].dueDate.substr(0, 4));
+          var dMonth = parseInt(obj.bills[k].dueDate.substr(5, 2));
+          var dDay= parseInt(obj.bills[k].dueDate.substr(8, 2));
+          if(dYear == year && dMonth==month-1 && dDay < day){
+            obj.bills.splice(k, 1);
+            allBills = JSON.stringify(obj);
+            numBills = obj.bills.length;
+            returnBills = obj;
+            k--;
+            //setCookie("allBills", allBills, 30);
+          }
+          else if (dYear==year && dMonth < month-1){
+            obj.bills.splice(k, 1);
+            allBills = JSON.stringify(obj);
+            returnBills = obj;
+            numBills = obj.bills.length;
+            k--;
+            //setCookie("allBills", allBills, 30);
+          }
+          else if((dYear < year && dDay < day) || (dYear<year && dMonth < 12)){
+            obj.bills.splice(k, 1);
+            allBills = JSON.stringify(obj);
+            returnBills = obj;
+            numBills = obj.bills.length;
+            k--;
+            //setCookie("allBills", allBills, 30);
+          }
+        }
+      }
+    }
+     
+     function deleteOldPaid(){
+        obj = returnBills;
+        allBills = JSON.stringify(obj);
+        numBills = obj.bills.length;
+        numPaid = 0;
+        var inArray = 0;
+        var date = Date();
+        date = date.substring(4, 15);
+        var month = date.substr(0, 3);
+        var day = date.substr(4, 2);
+        month = changeMonthToNumber(month);
+        day = parseInt(day);
+        var deleteArray = [];
+        for  (var k=0; k < numBills; k++){
+          if(obj.bills[k].dueDate.charAt(0) == ",") {
+            var endDate = obj.bills[k].repeat.substr(5,6);
+            var endMonth = changeMonthToNumber(endDate.substr(0, 3));
+            var endDay = parseInt(endDate.substr(4, 2));
+            if(day != endDay || month != endMonth) { //delete this paid bill
+              deleteArray[inArray] = k;
+              inArray++;
+            }
+            numPaid++;
+          }
+        }
+        if(numPaid == 0 || inArray == 0) return;
+        numBills = numBills - numPaid;
+        var range;
+        if (inArray == 1) range = [deleteArray[0], deleteArray[0]];
+        else range =  [deleteArray[0], deleteArray[inArray-1]];
+        var start = nth_occurrence(allBills, "{", range[0]+2);
+        var end = nth_occurrence(allBills, "}", range[1]+1);
+        start = allBills.substring(0, start);
+        if (numBills == 0) end = allBills.substring(end+1, allBills.length);
+        else end = allBills.substring(end+2, allBills.length);
+        allBills = start + end;
+        returnBills = JSON.parse(allBills);
+        //setCookie("allBills", allBills, 30);
+        return;
+      }
+      
+      function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+            }
+          }
+        return "";
+      }
+      
+      function setCookie(cname,cvalue,exdays) {
+        var d = new Date();
+        d.setTime(d.getTime() + (exdays*24*60*60*1000));
+        var expires = "expires=" + d.toGMTString();
+        document.cookie = cname+"="+cvalue+"; "+expires;
+      }
+      
+      function changeMonthToNumber(name) {
+        if (name == "Jan") return 1;
+        else if (name == "Feb") return 2;
+        else if (name == "Mar") return 3;
+        else if (name == "Apr") return 4;
+        else if (name == "May") return 5;
+        else if (name == "Jun") return 6;
+        else if (name == "Jul") return 7;
+        else if (name == "Aug") return 8;
+        else if (name == "Sep") return 9;
+        else if (name == "Oct") return 10;
+        else if (name == "Nov") return 11;
+        else if (name == "Dec") return 12;
+      }
+      
+      function nth_occurrence (string, char, nth) {
+        var first_index = string.indexOf(char);
+        var length_up_to_first_index = first_index + 1;
+        if (nth == 1) {
+          return first_index;
+        } 
+        else {
+          var string_after_first_occurrence = string.slice(length_up_to_first_index);
+          var next_occurrence = nth_occurrence(string_after_first_occurrence, char, nth - 1);
+          if (next_occurrence === -1) {
+            return -1;
+          } 
+          else {
+            return length_up_to_first_index + next_occurrence;  
+          }
+        }
+      }
+      
+     
+			
 	</script>
     
     <script src="js/vendor/jquery.js"></script>
     <script src="js/foundation.min.js"></script>
     <script>
       $(document).foundation();
+      
+      
     </script>
   </body>
 </html>

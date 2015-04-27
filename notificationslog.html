@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Paidit | Welcome</title>
-    <link rel="stylesheet" href="css/test.css" />
     <link rel="stylesheet" href="css/notificationslog.css" />
     <link rel="stylesheet" href="css/foundation.css" />
     <link rel="stylesheet" href="css/test.css" />
@@ -36,7 +35,6 @@
           <label class="show-for-medium-up">Settings</label>
         </a>
       </div>
-    
     <div class="container navigation" style = "width:94%; margin:3%">  
       <div class="small-12 small-centered large-12 large-centered columns">
         
@@ -90,6 +88,8 @@
       var obj;
       var returnLogs;
       var username;
+      //var backendURL = 'https://stormy-reef-9988.herokuapp.com/'
+      var backendURL = "https://pdit-backend-jcskillings.c9.io/";
       
       function loadNotifications() {
         if(getCookie("currUser") == "" || getCookie("currUser") == null || getCookie("currUser") =='{"bills":[]}') {
@@ -120,7 +120,7 @@
       }
       
       function getLogsHTTP2(user_name){
-        alert("usernmae in http2 is:" + JSON.stringify(user_name));
+        //alert("usernmae in http2 is:" + JSON.stringify(user_name));
         return $.ajax({
           type: "GET",
           dataType: 'json',
@@ -190,8 +190,8 @@
       function newUpdateJson(){
         var table = document.getElementById("logTable");
         var id;
-        alert(returnLogs);
-        alert(JSON.stringify(obj));
+        //alert(returnLogs);
+        //alert(JSON.stringify(obj));
         for(var j = 1; j < numLogs; j++){
           var info = obj.logs[j-1].info;
           var date = obj.logs[j-1].date;
@@ -240,7 +240,7 @@
       }
       
       function deleteLog(log_id){
-        alert("log id is:" + (log_id)); //logid is good, it all matches up sucka
+        //alert("log id is:" + (log_id)); //logid is good, it all matches up sucka
         return $.ajax({
           type: "DELETE",
           dataType: 'json',
@@ -249,16 +249,16 @@
           contentType: 'application/json',//ok then i will start doing the graph stuff then for now :) // sounds good
           //success: callback
           complete: function(complete){
-            alert("json complete: " +complete);
+            //alert("json complete: " +complete);
           },
           success: function(data){
-            alert("yippee");
+            //alert("yippee");
           }
           });
       } // end getBillsHTTP2
       
       function updateLogs(data){
-       alert("yay!");
+       //alert("yay!");
       } // end getBillsCallback
       
 

@@ -12,7 +12,7 @@
     <script type="text/javascript" src="js/responsive-tables.js"></script>
     <script src="js/vendor/modernizr.js"></script>
   </head>
-  <body onload="getUserInfo()">
+  <body onload="getInfo()">
     
       
   <div class="icon-bar five-up">
@@ -44,7 +44,7 @@
       <table class="large-20 columns" id="userTable" name="userTable">
         <tr>
           <th>Username:</th>
-          <td><input id="username" type="text" placeholder="username" name="username"/></td>
+          <td ><input id="username" type="text" placeholder="username" name="username"/></td>
         </tr>
         <tr>
           <th>First Name:</th>
@@ -89,7 +89,7 @@
             <th width="20%">Phone#/Email</th>
             <th width="8%">Type</th>
             <th width="10%">Carrier</th>
-            <th width="6%"></th>
+            <th width="6%">Verified</th>
             <th width="22%"></th>
             <th width="22%"></th>
           </tr>
@@ -142,23 +142,65 @@
       var password;
       var notifs;
       var numNotifs;
+      var currUser;
+      var backendURL = "https://pdit-backend-jcskillings.c9.io/";
       
-      function getUserInfo(){
-        if(getCookie("currUser") == "" || getCookie("currUser") == null || getCookie("currUser") =='{"bills":[]}') {
+      function getInfo(){
+        if(getCookie("currUser") == "" || getCookie("currUser") == null) {
           window.location.replace("splash.html");
         }
-        var currUser = JSON.parse(getCookie("currUser"));
-        firstName = currUser.firstName;
-        userName = currUser.userName;
-        lastName = currUser.lastName;
-        password = currUser.password;
+        else {
+        var user = JSON.parse(getCookie("currUser"));
+        var username = {"user_name": user.username };
+        
+        getNotifsHTTP2(username).done(getNotifsCallback);
+        }
+      }
+      
+      function getNotifsCallback(data){ 
+        //alert("data?: " + JSON.stringify(data));
+        notifs = {"methods": data };
+        //alert(JSON.stringify(returnBills));
+        if (notifs == null || notifs =="" || notifs == '{"methods":[]}'){
+          notifs= '{"bills":[]}';
+          numNotifs = 0;
+          getUserInfo();
+        }
+        else {
+          numNotifs = notifs.methods.length;
+          getUserInfo(); 
+        }
+      } // end getBillsCallback
+      
+      function getNotifsHTTP2(user_name){ 
+        //alert("usernmae in http2 is:" + JSON.stringify(user_name));//damn
+        return $.ajax({
+          type: "GET",
+          dataType: 'json',
+          //url: 'https://pdit-backend-jcskillings.c9.io/bills.json',
+          url: backendURL+'notif_types.json',
+          data: user_name,
+          contentType: 'application/json'
+          //success: callback
+          });
+      } // end getBillsHTTP2
+      
+      
+      
+      function getUserInfo(){
+        
+        currUser = JSON.parse(getCookie("currUser"));
+        firstName = currUser.first;
+        userName = currUser.username;
+        lastName = currUser.last;
+        //password = currUser.password;
         document.getElementById("username").value = userName;
         document.getElementById("firstname").value = firstName;
         document.getElementById("lastname").value = lastName;
-        document.getElementById("password").value = password;
-        document.getElementById("password2").value = password;
-        notifs = JSON.parse(getCookie("NM"));
-        numNotifs = notifs.methods.length;
+        //document.getElementById("password").value = "abcdefgh";
+        //document.getElementById("password2").value = "abcdefgh";
+        //notifs = JSON.parse(getCookie("NM"));
+        //numNotifs = notifs.methods.length;
         for  (var j=1; j < numNotifs+1; j++){
             putNotif(j);
           }
@@ -202,8 +244,12 @@
       var type;
       var name;
       var destination;
+      var carrier1;
       var carrier;
       var verified;
+      var currEdit;
+      var type1;
+      var newName;
       
       function putInEditField() {
         var j;
@@ -214,21 +260,25 @@
         type = null;
         verified = null;
         newJson = null;
-        var find;
+        currEdit = null;
+        
         
         for(j = 1; j < numNotifs; j++){
           var named = notifs.methods[j-1].name;
           var row = table.rows.item(j).cells[0].firstChild.data;
           if (named != row) {
-            if(isActive(named) == true) {
-              alert("You cannot change the name of a notification method that is currently attached to a bill");
-              window.location.replace("usersettings.html");
-            }
+            //if(isActive(named) == true) {
+            //  alert("You cannot change the name of a notification method that is currently attached to a bill");
+            //  window.location.replace("usersettings.html");
+            //}
+            
             name = notifs.methods[j-1].name;
             destination = notifs.methods[j-1].destination;
             carrier = notifs.methods[j-1].carrier;
             type = notifs.methods[j-1].type;
             verified = notifs.methods[j-1].verified;
+            currEdit = j-1;
+            /*
             NM = getCookie("NM");
             find = '{"type":"' +type+'","destination":"'+destination+'","carrier":"'+carrier+
               '","verified":"'+verified+'","name":"'+name;
@@ -239,25 +289,30 @@
               table.rows.item(j).cells[0].firstChild.data;
             newJson = NM.substring(NM.indexOf(find2), NM.length);
             newJson = tempCookie + newJson;
+            */
+            
             break;
           }
         }
-        if(newJson == null) { //editing last  & there is more than 1 bill
+        if(currEdit == null) { //editing last  & there is more than 1 bill
           name = notifs.methods[(numNotifs-1)].name;
-          if(isActive(name) == true) {
-            alert("You cannot change the name of a notification method that is currently attached to a bill");
-            window.location.replace("usersettings.html");
-          }
+          currEdit = numNotifs-1;
+          //if(isActive(name) == true) {
+          //  alert("You cannot change the name of a notification method that is currently attached to a bill");
+          //  window.location.replace("usersettings.html");
+          //}
           destination = notifs.methods[(numNotifs-1)].destination;
           carrier = notifs.methods[(numNotifs-1)].carrier;
           type = notifs.methods[(numNotifs-1)].type;
           verified = notifs.methods[(numNotifs-1)].verified;
+          /*
           NM = getCookie("NM");
           if(numNotifs == 1) find = '{"type":"' +type+'","destination":"'+destination+'","carrier":"'+carrier+
               '","verified":"'+verified+'","name":"'+name;
           else find = ',{"type":"' +type+'","destination":"'+destination+'","carrier":"'+carrier+
               '","verified":"'+verified+'","name":"'+name;
           newJson = NM.substring(0, NM.indexOf(find))+"]}";
+          */
         }
         $('#addNotif').css('visibility','hidden');
     
@@ -285,14 +340,15 @@
         var p=o.parentNode.parentNode;
         p.parentNode.removeChild(p);
         updateJson();
-        window.location.replace("usersettings.html");
+        //window.location.reload();
         }
       }
-      
+      var deleteName;
       function updateJson(){
         var j;
-        notifs = JSON.parse(getCookie("NM"));
-        numNotifs = notifs.methods.length;
+        //notifs = JSON.parse(getCookie("NM"));
+        //numNotifs = notifs.methods.length;
+        /*
         if (numNotifs == 1) {
           var nameTest = notifs.methods[0].name;
           if(isActive(nameTest) == true) {
@@ -303,7 +359,8 @@
           notifs = JSON.parse(getCookie("NM"));
           numNotifs = notifs.methods.length;
           return;
-        }
+        }*/
+        var id;
         var table = document.getElementById("userTable2");
         for(j = 1; j < numNotifs; j++){
           var name = notifs.methods[j-1].name;
@@ -318,6 +375,7 @@
               '","verified":"'+table.rows.item(j).cells[4].firstChild.data+'","name":"'+
               table.rows.item(j).cells[0].firstChild.data;
           if (total != row) {
+            /*
             if(isActive(name) == true) {
               alert("You cannot change the name of a notification method that is currently attached to a bill");
               return;
@@ -331,10 +389,16 @@
             addNL(message);
             setCookie("NM", tempCookie2, 30);
             notifs = JSON.parse(getCookie("NM"));
-            numNotifs = notifs.methods.length;
+            numNotifs = notifs.methods.length;*/
+            deleteName = notifs.methods[j-1].name;
+            id = notifs.methods[j-1].id;
+            notifs.methods.splice(j-1, 1);
+            numNotifs--;
+            deleteNotif(id).done(updateNotifs);
             return;
           }
         }
+        /*
         name = notifs.methods[j-1].name;
         if(isActive(name) == true) {
           alert("You cannot change the name of a notification method that is currently attached to a bill");
@@ -353,12 +417,43 @@
         setCookie("NM", tempCookie, 30);
         notifs = JSON.parse(getCookie("NM"));
         numNotifs = notifs.methods.length;
+        */
+        id = notifs.methods[numNotifs-1].id;
+        deleteName = notifs.methods[numNotifs-1].name;
+        notifs.methods.splice(numNotifs-1, 1);
+        numNotifs--;
+        deleteNotif(id).done(updateNotifs);
         return;
       }
       
+      function deleteNotif(notif_id){
+        //alert("log id is:" + (notif_id));
+        return $.ajax({
+          type: "DELETE",
+          dataType: 'json',
+          url: 'https://pdit-backend-jcskillings.c9.io/notif_types/'+notif_id+'.json', 
+          //data: notif_id,
+          contentType: 'application/json',
+          //success: callback
+          complete: function(complete){
+            //alert("json complete: " +complete);
+          },
+          success: function(data){
+            //alert("yippee");
+            
+          }
+          });
+      } // end getBillsHTTP2
+      
+      function updateNotifs(data){
+       //alert("yay!");
+       addNL1("You deleted Notification Method "+deleteName, "delete reminder");
+      } // end getBillsCallback
+      
+      
       $('#addNotif').click(function(){
-        var num = JSON.parse(getCookie("NM")).methods.length;
-        if (num == 4) {
+        //var num = JSON.parse(getCookie("NM")).methods.length;
+        if (numNotifs == 4) {
           alert("You cannot have more than 4 notification methods");
           return;
         }
@@ -412,26 +507,39 @@
       
       $('#saveEdit').click( function() {
         $('#saveEdit').click(null);
-        var name1 = document.getElementById("name").value;
-        if(isActive(name1) == true) {
-          alert("You cannot change to the name of a notification method which is currently active on a bill");
-          return;
-        }
-        var newNotif = new Method(type, destination, carrier, verified, name1);
-        var stringy = JSON.stringify(newNotif);
-        NM = newJson;
-        var tempBills = NM.substring(0, NM.length - 2);
-        if (numNotifs == 1) NM = tempBills + stringy + "]}";
-        else NM = tempBills + "," + stringy + "]}";
-        setCookie("NM",NM,30);
-        notifs = JSON.parse(getCookie("NM"));
+        newName = document.getElementById("name").value;
+        var newNotif = '{"notif_type": {"name": "'+newName+'", "destination":"'+notifs.methods[currEdit].destination+
+          '", "notifMethod": "'+notifs.methods[currEdit].type+'", "carrier": "'+notifs.methods[currEdit].carrier+'", "verified":false, "user_name":"'+userName+'"}}';
         $('#addNotif').css('visibility','visible');
-        window.location.replace("usersettings.html");
+        putNotifHTTP(newNotif, notifs.methods[currEdit].id).done(putNotifCallback);
+        //if(isActive(name1) == true) {
+        //  alert("You cannot change the name of a notification method which is currently active on a bill");
+        //  return;
+        //}
+        //window.location.replace("usersettings.html");
       });
+      
+      function putNotifHTTP(editedNotif, notifId){ // need correctly formated bill json and bill id
+        return $.ajax({
+          type: "PUT",
+          dataType: 'json',
+          url: backendURL+'notif_types/'+notifId+'.json',
+          data: editedNotif,
+          contentType: 'application/json'
+          });
+      }
+      
+      function putNotifCallback(data){ // everything that needs to be done after a bill is edited
+        //alert("putnotif callback data: " + JSON.stringify(data));
+        var oldName = notifs.methods[currEdit].name;
+        // will need to add log item
+        addNL1("You changed the Notification Method named "+oldName+" to " +newName, "edit reminder");
+      }
       
       $('#saveBtn').click( function() {
         $('#saveBtn').click(null);
         var name = document.getElementById("name").value;
+        /*
         var NM = (getCookie("NM"));
         var currMethods = JSON.parse(NM).methods;
         for(var i=0;i<currMethods.length;i++){
@@ -440,15 +548,16 @@
             alert("You may not have multiple notification methods with the same name");
             return;
           }
-        }
+        }*/
         var find = ",";
         if(name.indexOf(find) != -1) {
           alert("Notification method names cannot contain commas");
           return;
         }
-        var carrier =  document.getElementById("carrierDrop").value;
-        var type = document.getElementById("typeDrop").value;
+        carrier1 =  document.getElementById("carrierDrop").value;
+        type1 = document.getElementById("typeDrop").value;
         var destination = document.getElementById("destination").value;
+        /*
         var newNotif = new Method(type, destination, carrier, "verified", name);
         var stringy = JSON.stringify(newNotif);
         
@@ -461,13 +570,88 @@
         }
         setCookie("NM",NM,30);
         notifs = JSON.parse(getCookie("NM"));
-        numNotifs = notifs.methods.length;
+        numNotifs = notifs.methods.length;*/
+        var newMethod1 = '{"notif_type": {"name": "'+name+'", "destination":"'+destination+'", "notifMethod": "'+type1+'", "carrier": "'+carrier1+'", "verified":false, "user_name":"'+userName+'"}}';
         $('#addNotif').css('visibility','visible');
+        if(type1== "phone"){
+          if (carrier1 == "none" || carrier1 == "email"){
+            alert("You entered a phone number without a proper carrier selected.  Please correct and resubmit, thank you!");
+            return;
+          }
+        }
+        addNM1(newMethod1);
+        /*
         var message = "You added a new " + type + " Notification Method named " +
           name + " to be sent to " + destination;
         addNL(message);
-        window.location.replace("usersettings.html");
+        window.location.replace("usersettings.html");*/
       });
+      
+      function addNM1(jsonMethod){
+        //alert("calling addNM with data = " + jsonMethod);
+        var postTry2 = $.ajax({
+        type: "POST",
+        dataType: 'json',
+        //url: 'https://pdit-backend-jcskillings.c9.io/notif_types.json',
+        url: backendURL+'notif_types.json',
+        data: jsonMethod,
+        contentType: 'application/json',
+        complete: function(complete){
+        //alert("json complete: " +complete);
+        },
+        success: function(data){
+          numNotifs++;
+          if(type1 == "email")  addNL1("You added an unverified Email address!(Please enter the verification code sent to that address at the homepage or in settings!)", "create reminder");
+          else{
+            addNL1("You added an unverified phone number!(Please enter the verification code sent to that phone at the homepage or in settings!)", "create reminder");
+          }
+        },
+        error: function(error){
+          alert("error:" + JSON.stringify(error));
+        }
+        });
+      }
+      
+      function addNL1(message, eventType){
+        //alert("NL1 reached");
+        var currDate = Date();
+        var currTime = currDate.substring(16, 24);
+        var currHours = parseInt(currTime.substr(0, 2));
+        var ampm;
+        if (currHours >=1 && currHours <= 12){
+          ampm = " a.m.";
+        }
+        else if (currHours >= 13){
+          currHours = currHours -12;
+          ampm = " p.m.";
+        }
+        else {
+          currHours = 1;
+          ampm = " a.m.";
+        }
+        currTime = currHours + currTime.substr(2, 3) + ampm;
+        currDate = currDate.substring(4, 15);
+        var newLog = '{"log": {"info": "'+message+'", "date":"'+currDate+'", "time": "'+currTime+'","eventType":"'+eventType+'", "user_name":"'+userName+'", "hide":false}}';
+        
+        var postTry2 = $.ajax({
+          type: "POST",
+          dataType: 'json',
+          //url: 'https://pdit-backend-jcskillings.c9.io/logs.json',
+          url: backendURL+'logs.json',
+          data: newLog,
+          contentType: 'application/json',
+          complete: function(complete){
+          //alert("json complete: " +complete);
+          },
+          success: function(data){
+            //alert("added 1st NL");
+            window.location.reload();
+          },
+          error: function(error){
+            alert("error:" + JSON.stringify(error));
+          }
+        });
+      }
       
       $('#logout').click(function(){
         setCookie("currUser", "", 30);
@@ -591,17 +775,19 @@
         setCookie("NL",NL,30);
       }
       
-      
+      var newMessage;
       function saveUser(){
+        /*
         var obj = JSON.parse(getCookie("allUsers"));
         var numUsers = obj.users.length;
         var userIndex;
-        var userName1 = document.getElementById("username").value;
+        
         var named;
         for  (userIndex=0; userIndex < numUsers; userIndex++){
           named = obj.users[userIndex].userName;
           if(userName == named) break;
-        }
+        }*/
+        var userName1 = document.getElementById("username").value;
         var firstName1 = document.getElementById("firstname").value;
         var lastName1 = document.getElementById("lastname").value;
         var password1 = document.getElementById("password").value;
@@ -610,29 +796,33 @@
           alert("Your password must match the password confirmation!");
           return;
         }
-        if (password1.length < 6){
-          alert("Your password must be at least of length 6");
+        if (password1.length < 8 && password1 != ""){
+          alert("Your password must be at least of length 8");
           return;
         }
-        var newMessage = "";
+        newMessage = "";
         var numChanged = 0;
         
         if(userName == userName1 && firstName == firstName1 &&
-          lastName==lastName1 && password==password1){
+          lastName==lastName1 && password=="" && password2==""){
           alert("No changes were made/saved!");
           return;
         }
         else{
           if(userName != userName1) {
+            /*
             for  (var i=0; i < numUsers; i++){
               named = obj.users[i].userName;
               if(userName1 == named) {
                 alert("That username is taken, please enter another");
                 return;
               }
-            }
-            newMessage=newMessage + "You changed your username";
-            numChanged++;
+            }*/
+            
+            //newMessage=newMessage + "You changed your username";
+            //numChanged++;
+            alert("I'm sorry.  You cannot change your username at this point.");
+            return;
           }
           if(firstName!=firstName1){
             if (numChanged == 0) {
@@ -652,6 +842,7 @@
               newMessage=newMessage+", last name";
             }
           }
+          /*
           if(password!=password1) {
             if (numChanged == 0) {
               newMessage = "You changed your password";
@@ -661,13 +852,50 @@
               newMessage = newMessage +", password";
             }
           }
-          var update = new User(userName1, email, firstName1, lastName1, phone, password1);
-          var stringy = JSON.stringify(update);
-          setCookie("currUser", stringy, 30);
-          addNL(newMessage);
-          window.location.replace("usersettings.html");
+          */
+          //var update = new User(userName1, email, firstName1, lastName1, phone, password1);
+          //var stringy = JSON.stringify(update);
+          //setCookie("currUser", stringy, 30);
+          
+          //addNL(newMessage);
+          //window.location.replace("usersettings.html");
+          var jsonRegister;
+          if(password1 != "" && password1 != null){
+            //alert("PW1 != empty");
+            jsonRegister = '{"user": {"username":"'+userName1+'","first":"' + firstName1+'", "last":"'+lastName1+'", "password":"' + password1 + '"}}';
+          }
+          else {
+            alert("You must enter or change your password to change your name at this time");
+            return;
+            //jsonRegister = '{"user": {"username":"'+userName1+'","first":"' + firstName1+'", "last":"'+lastName1+'"}}';
+          }
+          finishSave(jsonRegister);
         }
-        
+      }
+      
+      function finishSave(jsonString) {
+        var postTry = $.ajax({
+                //beforeSend : function(jqXHR) {
+                //  jqXHR.setRequestHeader('X-CSRF-Token', $('meta[name="csrf-token"]').attr('content'));
+                //},
+          type: "PUT",
+          dataType: 'json',
+          //url: 'https://pdit-backend-jcskillings.c9.io/users.json',
+          url: backendURL+'users/'+currUser.id+'.json',
+          data: jsonString,
+          contentType: 'application/json',
+          complete: function(complete){
+          //alert("json complete: " +complete);
+          },
+          success: function(data){
+            //alert("KYLE!!");
+            setCookie("currUser", JSON.stringify(data), 30);
+            addNL1(newMessage, "login");
+          },//redir();//instead call new method to set NL, and NM if one exists
+          error: function(error){
+            alert("error:" + JSON.stringify(error));
+          }
+        });
       }
       
     </script>

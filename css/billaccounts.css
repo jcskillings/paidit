@@ -49,12 +49,12 @@ table {
 th {
     color: white !important;
     background: #67ADCC !important;
-    font-size: 125% !important;
+    font-size: 110% !important;
 }
 
 tr {
-    
     box-shadow: 5 0 50px #444F43  !important;
+    font-size: 100% !important;
 }
 .editBox {
     border-left: 4pt solid #809C78;

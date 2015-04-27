@@ -6,9 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Paidit | Welcome</title>
     <link rel="shortcut icon" href="img/icon/checkMark.png"/>
-    <link rel="stylesheet" href="css/index.css" />
     <link rel="stylesheet" href="css/test.css" />
-    
+    <link rel="stylesheet" href="css/index.css" />
     <link rel="stylesheet" href="css/foundation.css" />
     <script src="js/vendor/modernizr.js"></script>
   </head>
@@ -122,14 +121,12 @@
       var atBills = [];
       var returnBills =""; //global
       var username ="";
-      var numOverdue;
       //var backendURL = 'https://stormy-reef-9988.herokuapp.com/'
       var backendURL = "https://pdit-backend-jcskillings.c9.io/";
-      //======================================================================     
+     
       function errorBills(){
         alert("error getting bills");
       }
-      //======================================================================
       function getBills(){
         //alert("running get bills");
         
@@ -215,7 +212,7 @@
           } // end for */
         } // end else
       } // end getBills
-      //======================================================================      
+      
       function isWithinMonth(y, m, d, dy, dm, dd){
         if (y==dy && m==dm && d<=dd){
           return true;
@@ -228,11 +225,11 @@
         }
         return false;
       }
-      //======================================================================      
-      function reorderBills(year, month, day){ // not called?
+      
+      function reorderBills(year, month, day){
         //obj = JSON.parse(getCookie("allBills"));
         obj = returnBills;
-        //alert("in reorderBills, obj: " + JSON.stringify(obj));
+        alert("in reorderBills, obj: " + JSON.stringify(obj));
         numBills = obj.bills.length;
         allBills = JSON.stringify(obj);
         var bottom = numBills -1;
@@ -277,14 +274,14 @@
         //alert("after "+allBills);
         setCookie("allBills", allBills, 30);
       }
-      //======================================================================      
+      
       function myCallback(data) {
         //alert("in myCallback:" + JSON.stringify(data));
         // code that depends on 'result'
         returnBills = {"bills": data };
         //alert("setting obj to:" +JSON.stringify(returnBills));
         //obj = JSON.parse(returnBills); 
-        obj = returnBills;
+        obj = returnBills
         numBills = obj.bills.length;
         //alert("num bills:" + numBills);
         var date = Date();
@@ -296,67 +293,40 @@
         day = parseInt(day);
         year = parseInt(year);
         
-        numOverdue = 0;
-          numInserted = 0;
-          for  (atBill=0; atBill < numBills; atBill++){
-            var reminder2 = obj.bills[atBill].reminder2;
-            date = obj.bills[atBill].dueDate;
-            if(date.charAt(0)==",") continue;
-            var billYear = date.substr(0, 4);
-            billYear = parseInt(billYear);
-            var billMonth = date.substr(5, 2);
-            billMonth = parseInt(billMonth);
-            var billDay = date.substr(8, 2);
-            billDay = parseInt(billDay);
-            var today = new Date();
-            var rDate = RubyDateConvert(date);
-            //alert("rdate: " + rDate + " today: " + today);
-            if(reminder2 == null || rDate < today ){;
-              numOverdue++;
-              putMonthsBill(numInserted, "overdue", billYear, billMonth, billDay);
-              numInserted++;  
-            }
+        numInserted = 0;
+        for  (atBill=0; atBill < numBills; atBill++){
+          date = obj.bills[atBill].dueDate;
+          var billYear = date.substr(0, 4);
+          billYear = parseInt(billYear);
+          var billMonth = date.substr(5, 2);
+          billMonth = parseInt(billMonth);
+          var billDay = date.substr(8, 2);
+          billDay = parseInt(billDay);
+          if(year==billYear && month==billMonth && day<=billDay){
+            putMonthsBill(numInserted);
+            numInserted++;
           }
-          for(atBill=0; atBill< numBills; atBill++){
-            var reminder1 = obj.bills[atBill].reminder1;
-            date = obj.bills[atBill].dueDate;
-            billYear = date.substr(0, 4);
-            billYear = parseInt(billYear);
-            billMonth = date.substr(5, 2);
-            billMonth = parseInt(billMonth);
-            billDay = date.substr(8, 2);
-            billDay = parseInt(billDay);
-            if(reminder1 == null) {
-              var endDate = obj.bills[atBill].repeat.substr(5,6);
-              var endMonth = changeMonthToNumber(endDate.substr(0, 3));
-              var endDay = parseInt(endDate.substr(4, 2));
-              if(day != endDay) continue;
-              if(month != endMonth) continue;
-              putMonthsBill(numInserted, "paid",billYear, billMonth, billDay);
-              numInserted++;
-            }
+          else if(year==billYear && month+1==billMonth && billDay<=day){
+            putMonthsBill(numInserted);
+            numInserted++;
           }
-          for(atBill=0; atBill < numBills; atBill++){
-            date = obj.bills[atBill].dueDate;
-            if(date.charAt(0)==",") continue;
-            if(date.indexOf(",") != -1) 
-                  date=date.substring(date.indexOf(",")+1, date.length);
-                  
-            billYear = date.substr(0, 4);
-            billYear = parseInt(billYear);
-            billMonth = date.substr(5, 2);
-            billMonth = parseInt(billMonth);
-            billDay = date.substr(8, 2);
-            billDay = parseInt(billDay);
-            var show = isWithinMonth(year, month, day, billYear, billMonth, billDay);
-            if(show == true){
-              putMonthsBill(numInserted, "upcoming", billYear, billMonth, billDay);
-              numInserted++;
-            }
+          else if(year+1==billYear && month==12 && billMonth == 1 && billDay<=day){
+            putMonthsBill(numInserted);
+            numInserted++;
           }
+          else if(date.charAt(0)==",") {
+            var endDate = obj.bills[atBill].repeat.substr(5,6);
+            var endMonth = changeMonthToNumber(endDate.substr(0, 3));
+            var endDay = parseInt(endDate.substr(4, 2));
+            if(day != endDay) continue;
+            if(month != endMonth) continue;
+            putMonthsBill(numInserted);
+            numInserted++;
+          }
+        }
       } // end mycallback
  
-      //======================================================================      
+      
       function getBillsHTTP2(user_name){
         //alert("usernmae in http2 is:" + JSON.stringify(user_name));
         return $.ajax({
@@ -370,7 +340,7 @@
           });
       } // end getBillsHTTP2
       
-      //======================================================================     
+      
       function changeMonthToNumber(name) {
         if (name == "Jan") return 1;
         else if (name == "Feb") return 2;
@@ -387,8 +357,7 @@
       }
       
       var myStuff = [];
-      //======================================================================
-      function putMonthsBill(index, type, billYear, billMonth, billDay) {
+      function putMonthsBill(index) {
         var table = document.getElementById("billTable");
         var row = table.insertRow(index+1);
         var cell1 = row.insertCell(0);
@@ -401,24 +370,14 @@
         var cell8 = row.insertCell(7);
         atBills[index] = atBill;
         var dueD = obj.bills[atBill].dueDate;
-        //var tempBill = false;
+        var tempBill = false;
         if(dueD.charAt(0)==",") {
-        //  tempBill = true;
+          tempBill = true;
           dueD = dueD.substring(1, dueD.length);
         }
-        var currDate = Date();
-        currDate = currDate.substring(4, 15);
-        var currMonth = currDate.substr(0, 3);
-        var currDay = currDate.substr(4, 2);
-        var currYear = currDate.substr(7, 4);
-        currMonth = changeMonthToNumber(currMonth);
-        currDay = parseInt(currDay);
-        currYear = parseInt(currYear);
-        
         var year = dueD.substr(0, 4);
         var month = dueD.substr(5, 2);
         var day = dueD.substr(8, 2);
-
         var date = month +"/"+day+"/"+year;
         var hour = dueD.substr(11,2);
         var minute= dueD.substr(14, 2);
@@ -454,6 +413,7 @@
           }
         }
         var find = ",,";
+        //alert(category.indexOf(find));
         while(category.indexOf(find) != -1){
           var temp1 = category.substring(0, category.indexOf(find));
           var temp2 = category.substring(category.indexOf(find)+1, category.length);
@@ -466,17 +426,14 @@
         var display = "";
         var loginPage = obj.bills[atBill].loginPage;
         if(loginPage.indexOf(check1)!=-1 ||loginPage.indexOf(check2)!=-1 ||loginPage.indexOf(check3)!=-1){
-          if (type=="paid")display = "<a style='color:black;' href="+loginPage+
+          if (tempBill == true)display = "<a style='color:#3ADF00;' href="+loginPage+
             " onclick='window.open(this.href); return false;' onkeypress='window.open(this.href); return false;'>Paid At</a>";
-          else if(type=="upcoming")display = "<a style='color:#3ADF00;' href="+loginPage+" onclick='window.open(this.href); return false;'"+
+          else display = "<a style='color:#3ADF00;' href="+loginPage+" onclick='window.open(this.href); return false;'"+
             "onkeypress='window.open(this.href); return false;'>Pay Bill</a>";
-          else if (type=="overdue")display = "<a style='color:black;' href="+loginPage+
-            " onclick='window.open(this.href); return false;' onkeypress='window.open(this.href); return false;'>Pay Bill</a>";
         }
         
         var repeat;
-        if(obj.bills[atBill].reminder1 == null) repeat = obj.bills[atBill].repeat;
-        else if (obj.bills[atBill].reminder2 == null) repeat = "OVERDUE";
+        if(obj.bills[atBill].reminder1 == null || obj.bills[atBill].reminder2 == null) repeat = obj.bills[atBill].repeat;
         else {
           if (obj.bills[atBill].repeat == "Monthly"||obj.bills[atBill].repeat=="Weekly"||
                 obj.bills[atBill].repeat=="Biweekly" || obj.bills[atBill].repeat=="Never")
@@ -486,12 +443,12 @@
         
         
         var lastCell;
-        if(type=="paid") {
-          lastCell = "<a href='#'><img src='img/paiditkyleblackE.png' height='90' width='135' border=0/></a>";
+        if(tempBill == true) {
+          lastCell = "<a href='#'><img src='img/paiditkyleblackE.png' height='90' width='135' border=0/></a>"
         }
         else lastCell = "<a href='#' onclick='paidit(this)'><img src='img/paiditkyleblackQ.png' height='90' width='135' border=0/></a>";
         
-        cell1.innerHTML =  obj.bills[atBill].name;
+        cell1.innerHTML = obj.bills[atBill].name;
         cell1.style.fontSize="110%";
         cell2.innerHTML = "$" +obj.bills[atBill].amountLo+"-$"+obj.bills[atBill].amountHi;
         cell2.style.fontSize="110%";
@@ -529,27 +486,23 @@
           cell6.style.backgroundColor = "#00FF40";
           cell7.style.backgroundColor = "#00FF40";
         }
-      } // end putMonthsBill
+      }
       
       var thisOverdue;
-      //======================================================================
       function setOverdue(v){
         thisOverdue = v;
       }
       
-      var overdueMsg
-      //======================================================================
+      var overdueMsg;
       function overdue(row){
         var removeOverdue = null;
         var p=row.parentNode.parentNode;
         p.parentNode.removeChild(p);
         var table = document.getElementById("billTable");
-        //obj = JSON.parse(getCookie("allBills"));
-        obj = returnBills;
+        obj = JSON.parse(getCookie("allBills"));
         numBills = obj.bills.length;
         newJson = null;
-        //allBills = getCookie("allBills");
-        allBills = JSON.stringify(returnBills);
+        allBills = getCookie("allBills");
         for(var j = 1; j < numInserted; j++){
           name = obj.bills[j-1].name;
           var below = table.rows[j].cells[0].firstChild.data;
@@ -580,12 +533,11 @@
       function paidit(row){
         var p=row.parentNode.parentNode;
         p.parentNode.removeChild(p);
-        //obj = JSON.parse(getCookie("allBills"));
-        obj = returnBills;
+        obj = JSON.parse(getCookie("allBills"));
         numBills = obj.bills.length;
         paiditEditField();
       }
-      //======================================================================
+      
       function addNL(message){
         var currDate = Date();
         var currTime = currDate.substring(16, 24);
@@ -624,7 +576,7 @@
         this.date = date;
         this.time = time;
       }
-      //======================================================================
+      
       function paiditEditField(){
         var j;
         var table = document.getElementById("billTable");
@@ -640,8 +592,7 @@
         var reminder1 = null;
         var reminder2 = null;
         newJson = null;
-        //allBills = getCookie("allBills");
-        allBills = JSON.stringify(returnBills);
+        allBills = getCookie("allBills");
         var find;
         for(j = 1; j < numInserted; j++){
           name = obj.bills[atBills[j-1]].name;
@@ -720,8 +671,7 @@
         var updatedBill = new Bill(name, category, paymentType, loginPage, newDueDate, repeat, amountLo, amountHi, user_name, reminder1, reminder2);
         var stringy = JSON.stringify(updatedBill);
         
-        //numBills = JSON.parse(getCookie("allBills")).bills.length;
-        numBills = returnBills.bills.length;
+        numBills = JSON.parse(getCookie("allBills")).bills.length;
         allBills = newJson;
         var tempBills = allBills.substring(0, allBills.length - 2);
         if (numBills == 1){
@@ -1169,22 +1119,6 @@
           document.getElementById("welcome").innerHTML = name.bold() + "! ".bold() + document.getElementById("welcome").innerHTML;
         }
         return;
-      }
-      function RubyDateConvert(rubyDate){
-        var year = rubyDate.substring(0,4);
-        var month = rubyDate.substring(6,7);
-        var day = rubyDate.substring(8,10);
-        var hour = rubyDate.substring(11,13);
-        var minute = rubyDate.substring(14,16);
-        //alert("RUBY CONVERT year: " + year + " month: " + month + " day: " + day + " hour: " + hour + " minute: " + minute);
-        var dt = new Date(year,month-1,day,hour,minute);
-        var offset = dt.getTimezoneOffset()
-        //alert("offset (should be 300: " + offset);
-        dt.setMinutes(dt.getMinutes() - offset);
-        hour = dt.getHours();
-        minute = dt.getMinutes(); // after converision from UTC
-        //alert("Date: " + dt.toString());
-        return dt;
       }
     </script>
   </body>

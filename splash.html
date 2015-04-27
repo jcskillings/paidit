@@ -154,7 +154,7 @@
             <div class="right">
             <label>
             <input id="disclaimer" type="checkbox" checked>Allow data collection
-            <span data-tooltip aria-haspopup="true" class="has-tip right" title="This allows UW-Madison to use your data for educational purposes.  No names, phone numbers, email addresses, or personal data will be saved or used in any way">?</span>
+            <span data-tooltip aria-haspopup="true" class="has-tip right" title="This allows UW-Madison to use your data for educational purposes.  No names, phone numbers, email addresses, or personal data will be used in any way">?</span>
             </label></div><div class="clear"></div>
           </div>
           
@@ -213,7 +213,8 @@
       $(document).foundation();
 
       var checked;
-
+      var backendURL = "https://pdit-backend-jcskillings.c9.io/";
+      //var backendURL = 'https://stormy-reef-9988.herokuapp.com/';
       
       function redir(){
         window.location.replace("index.html");
@@ -250,7 +251,7 @@
       var NM;
        
       function newCheckCookie() {
-        /*
+        
         if (getCookie("NL") == null || getCookie("NL") == "" || getCookie("NL") == '{"logs":[]}'){
           setCookie("NL",'{"logs":[]}',30);
           NL = '{"logs":[]}';
@@ -281,7 +282,7 @@
           if (getCookie("currUser") != "" && getCookie("currUser") != null){
             redir();
           }
-        }*/
+        }
         if (getCookie("currUser") != "" && getCookie("currUser") != null){
           //alert("currUser detected!");
           var userTemp = JSON.parse(getCookie("currUser"));
@@ -396,11 +397,27 @@
               var email = document.forms['regForm']['regEmail'].value;
               var phone = document.forms['regForm']['regCell'].value;
               var provider = document.forms['regForm']['mydropdown'].value;
-              
               var jsonRegister = '{"user": {"username":"'+userName+'","email":"' + email + '","first":"' + firstName+'", "last":"'+lastName+
                 '", "phone":"' + phone+'", "verifiedAcct":'+dataCollect+', "provider":"'+ provider+ '", "password":"' + password + '"}}';
-                alert("jsonRegister: " + jsonRegister);
-              addUser(jsonRegister);
+                //alert("jsonRegister: " + jsonRegister);
+              
+              if(phone.length > 0 && phone.length < 10){
+                alert("Phone number should be ten digits.  Area code + 7-digit local number");
+                return;
+              }
+              var test1 = "-";
+              var test2 = "(";
+              var test3 = ")";
+              var test4 = ".";
+              var test5 = "/";
+              if(phone.indexOf(test1) != -1 ||phone.indexOf(test2) != -1 ||phone.indexOf(test3) != -1 ||phone.indexOf(test4) != -1 ||phone.indexOf(test5) != -1){
+                alert("Phone number should not contain anything except ten digits.");
+                return;
+              }
+              if(phone.length > 0 && provider == "none"){
+                alert("You entered a phone number without a provider. Please select a provider and resubmit.  Thank you.");
+                return;
+              }
               //var newUser = new User(userName, email, firstName, lastName, phone,  password);
               
               //var stringy = JSON.stringify(newUser);
@@ -433,33 +450,36 @@
               //var newMethod2 = new Method("cell", phone, provider, "verified", "cell1");
               //alert(newMethod);
               //var newMethod1 = '{"notif_type": {"name": "email1", "destination":"'+email+'", "type": "email", "carrier": "email", "verified": "not verified"}}';
-              //var newMethod2 = '{"notif_type": {"name": "phone1", "destination":"'+phone+'", "type": "phone", "carrier": "'+carrier+'", "verified": "not verified"}}';
+              //var newMethod2 = '{"notif_type": {"name": "phone1", "destination":"'+phone+'", "type": "phone", "carrier": "'+provider+'", "verified": "not verified"}}';
               //alert("about to call addNM 2 times");
              //addNM(newMethod1);
               //addNM(newMethod2);
-              
-              //var stringy1 = JSON.stringify(newMethod);
-              //var stringy2 = JSON.stringify(newMethod2);
-              //NM = getCookie("NM");
-              //var temp1 = NM.substring(0, NM.length - 2);
-              //if(numMethods == 0)  NM = temp1 + stringy1 + "," + stringy2 + "]}";
-              //else NM = temp1 + "," + stringy1 + "," + stringy2 + "]}";
-              //setCookie("NM", NM, 30);
+              /*
+              var stringy1 = JSON.stringify(newMethod);
+              var stringy2 = JSON.stringify(newMethod2);
+              NM = getCookie("NM");
+              var temp1 = NM.substring(0, NM.length - 2);
+              if(numMethods == 0)  NM = temp1 + stringy1 + "," + stringy2 + "]}";
+              else NM = temp1 + "," + stringy1 + "," + stringy2 + "]}";
+              setCookie("NM", NM, 30);
+              */
+              addUser(jsonRegister);
             }
           }
         }
       }
       
       function addNM1(jsonMethod){
-        alert("calling addNM with data = " + jsonMethod);
+        //alert("calling addNM with data = " + jsonMethod);
         var postTry2 = $.ajax({
         type: "POST",
         dataType: 'json',
-        url: 'https://pdit-backend-jcskillings.c9.io/notif_types.json',
+        //url: 'https://pdit-backend-jcskillings.c9.io/notif_types.json',
+        url: backendURL+'notif_types.json',
         data: jsonMethod,
         contentType: 'application/json',
         complete: function(complete){
-        alert("json complete: " +complete);
+        //alert("json complete: " +complete);
         },
         success: function(data){
           
@@ -472,21 +492,22 @@
           //addNM2(newMethod2);
         },
         error: function(error){
-          alert("error:" + JSON.stringify(error));
+          //alert("error:" + JSON.stringify(error));
         }
         });
       }
       
       function addNM2(jsonMethod){
-        alert("calling addNM with data = " + jsonMethod);
+        //alert("calling addNM with data = " + jsonMethod);
         var postTry2 = $.ajax({
         type: "POST",
         dataType: 'json',
-        url: 'https://pdit-backend-jcskillings.c9.io/notif_types.json',
+        //url: 'https://pdit-backend-jcskillings.c9.io/notif_types.json',
+        url: backendURL+'notif_types.json',
         data: jsonMethod,
         contentType: 'application/json',
         complete: function(complete){
-        alert("json complete: " +complete);
+        //alert("json complete: " +complete);
         },
         success: function(data){
           var userTemp = JSON.parse(getCookie("currUser"));
@@ -509,14 +530,15 @@
                 //},
           type: "POST",
           dataType: 'json',
-          url: 'https://pdit-backend-jcskillings.c9.io/users.json',
+          //url: 'https://pdit-backend-jcskillings.c9.io/users.json',
+          url: backendURL+'users.json',
           data: jsonString,
           contentType: 'application/json',
           complete: function(complete){
-          alert("json complete: " +complete);
+          //alert("json complete: " +complete);
           },
           success: function(data){
-            alert("KYLE!!");
+            //alert("KYLE!!");
             
           //alert("setting cookie:" + JSON.stringify(data));
             var remember = document.forms['regForm']['checkbox1'].checked;//rememberMe for cookies
@@ -533,7 +555,7 @@
       }
       
       function addNL2(message){
-        alert("NL2 reached");
+        //alert("NL2 reached");
         var currDate = Date();
         var currTime = currDate.substring(16, 24);
         var currHours = parseInt(currTime.substr(0, 2));
@@ -559,14 +581,15 @@
         var postTry2 = $.ajax({
           type: "POST",
           dataType: 'json',
-          url: 'https://pdit-backend-jcskillings.c9.io/logs.json',
+          //url: 'https://pdit-backend-jcskillings.c9.io/logs.json',
+          url: backendURL+'logs.json',
           data: newLog,
           contentType: 'application/json',
           complete: function(complete){
-          alert("json complete: " +complete);
+          //alert("json complete: " +complete);
           },
           success: function(data){
-            alert("added 2nd NL, now redir");
+            //alert("added 2nd NL, now redir");
             redir();
           },
           error: function(error){
@@ -577,7 +600,7 @@
       }
       
       function addNL1(message){
-        alert("NL1 reached");
+        //alert("NL1 reached");
         var currDate = Date();
         var currTime = currDate.substring(16, 24);
         var currHours = parseInt(currTime.substr(0, 2));
@@ -603,14 +626,15 @@
         var postTry2 = $.ajax({
           type: "POST",
           dataType: 'json',
-          url: 'https://pdit-backend-jcskillings.c9.io/logs.json',
+          //url: 'https://pdit-backend-jcskillings.c9.io/logs.json',
+          url: backendURL+'logs.json',
           data: newLog,
           contentType: 'application/json',
           complete: function(complete){
-          alert("json complete: " +complete);
+          //alert("json complete: " +complete);
           },
           success: function(data){
-            alert("added 1st NL");
+            //alert("added 1st NL");
             var userTemp = JSON.parse(getCookie("currUser"));
             var phone = userTemp.phone;
             var carrier = userTemp.provider;
@@ -628,14 +652,14 @@
             
           },
           error: function(error){
-            alert("error:" + JSON.stringify(error));
+            //alert("error:" + JSON.stringify(error));
           }
           });
         //setCookie("NL",NL,30);
       }
       
       function addNL(message){
-        alert("NL reached");
+        //alert("NL reached");
         var currDate = Date();
         var currTime = currDate.substring(16, 24);
         var currHours = parseInt(currTime.substr(0, 2));
@@ -672,11 +696,12 @@
         var postTry2 = $.ajax({
           type: "POST",
           dataType: 'json',
-          url: 'https://pdit-backend-jcskillings.c9.io/logs.json',
+          //url: 'https://pdit-backend-jcskillings.c9.io/logs.json',
+          url: backendURL+'logs.json',
           data: newLog,
           contentType: 'application/json',
           complete: function(complete){
-          alert("json complete: " +complete);
+          //alert("json complete: " +complete);
           },
           success: function(data){
             var email = thisUser.email;
@@ -693,7 +718,7 @@
               addNM2(newMethod2);
             }
             else{
-              alert("added NL redirecting");
+              //alert("added NL redirecting");
               redir();
             }
           },
@@ -855,14 +880,15 @@
         //},
           type: "POST",
           dataType: 'json',
-          url: 'https://pdit-backend-jcskillings.c9.io/users/sign_in.json',
+          //url: 'https://pdit-backend-jcskillings.c9.io/users/sign_in.json',
+          url: backendURL+'users/sign_in.json',
           data: jsonLogin,
           contentType: 'application/json',
           complete: function(complete){
-            alert("json complete: " +complete);
+            //alert("json complete: " +complete);
           },
           success: function(data){
-            alert("setting cookie:" + JSON.stringify(data));
+            //alert("setting cookie:" + JSON.stringify(data));
             if(remember == true) setCookie("currUser", JSON.stringify(data),30);
             else setCookie("currUser", JSON.stringify(data),0.25);
             //setCookie("currUser", JSON.stringify(data),30);
