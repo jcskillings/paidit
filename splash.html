@@ -1,4 +1,9 @@
 <!doctype html>
+/*
+all old code has just been commented out, but remains.  Feel free to remove
+whenever, but was left in to help understand how our code has tranitioned, from
+using a cookie based saving system, to a functioning backend
+*/
 <html class="no-js" lang="en">
   <head>
     <meta charset="utf-8" />
@@ -16,6 +21,7 @@
 
     <div class="row fullWidth" id="tipTopRow"></div>
     
+    //login and register buttons
     <div class="row fullWidth" div id="topRow">
       <div class="large-2  xlarge-2 columns">
         <a><img src="img/logoSm.png" id="mainLogo"/></a>
@@ -28,6 +34,7 @@
       </div>
     </div>
     
+    //info about Paidit
     <div id="middle" >
       <div class="row">
         <div class="large-12  large-centered columns">
@@ -37,11 +44,11 @@
            this mission by helping people to keep track of their bills in one spot with regular reminders to pay them on time. Prompt bill paying not only 
            leads to better credit history and credit score, but is an essential step towards a stable, financially secure home.</p>
            <br/>
-
         </div>
       </div>
     </div>
    
+   //features of Paidit
     <div id="bottomRow" >
       </br>
       <div class="row">
@@ -212,22 +219,22 @@
     <script>
       $(document).foundation();
 
-      var checked;
-      var backendURL = "https://pdit-backend-jcskillings.c9.io/";
+      var checked; //global var for alowing user data to be shared for with UW
+      var backendURL = "https://pdit-backend-jcskillings.c9.io/"; //var for backend
       //var backendURL = 'https://stormy-reef-9988.herokuapp.com/';
       
-      function redir(){
+      function redir(){ //function to redirect to home page
         window.location.replace("index.html");
       }
       
-      function setCookie(cname,cvalue,exdays) {
+      function setCookie(cname,cvalue,exdays) { //sets user cookie
         var d = new Date();
         d.setTime(d.getTime() + (exdays*24*60*60*1000));
         var expires = "expires=" + d.toGMTString();
         document.cookie = cname+"="+cvalue+"; "+expires;
       }
 
-      function getCookie(cname) {
+      function getCookie(cname) { //gets user cookie
         var name = cname + "=";
         var ca = document.cookie.split(';');
         for(var i=0; i<ca.length; i++) {
@@ -250,8 +257,11 @@
       var NL;
       var NM;
        
-      function newCheckCookie() {
+      function newCheckCookie() { //runs on page load
         
+        //most of these can be removed, mostly from when all data was
+        //saved  in cookies.  Might cause issue on other pages, so make sure
+        //to check incrementally
         if (getCookie("NL") == null || getCookie("NL") == "" || getCookie("NL") == '{"logs":[]}'){
           setCookie("NL",'{"logs":[]}',30);
           NL = '{"logs":[]}';
@@ -283,6 +293,7 @@
             redir();
           }
         }
+        //keep this one below.  Required for redirection if already logged in
         if (getCookie("currUser") != "" && getCookie("currUser") != null){
           //alert("currUser detected!");
           var userTemp = JSON.parse(getCookie("currUser"));
@@ -294,7 +305,7 @@
       }
       
       
-      function checkCookie() {
+      function checkCookie() { //old version of newCheckCookie, can be removed
         var numChecked = getCookie("numChecked");
         var user=getCookie("username");
         var password =getCookie("password");
@@ -326,7 +337,7 @@
         }
       }
       
-      // Bill object constructor
+      // Bill object constructor (not used since switched to functioning backend)
       function User(userName, email, firstName, lastName, phone,  password){
         this.userName = userName;
         this.email = email;
@@ -336,12 +347,14 @@
         this.password = password;
       }
       
+      // Log obj constructor (not used since switched to functioning backend)
       function Log(info, date, time) {
         this.info = info;
         this.date = date;
         this.time = time;
       }
       
+      //notification method constructor (not used since switched to functioning backend)
       function Method(type, destination, carrier, verified, name) {
         this.type = type;
         this.destination = destination;
@@ -350,7 +363,7 @@
         this.name = name;
       }
  
-      
+      //called when user submits registration form
       function validateForm() {   
         var userName = document.forms["regForm"]["regUsername"].value;
         /*
@@ -469,6 +482,7 @@
         }
       }
       
+      //ajax call to save email NM, will then create log for it
       function addNM1(jsonMethod){
         //alert("calling addNM with data = " + jsonMethod);
         var postTry2 = $.ajax({
@@ -497,6 +511,7 @@
         });
       }
       
+      //ajax call for creating phone method, creates log item after
       function addNM2(jsonMethod){
         //alert("calling addNM with data = " + jsonMethod);
         var postTry2 = $.ajax({
@@ -523,6 +538,8 @@
         }
         });
       }
+      
+      //ajax to create user, creates joined log item
       function addUser(jsonString) {
         var postTry = $.ajax({
                 //beforeSend : function(jqXHR) {
@@ -554,6 +571,7 @@
         });
       }
       
+      //ajax for creating log item for phone method, after redirects to home page
       function addNL2(message){
         //alert("NL2 reached");
         var currDate = Date();
@@ -599,6 +617,7 @@
         //setCookie("NL",NL,30);
       }
       
+      //ajax for creating email log item
       function addNL1(message){
         //alert("NL1 reached");
         var currDate = Date();
@@ -658,6 +677,7 @@
         //setCookie("NL",NL,30);
       }
       
+      //ajax for joinged log item, if NMs exists routes accordingly
       function addNL(message){
         //alert("NL reached");
         var currDate = Date();
@@ -729,6 +749,7 @@
         //setCookie("NL",NL,30);
       }
       
+      //old version of validate form, can be removed
       function oldValidateForm() {   
       var user = document.forms["regForm"]["regUsername"].value;
         if (user == null || user == "") {
@@ -781,6 +802,7 @@
         }
       }
       
+      //validates login info with backend, and redirects
       function validateLoginForm() {   
         var userName = document.forms["loginForm"]["loginUsername"].value;
         var i;
@@ -828,7 +850,8 @@
           }
         }
       }
-      
+
+      //
       $('#loginSubmit').click(function (){
          valLogin();
       });
@@ -844,13 +867,6 @@
       function valLogin(){
         signInHTTP(); 
       }
-      
-      function registerHTTP(){//how to check if username already exists?
-        
-        
-        
-      }
-    
       
       // return a user object parsed from json from the backend
       function signInHTTP(){
@@ -903,6 +919,7 @@
         }
       } //end signInHTTP
       
+      //not used?
       function ConvertFormToJSON(form){
           var array = jQuery(form).serializeArray();
           var json = {};

@@ -69,8 +69,9 @@
     
     <script >
 			
-			var returnBills="";
-			function getBills() {
+			var returnBills=""; //used for data returned from backend
+			
+			function getBills() { //gets the bills for the next 30ish days to be used for data
         /*if(getCookie("currUser") == "" || getCookie("currUser") == null || getCookie("currUser") =='{"bills":[]}') {
           window.location.replace("splash.html");
         } */
@@ -85,7 +86,7 @@
 
         }
       }
-      // Heh, it works now - there was a duplicate function down below - probaly my fault acutally either way i got a full bills list in the alerts and stuff
+      // sets the bills returned to be used on this page
       function getBillsCallback(data){ 
         //alert("data?: " + JSON.stringify(data));
         returnBills = {"bills": data };
@@ -102,6 +103,7 @@
         }
       } // end getBillsCallback
       
+      //ajax for getting a users bills
       function getBillsHTTP2(user_name){ 
         //alert("usernmae in http2 is:" + JSON.stringify(user_name));//damn
         return $.ajax({
@@ -115,6 +117,7 @@
           });
       } // end getBillsHTTP2
 			
+			//function that creates and puts both graphs and data
 			function startGraph(){
 				var ctx = document.getElementById("chart-area").getContext("2d");
 				var ctx2 = document.getElementById("graph-area").getContext("2d");
@@ -123,12 +126,12 @@
 				makeGraph2();
 				makeGraphData();
 				window.myPie = new Chart(ctx).Pie(myPieData);
-				makelist();
+				makelist(); //makes graph legend
 				//alert(JSON.stringify(myGraphData));
 				//alert(graphArray[0]);
 				var myGraph = new Chart(ctx2).Bar(myGraphData);
 				document.getElementById("graph-area").innerHTML = myGraph;
-				makelist2();
+				makelist2(); //makes graph legend
 				//legend(document.getElementById("chart-area"),myPieData);
 			}
 			
@@ -219,7 +222,7 @@
         year = parseInt(year);
         var dateArray = [];
         var add = 0;
-        for (var t=0; t < 31; t++){
+        for (var t=0; t < 32; t++){
           if ((day+add) > numDaysMonth){
             day = 1;
             add = 0;
@@ -232,12 +235,13 @@
         }
         var dataArrayLo = [];
         var dataArrayHi = [];
-        for(var g = 0; g < 31; g++){
+        for(var g = 0; g < 32; g++){
           dataArrayLo[g]=0;
           dataArrayHi[g]=0;
         }
         var arrayLen = graphArray.length;
         for(g = 0; g < arrayLen; g++){
+          //alert("added");
           dataArrayLo[graphArray[g][5]]+=graphArray[g][1];
           dataArrayHi[graphArray[g][5]]+=graphArray[g][2];
           //alert(graphArray[g][4]);
@@ -282,6 +286,7 @@
               }
           ]
         };
+        //alert(JSON.stringify(myGraphData));
       }
       
       function getNumDaysInMonth(month, year){
@@ -299,7 +304,11 @@
           else return "28";
         }
       }
-      var total;
+      
+      
+      var total; //total for month
+      
+      //accounts for repeat and updates total and sets myPieData array
 			function makePieData(){
 			  total=0;
 			  for(var j = 0; j < numBills; j++){
@@ -326,7 +335,7 @@
 			}
 			
 			
-			var myPieData = [];
+			var myPieData = []; //[value as percent, random color, gray highlight, name] for each bill
 			var allBills; //{"bills":[]} allBills that are NOT Paid are in array
       var numBills; //number of bills that are NOT Paid
       var obj; //JSON object of all bills that are NOT Paid
@@ -334,12 +343,12 @@
       var paidJson; 
       var numOverdue;
       var overdueJson;
-      var billArray = [];
-      var graphArray = [];
-      var myGraphData = {};
+      var billArray = []; //bills to be used, within a month
+      var graphArray = []; //dates for next 31 days
+      var myGraphData = {}; //dates with low and high columns
       var backendURL = "https://pdit-backend-jcskillings.c9.io/";
       
-    function getRandomColor() {
+    function getRandomColor() { //generates a random color for pie chart
       var letters = '0123456789ABCDEF'.split('');
       var color = '#';
       for (var i = 0; i < 6; i++ ) {
@@ -351,10 +360,11 @@
     function makeGraph(){
      // alert("mAkegraph");
       //alert((returnBills));
-      deleteOldOverdue();
-      deleteOldPaid();
-      updateBillsNoOverdue();
-      updateBillsNoPaid();
+      deleteOldOverdue(); //should delete overdue bills older than 1  month, needs updated
+      //to use the backend
+      deleteOldPaid(); //should delete paid bills not from today, needs updated to used backend
+      updateBillsNoOverdue();//removes overdue bills locally, not permantently to be used for data
+      updateBillsNoPaid();//removes paid bills locally, not permantently to be used for data
       //alert(numBills);
       for (var i=0; i < numBills; i++){
         putBill(i);
@@ -415,16 +425,16 @@
       return;
     }
     
-    function putMonthsBill(index, daysToGo){
+    function putMonthsBill(index, daysToGo){//puts bills to be used into graphArray to be used to make graph
       
       graphArray[index] = [obj.bills[atBill].name, obj.bills[atBill].amountLo,  obj.bills[atBill].amountHi, obj.bills[atBill].dueDate, obj.bills[atBill].repeat, daysToGo];
     }
     
-    function putBill(index){
+    function putBill(index){//puts bills to be used into billArray to be used to make pie chart
       billArray[index] = [obj.bills[index].name, obj.bills[index].amountLo,  obj.bills[index].amountHi, obj.bills[index].repeat];
     }
       
-    function updateBillsNoPaid() { //sets obj/numBills/allBills
+    function updateBillsNoPaid() { //sets obj/numBills/allBills without paid bills
         //paidJson = "";
         numPaid = 0;
         for  (var k=0; k < numBills; k++){
@@ -441,7 +451,7 @@
         }
       }
       
-      function updateBillsNoOverdue() { //sets obj/numBills/allBills
+      function updateBillsNoOverdue() { //sets obj/numBills/allBills without overdue bills
         obj = returnBills;
         allBills = JSON.stringify(returnBills);
         numBills = obj.bills.length;
@@ -476,7 +486,8 @@
         return;
       }
       
-      function isWithinMonth(y, m, d, dy, dm, dd){
+      function isWithinMonth(y, m, d, dy, dm, dd){ //first 3-durrent y, m, d
+                                                  //last 3 bill due y, m, d
         if (y==dy && m==dm && d<=dd){
           return true;
         }
@@ -489,7 +500,7 @@
         return false;
       }
     
-    function deleteOldOverdue(){
+    function deleteOldOverdue(){ //doesnt actually delete from backend, needs to do that.
       obj = (returnBills);
       allBills = JSON.stringify(returnBills);
       numBills = obj.bills.length;
@@ -535,7 +546,7 @@
       }
     }
      
-     function deleteOldPaid(){
+     function deleteOldPaid(){//doesnt delete from back end, needs to actually do that
         obj = returnBills;
         allBills = JSON.stringify(obj);
         numBills = obj.bills.length;
@@ -611,6 +622,7 @@
         else if (name == "Dec") return 12;
       }
       
+      //returns the location of the nth occurenct of whatever char you are looking for in the string
       function nth_occurrence (string, char, nth) {
         var first_index = string.indexOf(char);
         var length_up_to_first_index = first_index + 1;

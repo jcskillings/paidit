@@ -83,10 +83,10 @@
             </tbody>
         </table>
         
-        <a href="#" class="button radius" id="saveEdit">Save</a> <!-- saveEdit saves ? bill-->
+        <a href="#" class="button radius" id="saveEdit">Save</a> <!-- saveEdit saves the edited bill-->
         <a href="#" class="button radius" id="cancelEdit">Cancel</a>        
           
-        <a href="#" class="button radius" id="saveBtn">Save</a> <!-- saveBtn saves an edited bill-->
+        <a href="#" class="button radius" id="saveBtn">Save</a> <!-- saveBtn saves the new bill-->
         <a href="#" class="button radius" id="cancelBtn">Cancel</a>
       </div> 
     </div>
@@ -97,7 +97,7 @@
     <script>
       $(document).foundation();
       
-      var returnBills=""; //global
+      var returnBills=""; //saved bill object from backend used for this page
       
       function setCookie(cname,cvalue,exdays) {
         var d = new Date();
@@ -149,6 +149,7 @@
         } 
       } // end getBills() 
       
+      //sets returned bills from backend return value
       function getBillsCallback(data){
         // anything in getBills() that relies on json from the backend must go in here
         returnBills = {"bills": data };
@@ -174,6 +175,7 @@
         }
       } // end getBillsCallback
       
+      //ajax for getting bills
       function getBillsHTTP2(user_name){
         //alert("usernmae in http2 is:" + JSON.stringify(user_name));
         return $.ajax({
@@ -273,7 +275,7 @@
           '<button style="width:85px;padding: 20px 0px 20px 0px;" onClick="deleteRow(this)">Delete</button>';
       } // end putbill
       
-      function deleteOldPaid(){ // called by getBillsCallback
+      function deleteOldPaid(){ // called by getBillsCallback, needs to be implemented with backend
         //obj = JSON.parse(getCookie("allBills"));
         obj = returnBills;
         //allBills = getCookie("allBills");
@@ -320,7 +322,7 @@
       var paidJson; // dictionaries for all Paid bills
       var editRowIndex;
       
-      function updateBillsNoPaid() { //sets obj/numBills/allBills
+      function updateBillsNoPaid() { //sets obj/numBills/allBills, needs implemented with returnbills
         //obj = JSON.parse(getCookie("allBills"));
         //alert("inside updateBillsNoPaid");
         obj = returnBills;
@@ -356,6 +358,7 @@
         }
       } // end updateBillsNoPaid() ============================================================
       
+      //needs implmented with returnbills
       function updateWithPaid(message) { // returns JSON array of bills, called by deleteRow(), updateJSON, saveEdit() as argument to setCookie 
         if (numPaid == 0) return message;
         else {
@@ -365,6 +368,7 @@
         }
       }
       
+      //returns the location of the nth occurrence of char in string
       function nth_occurrence (string, char, nth) {
         var first_index = string.indexOf(char);
         var length_up_to_first_index = first_index + 1;
@@ -383,8 +387,8 @@
         }
       }
       
+      //removes bills from table to be edited
       function editRow(o) { // called on click of bill edit button
-        
         var p=o.parentNode.parentNode;
         editRowIndex = p.rowIndex;
         //alert("inside editRow: rowIndex: " + editRowIndex);
@@ -727,6 +731,7 @@
         alert("You cannot edit/delete another bill while one is currently being added or edited");
       }
       
+      //removes from table and calles updateJson to remove completely from backend, needs work
       function deleteRow(o){ // called when Delete button of bill is clicked
         if (confirm("Are you sure?  Deleting this bill cannot be undone!") == true){
         var p=o.parentNode.parentNode;
@@ -785,6 +790,7 @@
         this.user_name = user_name;
       }
       
+      //creates a log item given a message and eventType
       function addNL(message, eventType){
         var currDate = Date();
         var currTime = currDate.substring(16, 24);
@@ -1310,6 +1316,7 @@
         window.location.reload();
       }
       
+      //ajax to delete a bill
       function deleteBillHTTP(billId){
         return $.ajax({
           type: "DELETE",
@@ -1326,7 +1333,7 @@
       
       function deleteBillCallback(data){
         //alert("deleteBill callback data: " + JSON.stringify(data));
-        //window.location.reload();
+        window.location.reload();
       }
       //======================================================
       function checkValidDate(year, month, day) {
@@ -1560,7 +1567,7 @@
       }
       
       //======================================================
-      function reverse(year, month, day, hour, passedR) {
+      function reverse(year, month, day, hour, passedR) { //undoes getDateTime, returns [days,hours]
         var finalRD;
         var finalRH;
         var pyear = parseInt(passedR.substr(0, 4));
@@ -1607,6 +1614,7 @@
         return [finalRD, finalRH];
       } // end reverse //======================================================
       //======================================================
+      //returns dateTime for reminder given dueDate of bill and reminderdays+hours
       function getDateTime(year, month, day, hour, minute, TZ, reminderDays, reminderHours) {
         var finalYear;
         var finalMonth;
@@ -1685,7 +1693,7 @@
         else if (name == "Nov") return 11;
         else if (name == "Dec") return 12;
       }
-      function MonthNumToVal(num) {
+      function MonthNumToVal(num) { //errors in how month is used in places
         var month = new Array();
         month[0] = "01";
         month[1] = "02";
@@ -1701,7 +1709,7 @@
         month[11] = "12";
         return month[num];
       }
-      function MonthDecrement(mo){
+      function MonthDecrement(mo){//errors in how month is used in places
         var moInt = parseInt(mo)
         var month = new Array();
         month[0] = "00";

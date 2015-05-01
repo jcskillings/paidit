@@ -137,15 +137,13 @@
       var userName;
       var firstName;
       var lastName;
-      var email;
-      var phone;
       var password;
       var notifs;
       var numNotifs;
       var currUser;
       var backendURL = "https://pdit-backend-jcskillings.c9.io/";
       
-      function getInfo(){
+      function getInfo(){ //runs on load, puts in user info and notif methods
         if(getCookie("currUser") == "" || getCookie("currUser") == null) {
           window.location.replace("splash.html");
         }
@@ -157,6 +155,7 @@
         }
       }
       
+      //saves notifs locally when returned by backend
       function getNotifsCallback(data){ 
         //alert("data?: " + JSON.stringify(data));
         notifs = {"methods": data };
@@ -186,9 +185,8 @@
       } // end getBillsHTTP2
       
       
-      
+      //puts user info into table and calls putNotifs for notifs
       function getUserInfo(){
-        
         currUser = JSON.parse(getCookie("currUser"));
         firstName = currUser.first;
         userName = currUser.username;
@@ -206,6 +204,7 @@
           }
       }
       
+      //puts each notif method into table, capped at 4
       function putNotif(index){
         var table = document.getElementById("userTable2");
         var row = table.insertRow(index);
@@ -219,7 +218,7 @@
        
         cell1.innerHTML = notifs.methods[index-1].name;
         cell2.innerHTML = notifs.methods[index-1].destination;
-        cell3.innerHTML = notifs.methods[index-1].type;
+        cell3.innerHTML = notifs.methods[index-1].notifMethod;
         cell4.innerHTML = notifs.methods[index-1].carrier;
         cell5.innerHTML = notifs.methods[index-1].verified;
         cell6.innerHTML = '<button style="width:55px;padding: 16px 0px 16px 0px;margin:auto" onClick="editRow(this)" id="edit">Edit</button>'+" "+
@@ -233,6 +232,8 @@
         alert("You cannot utilize this function while currently editing/adding a notification method");
       }
       
+      //only allows a user to change the name of a notifcation method, should only 
+      //allow if it is not attached to a bill currently.  That check needs to still be done
       function editRow(o) {
         var p=o.parentNode.parentNode;
         p.parentNode.removeChild(p);
@@ -251,6 +252,7 @@
       var type1;
       var newName;
       
+      //once clicked, put into editable field.  can only edit name
       function putInEditField() {
         var j;
         var table = document.getElementById("userTable2");
@@ -261,8 +263,6 @@
         verified = null;
         newJson = null;
         currEdit = null;
-        
-        
         for(j = 1; j < numNotifs; j++){
           var named = notifs.methods[j-1].name;
           var row = table.rows.item(j).cells[0].firstChild.data;
@@ -335,6 +335,8 @@
         }
       }
       
+      //deletes a notif method.  Should only be allowed if not currently attached to a bill.
+      //this check is not currently implemented.
       function deleteRow(o){
         if (confirm("Are you sure?  Deleting this Notification Method cannot be undone!") == true){
         var p=o.parentNode.parentNode;
@@ -450,7 +452,8 @@
        addNL1("You deleted Notification Method "+deleteName, "delete reminder");
       } // end getBillsCallback
       
-      
+      //makes fields for creating a notif method, should make all other button unuable during
+      //this, not sure if that is implemented
       $('#addNotif').click(function(){
         //var num = JSON.parse(getCookie("NM")).methods.length;
         if (numNotifs == 4) {
@@ -489,6 +492,7 @@
         $(this).closest('tr').remove();
       });
       
+      //cancels add, changes visibility of buttons
       $('#cancelBtn').click( function() {
           $('#createNotif').remove();
           $('#saveBtn').css('visibility','hidden');
@@ -497,6 +501,7 @@
           window.location.reload();
       });
       
+      //cancels edit, changes visibility of buttons
       $('#cancelEdit').click( function() {
           $('#createNotif').remove();
           $('#saveEdit').css('visibility','hidden');
@@ -505,8 +510,10 @@
           window.location.reload();
       });
       
+      //gets fields from user edit and saves.  Should only work if not currently
+      //attached to a bill.  This check is not done currently.
       $('#saveEdit').click( function() {
-        $('#saveEdit').click(null);
+        $('#saveEdit').css('visibility','hidden');
         newName = document.getElementById("name").value;
         var newNotif = '{"notif_type": {"name": "'+newName+'", "destination":"'+notifs.methods[currEdit].destination+
           '", "notifMethod": "'+notifs.methods[currEdit].type+'", "carrier": "'+notifs.methods[currEdit].carrier+'", "verified":false, "user_name":"'+userName+'"}}';
@@ -537,7 +544,7 @@
       }
       
       $('#saveBtn').click( function() {
-        $('#saveBtn').click(null);
+        $('#saveBtn').css('visibility','hidden');
         var name = document.getElementById("name").value;
         /*
         var NM = (getCookie("NM"));
@@ -571,6 +578,7 @@
         setCookie("NM",NM,30);
         notifs = JSON.parse(getCookie("NM"));
         numNotifs = notifs.methods.length;*/
+        
         var newMethod1 = '{"notif_type": {"name": "'+name+'", "destination":"'+destination+'", "notifMethod": "'+type1+'", "carrier": "'+carrier1+'", "verified":false, "user_name":"'+userName+'"}}';
         $('#addNotif').css('visibility','visible');
         if(type1== "phone"){
@@ -587,6 +595,7 @@
         window.location.replace("usersettings.html");*/
       });
       
+      //ajax for creating new method
       function addNM1(jsonMethod){
         //alert("calling addNM with data = " + jsonMethod);
         var postTry2 = $.ajax({
@@ -612,6 +621,7 @@
         });
       }
       
+      //creates log item when things are edited, created, or removed
       function addNL1(message, eventType){
         //alert("NL1 reached");
         var currDate = Date();
@@ -659,6 +669,8 @@
         return;
       });
       
+      //old function when data was all saved in cookies, can be removed or 
+      //changed to do the check on front end
       function isActive(checkName) {
         var obj = JSON.parse(getCookie("allBills"));
         var  numBills = obj.bills.length;
@@ -742,6 +754,7 @@
         this.time = time;
       }
       
+      //old function for adding log items, can be removed
       function addNL(message){
         var currDate = Date();
         var currTime = currDate.substring(16, 24);
@@ -776,6 +789,10 @@
       }
       
       var newMessage;
+      
+      //should save user info if changed.  Issues here.  Cannot get PW from 
+      //backend so we have to make user reenter, which will also overwrite.
+      //Bypasses Devise and this causes problems.  Needs troubleshooting.
       function saveUser(){
         /*
         var obj = JSON.parse(getCookie("allUsers"));
@@ -873,6 +890,7 @@
         }
       }
       
+      //ajax to update user on backend and currUser on front
       function finishSave(jsonString) {
         var postTry = $.ajax({
                 //beforeSend : function(jqXHR) {

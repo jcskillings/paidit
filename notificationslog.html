@@ -83,15 +83,15 @@
         document.cookie = cname+"="+cvalue+"; "+expires;
       }
       
-      var NL;
-      var numLogs;
-      var obj;
-      var returnLogs;
-      var username;
+      var NL; //string version of obj
+      var numLogs; //numer of log items
+      var obj; //json of logs items
+      var returnLogs; //returned data from backend
+      var username; 
       //var backendURL = 'https://stormy-reef-9988.herokuapp.com/'
-      var backendURL = "https://pdit-backend-jcskillings.c9.io/";
+      var backendURL = "https://pdit-backend-jcskillings.c9.io/"; //url to backend location
       
-      function loadNotifications() {
+      function loadNotifications() { //runs on body load
         if(getCookie("currUser") == "" || getCookie("currUser") == null || getCookie("currUser") =='{"bills":[]}') {
           window.location.replace("splash.html");
         }
@@ -119,6 +119,7 @@
         }
       }
       
+      //ajox for getting log items
       function getLogsHTTP2(user_name){
         //alert("usernmae in http2 is:" + JSON.stringify(user_name));
         return $.ajax({
@@ -131,6 +132,7 @@
           });
       } // end getBillsHTTP2
       
+      //sets the data when given from backend, and puts them into the table
       function getLogsCallback(data){
         // anything in getBills() that relies on json from the backend must go in here
         //alert("log callback");
@@ -152,7 +154,7 @@
         }
       } // end getBillsCallback
       
-      
+      //puts the given log into the table
       function putLog(index) {
         //alert("entered put log");
         var table = document.getElementById("logTable");
@@ -166,20 +168,9 @@
         cell3.innerHTML = obj.logs[index].time;
         cell4.innerHTML = '<button onClick="deleteRow(this)">Delete</button>';
       }
-      
-      function stopDelete(){
-        var table;
-        var row;
-        for  (var i=0; i < numLogs-1; i++){
-          table = document.getElementById("logTable");
-          row = table.insertRow(i+1);
-          row.cells[3].innerHTML = '<button>Delete</button>';
-        }
-        return;
-      }
-      
+
+      //removes a bill from the table, then calls a function to remove permanently
       function deleteRow(o){
-        
         if (confirm("Are you sure?  Deleting this bill cannot be undone!") == true){
         var p=o.parentNode.parentNode;
         p.parentNode.removeChild(p);
@@ -187,6 +178,10 @@
         }
       }
       
+      //deletes bill permanantly (well just sets it to hidden by the backend, this
+      //should set to hidden if user allows us to use their data, but should delete
+      //permanently if user does not want us to use their data, this is not implemented
+      //correctly to do both these things currently, backend just sets to hide)
       function newUpdateJson(){
         var table = document.getElementById("logTable");
         var id;
@@ -239,14 +234,14 @@
         return;
       }
       
+      //ajax to delete a log item.  Does this just set it to hide? or actually delete?
       function deleteLog(log_id){
         //alert("log id is:" + (log_id)); //logid is good, it all matches up sucka
         return $.ajax({
           type: "DELETE",
           dataType: 'json',
-          url: 'https://pdit-backend-jcskillings.c9.io/logs/'+log_id+'.json', // yeah backend sees the right id, a routing problem with backend i think
-          //data: log_id,
-          contentType: 'application/json',//ok then i will start doing the graph stuff then for now :) // sounds good
+          url: 'https://pdit-backend-jcskillings.c9.io/logs/'+log_id+'.json',
+          contentType: 'application/json',
           //success: callback
           complete: function(complete){
             //alert("json complete: " +complete);
@@ -257,12 +252,13 @@
           });
       } // end getBillsHTTP2
       
+      //check to make sure it completes, nothing to do with returned data
       function updateLogs(data){
        //alert("yay!");
       } // end getBillsCallback
       
 
-      
+      //old update, can be removed
       function updateJson(){
         if(numLogs == 1) {
           setCookie("NL",'{"logs":[]}',30);
